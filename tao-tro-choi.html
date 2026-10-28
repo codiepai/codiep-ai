@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tạo trò chơi từ câu hỏi - CÔ ĐIỆP AI</title>
+<meta name="description" content="Cô nhập câu hỏi, chọn kiểu chơi, nhận link và mã QR cho học sinh. Không cần đăng nhập.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378;--vien:#d3e6f8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:radial-gradient(900px 480px at 90% -10%,#9fd4ff55,transparent 60%),linear-gradient(180deg,#e3f3ff,#f6fbff 40%,#fff8e8);min-height:100vh}
+.bia{background:linear-gradient(135deg,#06285a,#0b5cab 55%,#1d7bd8);color:#fff;padding:18px 16px 54px;position:relative;overflow:hidden}
+.bia::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#ffffff33,transparent 65%)}
+.rong{max-width:820px;margin:0 auto;position:relative}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(28px,6vw,40px)/1.1 "Baloo 2",sans-serif;margin:10px 0 4px}
+.bia h1 b{color:var(--gold)}
+.bia p{margin:0;opacity:.92;max-width:560px}
+main{max-width:820px;margin:-34px auto 0;padding:0 14px 120px;position:relative}
+.the{background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(11,92,171,.16);padding:18px;margin-bottom:16px;border:1px solid #fff}
+.the h2{font:800 20px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.buoc{flex:none;width:30px;height:30px;border-radius:50%;background:var(--gold);color:#5a3d00;display:grid;place-items:center;font:800 16px "Baloo 2",sans-serif}
+label.l{display:block;font-weight:600;font-size:14px;margin:10px 0 5px;color:var(--phu)}
+input[type=text],textarea,select{width:100%;font:500 16px "Be Vietnam Pro",sans-serif;padding:11px 13px;border:2px solid var(--vien);border-radius:14px;background:#fff;color:var(--ink)}
+input:focus,textarea:focus,select:focus{outline:3px solid #9fd4ff;border-color:var(--blue)}
+textarea{resize:vertical;min-height:60px}
+.luoi2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kieu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.kieu label{border:2px solid var(--vien);border-radius:16px;padding:12px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:14px;background:#fff;transition:.15s}
+.kieu label span{display:block;font-size:30px}
+.kieu input{position:absolute;opacity:0;pointer-events:none}
+.kieu input:checked+label{border-color:var(--blue);background:#eaf5ff;box-shadow:0 0 0 3px #9fd4ff88}
+.qc{border:2px solid var(--vien);border-radius:18px;padding:14px;margin-bottom:12px;background:#fbfdff}
+.qh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.qh b{font:800 17px "Baloo 2",sans-serif;color:var(--royal)}
+.act{display:flex;gap:6px}
+.btn{border:2px solid var(--vien);background:#fff;border-radius:12px;padding:7px 11px;font:600 14px "Be Vietnam Pro",sans-serif;color:var(--royal);cursor:pointer}
+.btn:hover{background:#eaf5ff}.btn.do{color:var(--bad)}
+.dap{display:flex;align-items:center;gap:8px;margin:8px 0}
+.dap .ch{flex:none;width:32px;height:32px;border-radius:50%;background:#eaf5ff;color:var(--royal);display:grid;place-items:center;font:800 15px "Baloo 2",sans-serif}
+.dap input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--ok)}
+.dap.dung .ch{background:var(--ok);color:#fff}.dap.dung input[type=text]{border-color:var(--ok);background:#f3fcf6}
+.dap .xoa{flex:none;border:0;background:none;color:#b5353a;font-size:20px;cursor:pointer;padding:2px 6px}
+.hinh{display:flex;align-items:center;gap:10px;margin:8px 0 2px;flex-wrap:wrap}
+.hinh img{height:64px;border-radius:10px;border:2px solid var(--vien)}
+.go{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.nutl{border:0;border-radius:16px;padding:13px 20px;font:800 17px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 5px 0 #b86200;cursor:pointer}
+.nutl:active{transform:translateY(2px);box-shadow:0 3px 0 #b86200}
+.nutl.xanh{background:linear-gradient(180deg,#3d9bf0,#0b5cab);box-shadow:0 5px 0 #073d73}
+.nutl.xam{background:#fff;color:var(--royal);border:2px solid var(--vien);box-shadow:0 4px 0 var(--vien)}
+.thanh{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--vien);padding:10px 14px max(10px,env(safe-area-inset-bottom));z-index:5}
+.thanh .rong{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.thanh span{font-weight:600;color:var(--phu);font-size:14px}
+.kq{display:none}.kq.hien{display:block}
+.linkbox{display:flex;gap:8px}.linkbox input{flex:1;font-size:14px}
+.qrbox{display:flex;gap:16px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.qrbox .qr{width:190px;height:190px;background:#fff;border:2px solid var(--vien);border-radius:16px;padding:8px;display:grid;place-items:center}
+.qrbox .qr svg{width:100%;height:100%}
+.ghi{color:var(--phu);font-size:13.5px;margin:6px 0 0}
+.canh{color:#8a5a00;background:#fff6dc;border:1px solid #ffe29a;border-radius:12px;padding:8px 12px;font-size:13.5px;margin-top:10px}
+dialog{border:0;border-radius:22px;padding:20px;max-width:640px;width:calc(100% - 28px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(6,40,90,.5)}
+dialog h3{font:800 20px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 6px}
+pre.mau{background:#f3f9ff;border:1px dashed var(--vien);border-radius:12px;padding:10px 12px;font:13.5px/1.5 "Be Vietnam Pro",sans-serif;white-space:pre-wrap;margin:6px 0 10px}
+@media (max-width:560px){.luoi2{grid-template-columns:1fr}.kieu label{font-size:13px}}
+</style>
+</head>
+<body>
+<header class="bia"><div class="rong">
+  <a href="./">&larr; Về trang chủ CÔ ĐIỆP AI</a>
+  <h1>Tạo trò chơi từ <b>câu hỏi</b></h1>
+  <p>Cô nhập câu hỏi, chọn kiểu chơi, nhận link và mã QR gửi cho học sinh. Học sinh bấm vào chơi ngay, không cần đăng nhập.</p>
+</div></header>
+
+<main>
+  <section class="the">
+    <h2><span class="buoc">1</span>Thông tin trò chơi</h2>
+    <label class="l" for="td">Tên trò chơi</label>
+    <input type="text" id="td" placeholder="Ví dụ: Ôn Toán Bài 10, phép cộng trong phạm vi 10" maxlength="80">
+    <label class="l" for="mt">Lời nhắn cho học sinh (không bắt buộc)</label>
+    <input type="text" id="mt" placeholder="Ví dụ: Các con đọc kĩ rồi chọn đáp án đúng nhé" maxlength="120">
+    <label class="l">Kiểu chơi</label>
+    <div class="kieu">
+      <div><input type="radio" name="kieu" id="k1" value="dua" checked><label for="k1"><span>🏁</span>Đường đua</label></div>
+      <div><input type="radio" name="kieu" id="k2" value="ten"><label for="k2"><span>🚀</span>Tên lửa</label></div>
+      <div><input type="radio" name="kieu" id="k3" value="vuon"><label for="k3"><span>🍎</span>Hái quả</label></div>
+    </div>
+    <div class="luoi2">
+      <div><label class="l" for="gio">Thời gian mỗi câu</label>
+        <select id="gio"><option value="0">Không giới hạn</option><option value="10">10 giây</option><option value="15">15 giây</option><option value="20">20 giây</option><option value="30">30 giây</option><option value="45">45 giây</option><option value="60">60 giây</option></select></div>
+      <div><label class="l" for="xao">Thứ tự câu hỏi</label>
+        <select id="xao"><option value="1">Xáo trộn mỗi lần chơi</option><option value="0">Giữ nguyên thứ tự</option></select></div>
+    </div>
+  </section>
+
+  <section class="the">
+    <h2><span class="buoc">2</span>Câu hỏi <span id="dem" style="font:600 14px 'Be Vietnam Pro';color:var(--phu)"></span></h2>
+    <div id="ds"></div>
+    <div class="go">
+      <button class="nutl xanh" id="them">+ Thêm câu hỏi</button>
+      <button class="nutl xam" id="dan">Dán nhiều câu</button>
+      <button class="nutl xam" id="tai">Tải file về máy</button>
+      <button class="nutl xam" id="mo">Mở file</button>
+      <button class="nutl xam" id="xoa">Xóa hết</button>
+    </div>
+    <input type="file" id="tep" accept=".json,application/json" hidden>
+    <p class="ghi">Câu hỏi tự lưu trên máy này. Muốn dùng trên máy khác, bấm "Tải file về máy".</p>
+  </section>
+
+  <section class="the kq" id="kq">
+    <h2><span class="buoc">3</span>Link và mã QR cho học sinh</h2>
+    <div class="linkbox"><input type="text" id="lk" readonly><button class="nutl" id="cc">Chép link</button></div>
+    <div class="go"><button class="nutl xanh" id="thu">Chơi thử</button><a class="nutl xam" style="text-decoration:none" href="tro-choi-ca-lop.html?nguon=may" target="_blank">Chiếu cả lớp chơi</a></div>
+    <label class="l" for="lop">Ghi kết quả của học sinh vào bảng tính của cô (không bắt buộc)</label>
+    <input type="text" id="lop" placeholder="Nhập mã lớp, ví dụ 1.14. Để trống nếu chỉ gửi cho thầy cô khác" maxlength="10">
+    <p class="ghi">Có mã lớp thì mỗi lần học sinh chơi xong, tên và điểm tự ghi vào trang "Kết quả" trong Google Sheet của cô Điệp. Link có mã lớp chỉ dành cho lớp của cô, thầy cô khác dùng link không có mã lớp.</p>
+    <div class="qrbox"><div class="qr" id="qr"></div><div><b>Mã QR</b><p class="ghi" id="qrghi">Học sinh quét mã bằng camera điện thoại là vào chơi. Cô chiếu mã lên tivi hoặc in ra dán lớp đều được.</p><button class="nutl xam" id="qrtai" style="margin-top:8px">Tải mã QR</button></div></div>
+    <div class="canh" id="canh" style="display:none"></div>
+    <p class="ghi">Câu hỏi nằm ngay trong link. Cô sửa câu hỏi thì bấm tạo link mới và gửi lại cho học sinh.</p>
+  </section>
+</main>
+
+<div class="thanh"><div class="rong"><span id="tk">0 câu hợp lệ</span><button class="nutl" id="tao">Tạo link và mã QR</button></div></div>
+
+<dialog id="hd">
+  <h3>Dán nhiều câu hỏi</h3>
+  <p class="ghi">Dán từ Word hoặc Excel. Mỗi câu gồm dòng câu hỏi, các dòng đáp án A, B, C, D và dòng đáp án đúng. Hoặc đánh dấu * trước đáp án đúng.</p>
+  <pre class="mau">Câu 1: 3 + 4 = ?
+A. 6
+B. 7
+C. 8
+Đáp án: B
+
+Câu 2: Chữ nào có vần ua?
+A. cua
+*B. mưa
+C. lúa</pre>
+  <textarea id="dv" rows="9" placeholder="Dán nội dung vào đây"></textarea>
+  <div class="go"><button class="nutl xanh" id="dvok">Thêm vào danh sách</button><button class="nutl xam" id="dvhuy">Đóng</button></div>
+  <p class="ghi" id="dvkq"></p>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const CHU = 'ABCD', KHO = 'codiep-tao-tro-choi';
+let S = {t: '', g: '', m: 'dua', k: 0, x: 1, q: [{c: '', a: ['', '', ''], d: 0, i: ''}]};
+try { const c = JSON.parse(localStorage.getItem(KHO)); if (c && Array.isArray(c.q) && c.q.length) S = c; } catch (e) {}
+const luu = () => { try { localStorage.setItem(KHO, JSON.stringify(S)); } catch (e) {} };
+
+/* ===== vẽ danh sách câu hỏi ===== */
+function ve(){
+  const ds = $('ds'); ds.innerHTML = '';
+  S.q.forEach((q, n) => {
+    const d = document.createElement('div'); d.className = 'qc'; d.dataset.n = n;
+    d.innerHTML = '<div class="qh"><b>Câu ' + (n + 1) + '</b><span class="act"><button class="btn" data-a="len" title="Lên">↑</button><button class="btn" data-a="xuong" title="Xuống">↓</button><button class="btn" data-a="nhan" title="Nhân bản">Nhân bản</button><button class="btn do" data-a="xoa" title="Xóa">Xóa</button></span></div>'
+      + '<textarea class="qt" rows="2" placeholder="Nhập câu hỏi"></textarea><div class="hinh"></div><div class="dsd"></div>';
+    d.querySelector('.qt').value = q.c;
+    const h = d.querySelector('.hinh');
+    if (q.i){ h.innerHTML = '<img alt=""><button class="btn do" data-a="bohinh">Bỏ hình</button>'; h.querySelector('img').src = q.i; }
+    else h.innerHTML = '<label class="btn" style="cursor:pointer">Thêm hình<input type="file" accept="image/*" data-a="hinh" hidden></label>';
+    const dd = d.querySelector('.dsd');
+    q.a.forEach((a, k) => {
+      const r = document.createElement('div'); r.className = 'dap' + (q.d === k ? ' dung' : '');
+      r.innerHTML = '<input type="radio" name="d' + n + '" data-a="dung" data-k="' + k + '"' + (q.d === k ? ' checked' : '') + ' title="Đáp án đúng"><span class="ch">' + CHU[k] + '</span><input type="text" class="at" data-k="' + k + '" placeholder="Đáp án ' + CHU[k] + '">' + (q.a.length > 2 ? '<button class="xoa" data-a="xoada" data-k="' + k + '" title="Xóa đáp án">×</button>' : '');
+      r.querySelector('.at').value = a; dd.appendChild(r);
+    });
+    if (q.a.length < 4){ const b = document.createElement('button'); b.className = 'btn'; b.dataset.a = 'themda'; b.textContent = '+ Thêm đáp án'; dd.appendChild(b); }
+    ds.appendChild(d);
+  });
+  dem();
+}
+function hopLe(q){ const a = q.a.map(x => x.trim()); return q.c.trim() && a.filter(Boolean).length >= 2 && a[q.d]; }
+function dem(){
+  const n = S.q.filter(hopLe).length;
+  $('dem').textContent = '(' + S.q.length + ' câu)'; $('tk').textContent = n + ' câu hợp lệ';
+}
+/* sự kiện */
+$('ds').addEventListener('input', e => {
+  const c = e.target.closest('.qc'); if (!c) return; const q = S.q[+c.dataset.n];
+  if (e.target.classList.contains('qt')) q.c = e.target.value;
+  else if (e.target.classList.contains('at')) q.a[+e.target.dataset.k] = e.target.value;
+  luu(); dem();
+});
+$('ds').addEventListener('change', e => {
+  const c = e.target.closest('.qc'); if (!c) return; const n = +c.dataset.n, q = S.q[n];
+  if (e.target.dataset.a === 'dung'){ q.d = +e.target.dataset.k; luu(); c.querySelectorAll('.dap').forEach((r, k) => r.classList.toggle('dung', k === q.d)); dem(); }
+  if (e.target.dataset.a === 'hinh' && e.target.files[0]) nenHinh(e.target.files[0]).then(u => { q.i = u; luu(); ve(); });
+});
+$('ds').addEventListener('click', e => {
+  const b = e.target.closest('[data-a]'); if (!b || b.tagName === 'INPUT') return; const c = b.closest('.qc'); const n = +c.dataset.n, q = S.q[n], a = b.dataset.a;
+  if (a === 'xoa'){ if (S.q.length === 1) S.q[0] = {c: '', a: ['', '', ''], d: 0, i: ''}; else S.q.splice(n, 1); }
+  else if (a === 'nhan') S.q.splice(n + 1, 0, JSON.parse(JSON.stringify(q)));
+  else if (a === 'len' && n > 0) [S.q[n - 1], S.q[n]] = [S.q[n], S.q[n - 1]];
+  else if (a === 'xuong' && n < S.q.length - 1) [S.q[n + 1], S.q[n]] = [S.q[n], S.q[n + 1]];
+  else if (a === 'themda') q.a.push('');
+  else if (a === 'xoada'){ const k = +b.dataset.k; q.a.splice(k, 1); if (q.d >= q.a.length) q.d = 0; else if (q.d > k) q.d--; }
+  else if (a === 'bohinh') q.i = '';
+  else return;
+  luu(); ve();
+});
+$('them').onclick = () => { S.q.push({c: '', a: ['', '', ''], d: 0, i: ''}); luu(); ve(); const l = $('ds').lastElementChild; l.scrollIntoView({behavior: 'smooth', block: 'center'}); l.querySelector('.qt').focus(); };
+$('xoa').onclick = () => { if (confirm('Xóa hết câu hỏi?')){ S.q = [{c: '', a: ['', '', ''], d: 0, i: ''}]; luu(); ve(); $('kq').classList.remove('hien'); } };
+/* thông tin chung */
+const doc = () => { $('td').value = S.t || ''; $('mt').value = S.g || ''; $('gio').value = String(S.k || 0); $('xao').value = String(S.x === 0 ? 0 : 1); document.querySelector('input[name=kieu][value=' + (S.m || 'dua') + ']').checked = true; };
+$('td').oninput = () => { S.t = $('td').value; luu(); }; $('mt').oninput = () => { S.g = $('mt').value; luu(); };
+$('gio').onchange = () => { S.k = +$('gio').value; luu(); }; $('xao').onchange = () => { S.x = +$('xao').value; luu(); };
+document.querySelectorAll('input[name=kieu]').forEach(r => r.onchange = () => { S.m = r.value; luu(); });
+/* nén hình nhỏ */
+function nenHinh(f){
+  return new Promise((ok, no) => { const im = new Image(), u = URL.createObjectURL(f);
+    im.onload = () => { const W = 360, k = Math.min(1, W / im.width), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); ok(c.toDataURL('image/jpeg', .55)); };
+    im.onerror = no; im.src = u; });
+}
+/* ===== dán nhiều câu ===== */
+function phanTich(txt){
+  const out = []; let cur = null;
+  const dong = txt.replace(/\r/g, '').split('\n').map(x => x.trim());
+  const them = () => { if (cur && cur.c && cur.a.length >= 2){ if (cur.d < 0 || cur.d >= cur.a.length) cur.d = 0; out.push({c: cur.c, a: cur.a.slice(0, 4), d: cur.d, i: ''}); } cur = null; };
+  for (const l of dong){
+    if (!l){ continue; }
+    let m;
+    if ((m = l.match(/^(\*?)\s*([A-Da-d])\s*[.):\-]\s*(.+)$/)) && cur){
+      cur.a.push(m[3].trim()); if (m[1]) cur.d = cur.a.length - 1; continue; }
+    if ((m = l.match(/^(?:đáp án|dap an|đ\/a|dap an dung|đáp án đúng)\s*[:\-]?\s*([A-Da-d])/i)) && cur){ cur.d = 'ABCD'.indexOf(m[1].toUpperCase()); continue; }
+    const q = l.replace(/^(câu|cau)\s*\d+\s*[:.)\-]?\s*/i, '').replace(/^\d+\s*[.):]\s*/, '');
+    if (cur && cur.a.length === 0){ cur.c += ' ' + q; continue; }
+    them(); cur = {c: q, a: [], d: 0};
+  }
+  them(); return out;
+}
+$('dan').onclick = () => { $('dvkq').textContent = ''; $('hd').showModal(); $('dv').focus(); };
+$('dvhuy').onclick = () => $('hd').close();
+$('dvok').onclick = () => {
+  const ds = phanTich($('dv').value);
+  if (!ds.length){ $('dvkq').textContent = 'Chưa nhận ra câu nào. Cô kiểm tra lại: mỗi câu cần dòng câu hỏi và ít nhất 2 đáp án A, B.'; return; }
+  if (S.q.length === 1 && !S.q[0].c.trim()) S.q = [];
+  S.q = S.q.concat(ds); luu(); ve(); $('hd').close(); $('dv').value = '';
+};
+/* ===== tải / mở file ===== */
+$('tai').onclick = () => { const b = new Blob([JSON.stringify(S, null, 1)], {type: 'application/json'}), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (S.t || 'tro-choi').replace(/[^\wÀ-ỹ -]/g, '').trim().replace(/\s+/g, '-') + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
+$('mo').onclick = () => $('tep').click();
+$('tep').onchange = () => { const f = $('tep').files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d || !Array.isArray(d.q) || !d.q.length) throw 0; S = d; luu(); doc(); $('lop').value = S.lop || ''; ve(); } catch (e) { alert('File này không phải file trò chơi của CÔ ĐIỆP AI.'); } }; r.readAsText(f); $('tep').value = ''; };
+/* ===== tạo link và QR ===== */
+async function ma(obj){
+  const by = new TextEncoder().encode(JSON.stringify(obj));
+  const b64 = u => btoa(String.fromCharCode.apply(null, u)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  if ('CompressionStream' in window){
+    const cs = new CompressionStream('deflate-raw'), w = cs.writable.getWriter(); w.write(by); w.close();
+    return 'z' + b64(new Uint8Array(await new Response(cs.readable).arrayBuffer()));
+  }
+  return 'p' + b64(by);
+}
+let linkHT = '';
+$('tao').onclick = async () => {
+  const ok = S.q.filter(hopLe);
+  if (!ok.length){ alert('Cô nhập ít nhất 1 câu hỏi có đủ đề và 2 đáp án, nhớ chọn đáp án đúng nhé.'); return; }
+  const q = ok.map(x => { const a = x.a.map(y => y.trim()), dd = a[x.d]; const lst = a.filter(Boolean); const o = {c: x.c.trim(), a: lst, d: lst.indexOf(dd)}; if (x.i) o.i = x.i; return o; });
+  const obj = {t: S.t.trim() || 'Trò chơi ôn tập', g: S.g.trim(), m: S.m, k: S.k, x: S.x, q};
+  const code = await ma(obj);
+  const lop = ($('lop').value || '').replace(/[^0-9A-Za-z.]/g, '').slice(0, 10); S.lop = lop; luu();
+  linkHT = new URL('choi.html', location.href).href + (lop ? '?lop=' + lop : '') + '#d=' + code;
+  $('lk').value = linkHT; $('kq').classList.add('hien'); veQR();
+  const canh = $('canh'); canh.style.display = linkHT.length > 5000 ? 'block' : 'none';
+  canh.textContent = 'Link khá dài (' + linkHT.length + ' ký tự) nên Zalo hoặc Facebook có thể cắt link. Cô bớt hình hoặc chia thành 2 trò chơi để link ngắn hơn nhé.';
+  $('kq').scrollIntoView({behavior: 'smooth', block: 'start'});
+};
+let svgQR = '';
+function veQR(){
+  const o = $('qr'); o.innerHTML = ''; svgQR = '';
+  try {
+    if (typeof qrcode === 'undefined') throw 0;
+    if (linkHT.length > 2400) throw 1;
+    const q = qrcode(0, 'L'); q.addData(linkHT); q.make(); svgQR = q.createSvgTag({cellSize: 4, margin: 2, scalable: true}); o.innerHTML = svgQR;
+    $('qrtai').style.display = '';
+  } catch (e) { o.textContent = ''; $('qrtai').style.display = 'none'; $('qrghi').textContent = e === 1 ? 'Link dài quá nên chưa tạo được mã QR. Cô bớt hình hoặc bớt câu hỏi, hoặc dùng nút Chép link.' : 'Chưa tải được mã QR. Cô kiểm tra mạng rồi bấm tạo lại.'; }
+}
+$('qrtai').onclick = () => { if (!svgQR) return; const b = new Blob([svgQR], {type: 'image/svg+xml'}), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'ma-qr-tro-choi.svg'; a.click(); };
+$('cc').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText(linkHT) : Promise.reject()).then(() => { $('cc').textContent = 'Đã chép'; setTimeout(() => $('cc').textContent = 'Chép link', 1600); }, () => { $('lk').select(); document.execCommand('copy'); }); };
+$('thu').onclick = () => window.open(linkHT, '_blank');
+doc(); ve();
+</script>
+</body>
+</html>

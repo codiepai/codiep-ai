@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+<title>Ôn lại các bài đã học - Lớp 1.14</title>
+<style>
+  body{font-family:"Segoe UI",Arial,sans-serif;background:#fff8ec;margin:0;color:#3a2a1a}
+  header{background:#f08a24;color:#fff;padding:18px 20px;text-align:center}
+  header h1{margin:0;font-size:26px}
+  header p{margin:6px 0 0;font-size:15px}
+  main{max-width:900px;margin:0 auto;padding:14px}
+  .tong{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px}
+  button,a.choi{font:inherit;border:0;border-radius:10px;padding:8px 14px;cursor:pointer;text-decoration:none;display:inline-block}
+  .to{background:#2b7de9;color:#fff;font-weight:700;padding:11px 18px}
+  h2{background:#fff;border-left:8px solid #f08a24;margin:22px 0 8px;padding:10px 14px;border-radius:8px;font-size:20px}
+  .hang{display:flex;align-items:center;gap:10px;background:#fff;border-radius:10px;padding:9px 12px;margin:6px 0;box-shadow:0 1px 3px #0002}
+  .hang .ten{flex:1}
+  .hang .ten b{display:block}
+  .hang .ten small{color:#8a6b4a}
+  a.choi{background:#f08a24;color:#fff;font-weight:700}
+  button.chep{background:#e8eef9;color:#1f4f9c}
+  .xong{background:#2e9b4e!important;color:#fff!important}
+  .luu{background:#fff3cf;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>1.14 vừa học, vừa chơi, vui vui vui!</h1>
+  <p>Trường Tiểu học Kim Đồng | Lớp 1.14 | Bấm nút CHƠI để vào trò chơi nhé!</p>
+</header>
+<main>
+  <div id="ds"></div>
+</main>
+<script>
+const WEB = 'https://codiepai.github.io/trochoi/';
+const LOP = '1.14';
+const NHOM = [
+  { ten: 'TIẾNG VIỆT: Trò chơi khởi động (Bài 22 đến 35)', g: [
+    ['kd22','Hộp quà bí mật','Bài 22 T t, Tr tr'],
+    ['kd23','Câu cá','Bài 23 Th th, ia'],
+    ['kd24','Ai nhanh hơn','Bài 24 ua, ưa'],
+    ['kd25','Vòng quay may mắn','Bài 25 Ôn tập'],
+    ['kd26','Đoán hình bị che','Bài 26 Ph ph, Qu qu'],
+    ['kd27','Hộp quà bí mật','Bài 27 V v, X x'],
+    ['kd28','Câu cá','Bài 28 Y y'],
+    ['kd29','Ai nhanh hơn','Bài 29 Chính tả'],
+    ['kd30','Vòng quay may mắn','Bài 30 Ôn tập'],
+    ['kd31','Câu cá','Bài 31 an, ăn, ân'],
+    ['kd32','Ai nhanh hơn','Bài 32 on, ôn, ơn'],
+    ['kd33','Vòng quay may mắn','Bài 33 en, ên, in, un'],
+    ['kd34','Đoán hình bị che','Bài 34 am, ăm, âm'],
+    ['kd35','Hộp quà bí mật','Bài 35 Ôn tập'],
+    ['kd35b','Đàn cá ôn vần','Bài 35 Ôn tập']
+  ]},
+  { ten: 'TIẾNG VIỆT: Trò chơi luyện tập (Bài 25 đến 35)', g: [
+    ['co25','Đàn cò tha chữ','Bài 25 Ôn tập'],
+    ['tv26','Bóng bay chữ','Bài 26 Ph ph, Qu qu'],
+    ['tv27','Đoàn xe chở chữ','Bài 27 V v, X x'],
+    ['kt27','Về quê vui vẻ (kéo thả)','Bài 27 V v, X x'],
+    ['tv28','Bướm tha chữ','Bài 28 Y y'],
+    ['kt28','Vườn dã quỳ (kéo thả)','Bài 28 Y y'],
+    ['tv29','Bể cá chính tả','Bài 29 Chính tả'],
+    ['kt29','Rừng chính tả (kéo thả)','Bài 29 Chính tả'],
+    ['tv30','Sách bay','Bài 30 Ôn tập'],
+    ['kt30','Biển chữ (kéo thả)','Bài 30 Ôn tập'],
+    ['tv31','Nông trại vần (kéo thả)','Bài 31 an, ăn, ân'],
+    ['tv32','Rừng xanh vui nhộn (kéo thả)','Bài 32 on, ôn, ơn'],
+    ['tv33','Biển xanh (kéo thả)','Bài 33 en, ên, in, un'],
+    ['tv34','Vườn hoa (kéo thả)','Bài 34 am, ăm, âm'],
+    ['tv35','Bến đò (kéo thả)','Bài 35 Ôn tập'],
+    ['tv35b','Đàn cá ôn tập (bảng vần, bắt cá, đọc truyện)','Bài 35 Ôn tập'],
+    ['ngngh','Hai ngôi nhà: ôn ng/ngh, g/gh','Ôn ng, ngh, g, gh']
+  ]},
+  { ten: 'TOÁN: từ Tuần 5 đến Bài 8', g: [
+    ['beca','Bể cá Mấy và mấy','Bài 5 Mấy và mấy'],
+    ['toan5','Ôn Toán tuần 5','Tuần 5'],
+    ['kdtoan7','Ngôi nhà bí mật (khởi động)','Bài 7 Các hình, tiết 1'],
+    ['toan7','Thám tử hình (luyện tập)','Bài 7 Các hình, tiết 1'],
+    ['kdtoan7b','Thắp nến bánh sinh nhật (khởi động)','Bài 7 Các hình, tiết 2'],
+    ['toan7b','Xưởng hình vui nhộn (luyện tập)','Bài 7 Các hình, tiết 2'],
+    ['kdtoan8','Ghép mũi tên (khởi động)','Bài 8 Lắp ghép, xếp hình, tiết 1'],
+    ['toan8','Xưởng lắp ghép (luyện tập)','Bài 8 Lắp ghép, xếp hình, tiết 1'],
+    ['kdtoan8b','Lắp tên lửa (khởi động)','Bài 8 Lắp ghép, xếp hình, tiết 2'],
+    ['toan8b','Ghép tam giác (luyện tập)','Bài 8 Lắp ghép, xếp hình, tiết 2']
+  ]},
+  { ten: 'THÊM: Ôn cuối tuần, Toán + Tiếng Việt (20 câu)', g: [
+    ['tuan5','Ôn tuần 5','Tuần 5'],
+    ['tuan6','Ôn tuần 6','Tuần 6'],
+    ['tuan7','Đường đua tuần 7','Tuần 7'],
+    ['tuan8','Phiêu lưu bản đồ tuần 8','Tuần 8'],
+    ['vuon8','Vườn cây tuần 8','Tuần 8']
+  ]}
+];
+const link = ma => WEB + ma + '.html?lop=' + LOP;
+const ds = document.getElementById('ds');
+function chep(t, nut, nhan){
+  const xong = () => { const c = nut.textContent; nut.textContent = nhan || 'Đã chép'; nut.classList.add('xong'); setTimeout(()=>{nut.textContent=c;nut.classList.remove('xong')},1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(xong, () => thuCong(t));
+  else thuCong(t);
+}
+function thuCong(t){ prompt('Bấm Ctrl+C để chép:', t); }
+NHOM.forEach(n => {
+  const h = document.createElement('h2'); h.textContent = n.ten; ds.appendChild(h);
+  n.g.forEach((g, i) => {
+    const d = document.createElement('div'); d.className = 'hang';
+    d.innerHTML = '<div class="ten"><b></b><small></small></div>';
+    d.querySelector('b').textContent = (i + 1) + '. ' + g[1];
+    d.querySelector('small').textContent = g[2];
+    const a = document.createElement('a'); a.className = 'choi'; a.target = '_blank'; a.href = link(g[0]); a.textContent = 'Chơi';
+    const b = document.createElement('button'); b.className = 'chep'; b.textContent = 'Chép link';
+    b.onclick = () => chep(link(g[0]), b);
+    d.append(a, b); ds.appendChild(d);
+  });
+});
+</script>
+</body>
+</html>

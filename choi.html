@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chơi cùng cô Điệp - CÔ ĐIỆP AI</title>
+<meta name="description" content="Trò chơi ôn tập do cô Hồng Điệp soạn. Bấm vào chơi ngay trên điện thoại.">
+<meta property="og:title" content="Trò chơi ôn tập - CÔ ĐIỆP AI">
+<meta property="og:description" content="Bé bấm vào chơi ngay, không cần đăng nhập.">
+<meta property="og:image" content="https://codiep-ai.netlify.app/anh-bia.jpg">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:radial-gradient(900px 500px at 85% -10%,#9fd4ff55,transparent 60%),radial-gradient(700px 500px at 0% 100%,#ffd98a55,transparent 60%),linear-gradient(180deg,#d8efff,#f4fbff 60%,#fff6e0);min-height:100vh}
+.khung{max-width:560px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 16px 28px;min-height:100vh;display:flex;flex-direction:column}
+.dau{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.nhan{font:800 15px "Baloo 2",sans-serif;color:var(--royal);letter-spacing:.5px}
+.nhan b{color:var(--gold);text-shadow:0 1px 0 #b88a00}
+.loa{border:0;background:#fff;border-radius:999px;padding:8px 14px;font:700 14px "Be Vietnam Pro",sans-serif;color:var(--royal);box-shadow:0 3px 10px rgba(11,92,171,.18);cursor:pointer}
+.the{background:rgba(255,255,255,.92);border-radius:24px;box-shadow:0 14px 40px rgba(11,92,171,.18),0 2px 0 #fff inset;padding:22px;backdrop-filter:blur(6px)}
+h1{font:800 30px/1.15 "Baloo 2",sans-serif;color:var(--royal);margin:0 0 6px;text-align:center}
+.mo{color:var(--phu);text-align:center;margin:0 0 16px}
+.so{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0 16px}
+.so span{background:#eef6ff;border:2px solid #cfe6fb;border-radius:999px;padding:6px 14px;font-weight:700;color:var(--royal);font-size:14px}
+input.ten{width:100%;font:600 17px "Be Vietnam Pro",sans-serif;padding:14px 16px;border:2px solid #cfe6fb;border-radius:16px;margin:0 0 14px;text-align:center;background:#fff}
+input.ten:focus{outline:3px solid #9fd4ff;border-color:var(--blue)}
+.nut{display:block;width:100%;border:0;border-radius:18px;padding:16px 18px;font:800 20px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 6px 0 #b86200,0 12px 24px rgba(247,127,0,.35);cursor:pointer}
+.nut:active{transform:translateY(3px);box-shadow:0 3px 0 #b86200}
+.nut.xanh{background:linear-gradient(180deg,#3d9bf0,#0b5cab);box-shadow:0 6px 0 #073d73,0 12px 24px rgba(11,92,171,.3)}
+.nut.nhat{background:#fff;color:var(--royal);box-shadow:0 4px 0 #cfe6fb;border:2px solid #cfe6fb}
+.hang{display:flex;gap:10px}.hang>*{flex:1}
+/* cảnh tiến độ */
+.canh{position:relative;background:linear-gradient(180deg,#bfe6ff,#e6f6ff);border-radius:20px;padding:10px 14px 8px;margin-bottom:12px;box-shadow:0 6px 18px rgba(11,92,171,.14) inset;overflow:hidden}
+.duong{position:relative;height:46px;border-bottom:5px dashed #fff}
+.duong .xe{position:absolute;bottom:2px;font-size:36px;transition:left .6s cubic-bezier(.3,1.4,.5,1);transform:scaleX(-1)}
+.duong .co{position:absolute;right:0;bottom:2px;font-size:30px}
+.tenlua{display:flex;align-items:flex-end;gap:2px;height:92px;position:relative}
+.tenlua .tl{position:absolute;bottom:0;left:50%;font-size:38px;transform:translateX(-50%);transition:bottom .6s cubic-bezier(.3,1.4,.5,1)}
+.tenlua .sao{position:absolute;right:12px;top:4px;font-size:26px}
+.vuon{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;min-height:44px;font-size:24px}
+.vuon i{font-style:normal;opacity:.25;filter:grayscale(1);transition:.4s}.vuon i.chin{opacity:1;filter:none;transform:scale(1.1)}
+.thanh{height:10px;border-radius:99px;background:#fff;overflow:hidden;margin-top:8px}.thanh i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3d9bf0,#22b35e);transition:width .5s}
+.tt{display:flex;justify-content:space-between;font-weight:700;color:var(--royal);font-size:14px;margin:2px 2px 8px}
+.gio{height:8px;border-radius:99px;background:#e1edf8;overflow:hidden;margin:0 0 10px}.gio i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffc94a,#f77f00);transform-origin:left}
+.cau{font:700 22px/1.35 "Be Vietnam Pro",sans-serif;text-align:center;margin:6px 0 14px;white-space:pre-line}
+.cau img,.dapan img{max-width:100%;max-height:180px;border-radius:12px;display:block;margin:8px auto 0}
+.dapan{display:grid;gap:12px}
+.dapan button{display:flex;align-items:center;gap:12px;text-align:left;border:2px solid #cfe6fb;background:#fff;border-radius:18px;padding:12px 14px;font:700 19px "Be Vietnam Pro",sans-serif;color:var(--ink);cursor:pointer;box-shadow:0 4px 0 #cfe6fb;transition:transform .1s}
+.dapan button:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #cfe6fb}
+.dapan button b{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#eaf5ff;color:var(--royal);font:800 18px "Baloo 2",sans-serif}
+.dapan button.dung{background:#e8fbef;border-color:var(--ok);box-shadow:0 4px 0 #1b8f4b;animation:nhun .4s}
+.dapan button.dung b{background:var(--ok);color:#fff}
+.dapan button.sai{background:#fff0f0;border-color:var(--bad);box-shadow:0 4px 0 #b5353a;animation:lac .35s}
+.dapan button.sai b{background:var(--bad);color:#fff}
+@keyframes nhun{50%{transform:scale(1.04)}}@keyframes lac{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.thongbao{min-height:30px;text-align:center;font:800 20px "Baloo 2",sans-serif;margin-top:12px}
+.sao3{font-size:46px;text-align:center;letter-spacing:6px;margin:4px 0}
+.diem{font:800 56px/1 "Baloo 2",sans-serif;color:var(--royal);text-align:center}
+.sai-ds{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.sai-ds li{background:#fff7f7;border:2px solid #ffd4d6;border-radius:14px;padding:10px 12px;font-size:15px}
+.sai-ds li b{color:var(--ok)}
+.chan{margin-top:auto;padding-top:18px;text-align:center;color:var(--phu);font-size:13px}
+.an{display:none!important}
+.loi{background:#fff;border-radius:20px;padding:22px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="khung">
+  <div class="dau"><span class="nhan">CÔ <b>ĐIỆP</b> AI</span><button class="loa an" id="loa">🔊 Nghe câu hỏi</button></div>
+
+  <!-- màn hình bắt đầu -->
+  <div class="the" id="man-dau">
+    <h1 id="td">Trò chơi ôn tập</h1>
+    <p class="mo" id="mt">Bấm vào chơi ngay nhé.</p>
+    <div class="so" id="so"></div>
+    <input class="ten" id="ten" type="text" placeholder="Tên của con" maxlength="30" autocomplete="off">
+    <button class="nut" id="bd">Bắt đầu chơi</button>
+  </div>
+
+  <!-- màn hình chơi -->
+  <div class="an" id="man-choi">
+    <div class="canh" id="canh"></div>
+    <div class="tt"><span id="stt"></span><span id="dg"></span></div>
+    <div class="gio an" id="gio"><i></i></div>
+    <div class="the">
+      <div class="cau" id="cau"></div>
+      <div class="dapan" id="dapan"></div>
+      <div class="thongbao" id="tb"></div>
+    </div>
+  </div>
+
+  <!-- kết quả -->
+  <div class="the an" id="man-kq">
+    <div class="sao3" id="sao"></div>
+    <div class="diem" id="diem"></div>
+    <p class="mo" id="loi"></p>
+    <p class="mo" id="gui" style="font-weight:700;color:#1b8f4b;margin:6px 0 0"></p>
+    <ul class="sai-ds" id="sai"></ul>
+    <div class="hang" style="margin-top:16px"><button class="nut xanh" id="lai">Chơi lại</button><button class="nut nhat" id="cc">Chép link</button></div>
+  </div>
+
+  <div class="loi an" id="loi-link"><h1>Chưa mở được trò chơi</h1><p class="mo">Link này bị thiếu hoặc bị cắt ngắn khi gửi. Xin cô gửi lại link đầy đủ nhé.</p></div>
+  <div class="chan">Cô Hồng Điệp - TH Kim Đồng · codiep-ai.netlify.app</div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const r = n => Math.floor(Math.random() * n);
+const tron = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--){ const j = r(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const CHU = 'ABCD';
+let Q = null, thuTu = [], i = 0, diem = 0, sai = [], saiSo = [], khoa = false, hen = null, thoiGian = 0, ten = '';
+/* Ghi kết quả vào bảng tính của cô khi link có ?lop=1.14 (link chia sẻ cho thầy cô khác thì không ghi) */
+const LOP = (new URLSearchParams(location.search).get('lop') || '').replace(/[^0-9A-Za-z.]/g, '').slice(0, 10);
+const LINK_SHEET = 'https://script.google.com/macros/s/AKfycbzE5tlog_osSNJ7Tsr4SnJPQCiv5LpyfQaDj8jNHNYzT9YEMGnQHTJrrpNXV_45lq1t/exec';
+
+/* ===== đọc dữ liệu từ link (#d=...) ===== */
+function giaiMa(s){
+  const bin = atob(s.slice(1).replace(/-/g, '+').replace(/_/g, '/'));
+  const by = Uint8Array.from(bin, c => c.charCodeAt(0));
+  if (s[0] === 'z'){
+    const ds = new DecompressionStream('deflate-raw'), w = ds.writable.getWriter(); w.write(by); w.close();
+    return new Response(ds.readable).arrayBuffer().then(b => JSON.parse(new TextDecoder().decode(b)));
+  }
+  return Promise.resolve(JSON.parse(new TextDecoder().decode(by)));
+}
+async function nap(){
+  try {
+    const m = location.hash.match(/d=([^&]+)/); if (!m) throw 0;
+    Q = await giaiMa(m[1]);
+    if (!Q || !Array.isArray(Q.q) || !Q.q.length) throw 0;
+    batDau0();
+  } catch (e) { $('man-dau').classList.add('an'); $('loi-link').classList.remove('an'); }
+}
+const CANH = {dua: ['🐰', '🐢', '🐿️', '🦊', '🐼'], ten: ['🚀'], vuon: ['🍎', '🍊', '🍓', '🍇', '🥕', '🍉']};
+function batDau0(){
+  document.title = (Q.t || 'Trò chơi') + ' - CÔ ĐIỆP AI';
+  $('td').textContent = Q.t || 'Trò chơi ôn tập';
+  $('mt').textContent = Q.g || 'Bấm vào chơi ngay nhé.';
+  const k = Q.k ? '⏱ ' + Q.k + ' giây mỗi câu' : '⏱ Không giới hạn thời gian';
+  $('so').innerHTML = '<span>📝 ' + Q.q.length + ' câu</span><span>' + k + '</span><span>' + ({dua: '🏁 Đường đua', ten: '🚀 Tên lửa', vuon: '🍎 Hái quả'}[Q.m] || '🏁 Đường đua') + '</span>';
+}
+/* ===== âm thanh ===== */
+let ac = null;
+function bip(ok){
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume();
+    const t = ac.currentTime, nho = (f, d, v) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(v, t + d); g.gain.exponentialRampToValueAtTime(.001, t + d + .25); o.connect(g); g.connect(ac.destination); o.start(t + d); o.stop(t + d + .27); };
+    if (ok){ nho(660, 0, .35); nho(880, .12, .35); nho(1320, .24, .3); } else { nho(220, 0, .35); nho(165, .15, .35); }
+  } catch (e) {}
+}
+/* ===== đọc câu hỏi: chỉ khi bấm nút loa ===== */
+function doc(){
+  if (!('speechSynthesis' in window)) return;
+  const v = speechSynthesis.getVoices().filter(x => /^vi/i.test(x.lang)); if (!v.length) return;
+  const c = Q.q[thuTu[i]]; speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(c.c + '. ' + c.a.map((x, k) => CHU[k] + '. ' + x).join('. ')); u.voice = v.find(x => /HoaiMy/i.test(x.name)) || v[0]; u.lang = 'vi-VN'; u.rate = .9; speechSynthesis.speak(u);
+}
+$('loa').onclick = doc;
+
+/* ===== cảnh tiến độ ===== */
+let xe = '🐰';
+function veCanh(d){
+  if (d === undefined) d = i;
+  const n = thuTu.length, p = d / n;
+  if (Q.m === 'ten') $('canh').innerHTML = '<div class="tenlua"><span class="sao">⭐</span><span class="tl" style="bottom:' + Math.round(p * 62) + 'px">🚀</span></div><div class="thanh"><i style="width:' + Math.round(p * 100) + '%"></i></div>';
+  else if (Q.m === 'vuon') $('canh').innerHTML = '<div class="vuon">' + Array.from({length: n}, (_, k) => '<i class="' + (k < diem ? 'chin' : '') + '">' + CANH.vuon[k % CANH.vuon.length] + '</i>').join('') + '</div><div class="thanh"><i style="width:' + Math.round(p * 100) + '%"></i></div>';
+  else $('canh').innerHTML = '<div class="duong"><span class="xe" style="left:' + Math.round(p * 82) + '%">' + xe + '</span><span class="co">🏁</span></div><div class="thanh"><i style="width:' + Math.round(p * 100) + '%"></i></div>';
+}
+/* ===== vòng chơi ===== */
+function batDau(){
+  ten = $('ten').value.trim();
+  xe = pick(CANH.dua);
+  thuTu = Q.q.map((_, k) => k); if (Q.x !== 0) thuTu = tron(thuTu);
+  i = 0; diem = 0; sai = []; saiSo = []; khoa = false;
+  $('man-dau').classList.add('an'); $('man-kq').classList.add('an'); $('man-choi').classList.remove('an');
+  if ('speechSynthesis' in window) $('loa').classList.remove('an');
+  cauMoi(); bip(true);
+}
+const pick = a => a[r(a.length)];
+function cauMoi(){
+  khoa = false; const c = Q.q[thuTu[i]]; veCanh();
+  $('stt').textContent = 'Câu ' + (i + 1) + '/' + thuTu.length; $('dg').textContent = '⭐ ' + diem; $('tb').textContent = ''; $('tb').style.color = '';
+  $('cau').innerHTML = ''; const t = document.createElement('div'); t.textContent = c.c; $('cau').appendChild(t);
+  if (c.i){ const im = document.createElement('img'); im.src = c.i; im.alt = ''; $('cau').appendChild(im); }
+  const ds = tron(c.a.map((x, k) => ({x, k}))); /* đảo đáp án */
+  $('dapan').innerHTML = '';
+  ds.forEach((o, vt) => {
+    const b = document.createElement('button'); const ch = document.createElement('b'); ch.textContent = CHU[vt];
+    const tx = document.createElement('span'); tx.textContent = o.x; b.append(ch, tx); b.dataset.k = o.k; b.onclick = () => chon(b, c);
+    $('dapan').appendChild(b);
+  });
+  if (Q.k){ $('gio').classList.remove('an'); const it = $('gio').firstElementChild; it.style.transition = 'none'; it.style.transform = 'scaleX(1)'; void it.offsetWidth; it.style.transition = 'transform ' + Q.k + 's linear'; it.style.transform = 'scaleX(0)'; clearTimeout(hen); hen = setTimeout(() => chon(null, c), Q.k * 1000); }
+  else $('gio').classList.add('an');
+}
+function chon(b, c){
+  if (khoa) return; khoa = true; clearTimeout(hen);
+  const dung = b && +b.dataset.k === c.d;
+  [...$('dapan').children].forEach(x => { x.disabled = true; if (+x.dataset.k === c.d) x.classList.add('dung'); });
+  if (dung){ diem++; $('tb').textContent = pick(['Giỏi quá!', 'Đúng rồi!', 'Tuyệt vời!', 'Con làm tốt lắm!']); $('tb').style.color = '#1b8f4b'; bip(true); }
+  else { if (b) b.classList.add('sai'); sai.push(c); saiSo.push(thuTu[i] + 1); $('tb').textContent = b ? 'Chưa đúng, con xem đáp án nhé' : 'Hết giờ rồi, con xem đáp án nhé'; $('tb').style.color = '#b5353a'; bip(false); }
+  $('dg').textContent = '⭐ ' + diem;
+  if (dung) veCanh(i + 1);          /* cảnh chạy tới khi trả lời đúng */
+  setTimeout(() => { i++; if (i >= thuTu.length) ketThuc(); else cauMoi(); }, dung ? 900 : 1900);
+}
+function ketThuc(){
+  speechSynthesis && speechSynthesis.cancel();
+  $('man-choi').classList.add('an'); $('man-kq').classList.remove('an'); $('loa').classList.add('an');
+  const n = thuTu.length, t = Math.round(diem / n * 100), sao = t >= 90 ? 3 : t >= 65 ? 2 : t >= 35 ? 1 : 0;
+  $('sao').textContent = '⭐'.repeat(sao) + '☆'.repeat(3 - sao);
+  $('diem').textContent = diem + '/' + n;
+  $('loi').textContent = (ten ? ten + ' ơi, ' : '') + (sao === 3 ? 'con giỏi quá, hoàn thành xuất sắc!' : sao === 2 ? 'con làm tốt lắm, thêm chút nữa là xuất sắc!' : 'cố gắng lên nhé, con chơi lại để được nhiều sao hơn!');
+  $('sai').innerHTML = sai.length ? '<li style="background:none;border:0;padding:0;font-weight:700;color:var(--royal)">Những câu cần xem lại:</li>' : '';
+  sai.forEach(c => { const li = document.createElement('li'); li.innerHTML = '<span></span><br>Đáp án đúng: <b></b>'; li.firstChild.textContent = c.c; li.querySelector('b').textContent = c.a[c.d]; $('sai').appendChild(li); });
+  if (sao === 3) bip(true);
+  guiKetQua(n);
+}
+function guiKetQua(n){
+  $('gui').textContent = '';
+  if (!LOP) return;
+  const d = Math.min(20, n), dung = n > 20 ? Math.round(diem * 20 / n) : diem;
+  const goi = {lop: LOP, ten: ten || 'Không ghi tên', bai: (Q.t || 'Trò chơi').slice(0, 60), dungLanDau: dung, soCau: d,
+    chiTiet: 'Đúng ' + diem + '/' + n + (saiSo.length ? '. Sai câu: ' + saiSo.join(', ') : '. Đúng hết')};
+  fetch(LINK_SHEET, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify(goi)})
+    .then(() => { $('gui').textContent = '✔ Đã gửi kết quả cho cô'; }, () => { $('gui').textContent = 'Chưa gửi được kết quả, con báo cô nhé'; });
+}
+$('bd').onclick = batDau; $('lai').onclick = batDau;
+$('cc').onclick = () => { const l = location.href.replace(/\?[^#]*/, ''); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(() => { $('cc').textContent = 'Đã chép'; setTimeout(() => $('cc').textContent = 'Chép link', 1600); }, () => prompt('Chép link này:', l)); };
+window.onerror = (m, f) => { if (/zalo|FBNav|instagram/i.test(String(m)) || (f && !String(f).includes(location.host))) return true; };
+nap();
+</script>
+</body>
+</html>

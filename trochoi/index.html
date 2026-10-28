@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cô Điệp AI - Kho trò chơi</title>
+<style>
+body{font-family:"Segoe UI",Arial,sans-serif;background:#e8f6ff;margin:0;padding:20px 16px 40px;color:#12304a}
+h1{text-align:center;color:#0b5cab;font-size:28px;margin:6px 0 6px}
+.gt{text-align:center;max-width:560px;margin:0 auto 18px;font-size:16px;line-height:1.4}
+h2{max-width:560px;margin:26px auto 4px;font-size:21px;color:#0b5cab}
+.ghi{max-width:560px;margin:0 auto 10px;font-size:14px;color:#4a6378}
+.the{max-width:560px;margin:0 auto 12px;display:flex;gap:8px}
+.the a{flex:1;padding:14px 18px;border-radius:16px;background:#f08c00;box-shadow:0 5px 0 #b86200;color:#fff;text-decoration:none}
+.lop3 .the a{background:#2f9e44;box-shadow:0 5px 0 #1e6b2e}
+.kd .the a{background:#7048e8;box-shadow:0 5px 0 #4c2fb0}
+.the a b{display:block;font-size:21px;line-height:1.2}.the a span{font-size:15px}
+.the a.vao{flex:none;width:76px;display:flex;align-items:center;justify-content:center;text-align:center;border:3px solid #0b5cab;border-radius:16px;background:#fff;color:#0b5cab;font-weight:700;font-size:14px;box-shadow:none;padding:0}
+.the button.xong{background:#2f9e44;border-color:#2f9e44;color:#fff}
+</style>
+</head>
+<body>
+<p style="text-align:center;margin:0"><a href="../" style="color:#0b5cab;font-weight:700">&larr; Về trang chủ CÔ ĐIỆP AI</a></p><h1 id="tieu-de">Cô Điệp AI - Kho trò chơi</h1>
+<p class="gt">Trò chơi ôn tập cho học sinh tiểu học. Bấm vào tên trò hoặc nút "Vào làm bài" để chơi.</p>
+<div id="ds"></div>
+<script>
+// Mỗi trò một dòng: "ma" là tên file trong thư mục này (ma + '.html'). Trò mới nhất để trên cùng trong nhóm.
+const NHOM = [
+  { ten: 'Lớp 1 - Ôn cuối tuần (Toán + Tiếng Việt)', ghi: 'Học sinh chơi trên điện thoại ở nhà.', TRO: [
+    { ma: 'tuan20', ten: 'Đàn thỏ về chuồng tuần 20', tuan: 'Tuần 20' },
+    { ma: 'tuan19', ten: 'Nhổ cà rốt tuần 19', tuan: 'Tuần 19' },
+    { ma: 'tuan18', ten: 'Hái bó rau tuần 18', tuan: 'Tuần 18' },
+    { ma: 'tuan17', ten: 'Viên kẹo ngọt tuần 17', tuan: 'Tuần 17' },
+    { ma: 'tuan16', ten: 'Xếp que kem tuần 16', tuan: 'Tuần 16' },
+    { ma: 'tuan15', ten: 'Xếp hộp quà tuần 15', tuan: 'Tuần 15' },
+    { ma: 'tuan14', ten: 'Ong lấy mật tuần 14', tuan: 'Tuần 14' },
+    { ma: 'tuan13', ten: 'Tên lửa tuần 13', tuan: 'Tuần 13' },
+    { ma: 'tuan12', ten: 'Đoàn tàu tuần 12', tuan: 'Tuần 12' },
+    { ma: 'tuan11', ten: 'Câu cá tuần 11', tuan: 'Tuần 11' },
+    { ma: 'tuan10', ten: 'Xây lâu đài tuần 10', tuan: 'Tuần 10' },
+    { ma: 'vuon9', ten: 'Vườn cây tuần 9', tuan: 'Tuần 9' },
+    { ma: 'tuan9', ten: 'Chùm bóng bay tuần 9', tuan: 'Tuần 9' },
+    { ma: 'vuon8', ten: 'Vườn cây tuần 8', tuan: 'Tuần 8' },
+    { ma: 'tuan8', ten: 'Phiêu lưu bản đồ tuần 8', tuan: 'Tuần 8' },
+    { ma: 'tuan7', ten: 'Đường đua tuần 7', tuan: 'Tuần 7' },
+    { ma: 'tuan6', ten: 'Ôn tuần 6', tuan: 'Tuần 6' },
+    { ma: 'tuan5', ten: 'Ôn tuần 5', tuan: 'Tuần 5' }
+  ]},
+  { ten: 'Lớp 1 - Tiếng Việt luyện tập', ghi: 'Chơi trên tivi cả lớp hoặc ở nhà.', TRO: [
+    { ma: 'keoco', ten: 'Kéo co vần (thi đua 2 đội)', tuan: 'Ôn vần đến Bài 40' },
+        { ma: 'tv40', ten: 'Tiệm kem ôn tập', tuan: 'Bài 40 Ôn tập' },
+    { ma: 'tv39', ten: 'Hội đom đóm', tuan: 'Bài 39 oi, ôi, ơi' },
+    { ma: 'tv38', ten: 'Nông trại máy cày (kéo thả)', tuan: 'Bài 38 ai, ay, ây' },
+{ ma: 'tv37', ten: 'Tiệm kem tủm tỉm', tuan: 'Bài 37 em, êm, im, um' },
+    { ma: 'tv36', ten: 'Đom đóm thắp đèn', tuan: 'Bài 36 om, ôm, ơm' },
+    { ma: 'tv35', ten: 'Bến đò (kéo thả)', tuan: 'Bài 35 Ôn tập' },
+    { ma: 'tv35b', ten: 'Đàn cá ôn tập (bảng vần + bắt cá + đọc truyện)', tuan: 'Bài 35 Ôn tập' },
+    { ma: 'ngngh', ten: 'Hai ngôi nhà: ôn ng/ngh, g/gh (có thuyết minh)', tuan: 'Ôn ng, ngh, g, gh' },
+    { ma: 'tv34', ten: 'Vườn hoa (kéo thả)', tuan: 'Bài 34 am, ăm, âm' },
+    { ma: 'tv34b', ten: 'Giỏ tre (kéo thả)', tuan: 'Bài 34 am, ăm, âm' },
+    { ma: 'tv33', ten: 'Biển xanh (kéo thả)', tuan: 'Bài 33 en, ên, in, un' },
+    { ma: 'tv32', ten: 'Rừng xanh vui nhộn (kéo thả)', tuan: 'Bài 32 on, ôn, ơn' },
+    { ma: 'tv31', ten: 'Nông trại vần (kéo thả)', tuan: 'Bài 31 an, ăn, ân' },
+    { ma: 'tv30', ten: 'Sách bay', tuan: 'Bài 30 Ôn tập' },
+    { ma: 'tv29', ten: 'Bể cá chính tả', tuan: 'Bài 29 Chính tả' },
+    { ma: 'tv28', ten: 'Bướm tha chữ', tuan: 'Bài 28 Y y' },
+    { ma: 'kt30', ten: 'Biển chữ ôn tập (kéo thả)', tuan: 'Bài 30 Ôn tập' },
+    { ma: 'kt29', ten: 'Rừng chính tả (kéo thả)', tuan: 'Bài 29 Chính tả' },
+    { ma: 'kt28', ten: 'Vườn dã quỳ (kéo thả)', tuan: 'Bài 28 Y y' },
+    { ma: 'kt27', ten: 'Về quê vui vẻ (kéo thả)', tuan: 'Bài 27 V v, X x' },
+    { ma: 'tv27', ten: 'Đoàn xe chở chữ', tuan: 'Bài 27 V v, X x' },
+    { ma: 'tv26', ten: 'Bóng bay chữ', tuan: 'Bài 26 Ph ph, Qu qu' },
+    { ma: 'co25', ten: 'Đàn cò tha chữ', tuan: 'Bài 25 Ôn tập' }
+  ]},
+  { ten: 'Lớp 1 - Tiếng Việt khởi động', ghi: 'Trình chiếu trên tivi đầu tiết học.', lop: 'kd', TRO: [
+    { ma: 'kd42b', ten: 'Mèo con hái táo', tuan: 'Bài 42 ao, eo' },
+    { ma: 'kd42', ten: 'Ếch con nhảy lá sen', tuan: 'Bài 42 ao, eo' },
+        { ma: 'kd40', ten: 'Vòng quay may mắn', tuan: 'Bài 40 Ôn tập' },
+    { ma: 'kd39', ten: 'Ai nhanh hơn', tuan: 'Bài 39 oi, ôi, ơi' },
+    { ma: 'kd38', ten: 'Câu cá', tuan: 'Bài 38 ai, ay, ây' },
+{ ma: 'kd37', ten: 'Trốn tìm', tuan: 'Bài 37 em, êm, im, um' },
+    { ma: 'kd36', ten: 'Đoàn tàu về xóm', tuan: 'Bài 36 om, ôm, ơm' },
+    { ma: 'kd35', ten: 'Hộp quà bí mật', tuan: 'Bài 35 Ôn tập' },
+    { ma: 'kd35b', ten: 'Đàn cá ôn vần (câu cá)', tuan: 'Bài 35 Ôn tập' },
+    { ma: 'kd34', ten: 'Đoán hình bị che', tuan: 'Bài 34 am, ăm, âm' },
+    { ma: 'kd33', ten: 'Vòng quay may mắn', tuan: 'Bài 33 en, ên, in, un' },
+    { ma: 'kd32', ten: 'Ai nhanh hơn', tuan: 'Bài 32 on, ôn, ơn' },
+    { ma: 'kd31', ten: 'Câu cá', tuan: 'Bài 31 an, ăn, ân' },
+    { ma: 'kd30', ten: 'Vòng quay may mắn', tuan: 'Bài 30 Ôn tập' },
+    { ma: 'kd29', ten: 'Ai nhanh hơn', tuan: 'Bài 29 Chính tả' },
+    { ma: 'kd28', ten: 'Câu cá', tuan: 'Bài 28 Y y' },
+    { ma: 'kd27', ten: 'Hộp quà bí mật', tuan: 'Bài 27 V v, X x' },
+    { ma: 'kd26', ten: 'Đoán hình bị che', tuan: 'Bài 26 Ph ph, Qu qu' },
+    { ma: 'kd25', ten: 'Vòng quay may mắn', tuan: 'Bài 25 Ôn tập' },
+    { ma: 'kd24', ten: 'Ai nhanh hơn', tuan: 'Bài 24 ua, ưa' },
+    { ma: 'kd23', ten: 'Câu cá', tuan: 'Bài 23 Th th, ia' },
+    { ma: 'kd22', ten: 'Hộp quà bí mật', tuan: 'Bài 22 T t, Tr tr' }
+  ]},
+  { ten: 'Lớp 1 - Toán', ghi: 'Khởi động chiếu tivi đầu tiết; luyện tập chơi trên tivi cả lớp hoặc ở nhà.', TRO: [
+    { ma: 'toan10f', ten: 'Luyện tập bằng 10 (tháp số, cộng ba số)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 6 Luyện tập' },
+    { ma: 'kdtoan10f', ten: 'Đoàn tàu số 10 (khởi động, chiếu tivi)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 6 Luyện tập' },
+    { ma: 'toan10e', ten: 'Cặp thẻ anh em (luyện tập, lật thẻ)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 5 Luyện tập' },
+    { ma: 'kdtoan10e', ten: 'Bông hoa năm cánh (khởi động, chiếu tivi)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 5 Luyện tập' },
+    { ma: 'toan10d', ten: 'Số 0 trong phép cộng (tìm chuồng cho thỏ)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 4' },
+    { ma: 'kdtoan10d', ten: 'Thắp sáng ngôi sao (khởi động, chiếu tivi)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 4' },
+    { ma: 'toan10c', ten: 'Thêm vào bằng mấy? (đường đua)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 3' },
+    { ma: 'kdtoan10c', ten: 'Chú sâu tập đếm (khởi động, chiếu tivi)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 3' },
+    { ma: 'toan10b', ten: 'Luyện tập phép cộng (hái táo, xoài, số còn thiếu)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 2 Luyện tập' },
+    { ma: 'kdtoan10b', ten: 'Tô màu cầu vồng (khởi động, chiếu tivi)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 2 Luyện tập' },
+    { ma: 'toan10', ten: 'Gộp lại bằng mấy? (luyện tập)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 1' },
+    { ma: 'kdtoan10', ten: 'Vườn hoa phép cộng (khởi động, chiếu tivi)', tuan: 'Bài 10 Phép cộng trong phạm vi 10 - tiết 1' },
+    { ma: 'toan9', ten: 'Siêu thám tử hình (luyện tập)', tuan: 'Bài 9 Luyện tập chung' },
+    { ma: 'kdtoan9', ten: 'Ném bóng vào rổ (khởi động, chiếu tivi)', tuan: 'Bài 9 Luyện tập chung' },
+    { ma: 'toan8b', ten: 'Ghép tam giác (luyện tập, kéo thả)', tuan: 'Bài 8 Thực hành lắp ghép, xếp hình - tiết 2 Luyện tập' },
+    { ma: 'kdtoan8b', ten: 'Lắp tên lửa (khởi động, chiếu tivi)', tuan: 'Bài 8 Thực hành lắp ghép, xếp hình - tiết 2 Luyện tập' },
+    { ma: 'toan8', ten: 'Xưởng lắp ghép (luyện tập, kéo thả)', tuan: 'Bài 8 Thực hành lắp ghép, xếp hình - tiết 1' },
+    { ma: 'kdtoan8', ten: 'Ghép mũi tên (khởi động, chiếu tivi)', tuan: 'Bài 8 Thực hành lắp ghép, xếp hình - tiết 1' },
+    { ma: 'toan7b', ten: 'Xưởng hình vui nhộn (luyện tập)', tuan: 'Bài 7 Hình vuông, hình tròn, hình tam giác, hình chữ nhật - tiết 2 Luyện tập' },
+    { ma: 'kdtoan7b', ten: 'Thắp nến bánh sinh nhật (khởi động, chiếu tivi)', tuan: 'Bài 7 Hình vuông, hình tròn, hình tam giác, hình chữ nhật - tiết 2 Luyện tập' },
+    { ma: 'toan7', ten: 'Thám tử hình (luyện tập)', tuan: 'Bài 7 Hình vuông, hình tròn, hình tam giác, hình chữ nhật - tiết 1' },
+    { ma: 'kdtoan7', ten: 'Ngôi nhà bí mật (khởi động, chiếu tivi)', tuan: 'Bài 7 Hình vuông, hình tròn, hình tam giác, hình chữ nhật - tiết 1' },
+    { ma: 'toan5', ten: 'Ôn Toán tuần 5', tuan: 'Tuần 5' },
+    { ma: 'beca', ten: 'Bể cá Mấy và mấy', tuan: 'Tuần 4-5' }
+  ]},
+  { ten: 'Trò chơi cả lớp (chiếu tivi)', ghi: 'Bốn trò MỚI dùng câu hỏi của chính thầy cô. Ba trò sau cần bấm ⚙ Danh sách để dán tên học sinh (chỉ lưu trên máy đang dùng).', lop: 'kd', TRO: [
+    { ma: 'rungchuong', url: '../tro-choi-ca-lop.html?g=chuong', ten: 'Rung chuông vàng', tuan: 'MỚI - Cả lớp viết đáp án, ai sai bị loại' },
+    { ma: 'manhghep', url: '../tro-choi-ca-lop.html?g=manh', ten: 'Mảnh ghép bí ẩn', tuan: 'MỚI - Trả lời đúng mở mảnh, đoán hình' },
+    { ma: 'duathuyen', url: '../tro-choi-ca-lop.html?g=thuyen', ten: 'Đua thuyền các tổ', tuan: 'MỚI - Tổ đúng thì thuyền tiến lên' },
+    { ma: 'hopqua', url: '../tro-choi-ca-lop.html?g=qua', ten: 'Hộp quà bí mật', tuan: 'MỚI - Chọn hộp quà, trả lời đúng để mở quà' },
+    { ma: 'bongbong', ten: 'Bong bóng gọi tên', tuan: 'Quay chọn bạn, hỏi bài, thưởng sao' },
+    { ma: 'trieuphu', ten: 'Triệu phú nhí', tuan: '15 câu leo thang sao, 3 quyền trợ giúp' },
+    { ma: 'olympia', ten: 'Đường lên đỉnh tri thức', tuan: '4 tổ thi 4 vòng' }
+  ]},
+  { ten: 'Lớp 3', lop: 'lop3', TRO: [
+    { ma: 'l3tv7', ten: 'Bàn tay cô giáo', tuan: 'Tiếng Việt - Tuần 7' },
+    { ma: 'l3toan6', ten: 'Một phần mấy', tuan: 'Toán - Tuần 6' }
+  ]},
+  { ten: 'Lớp 4', lop: 'lop3', TRO: [
+    { ma: 'l4kd15', ten: 'Mở khóa kho báu (khởi động, chiếu tivi)', tuan: 'Toán - Bài 15 Làm quen với dãy số tự nhiên' },
+    { ma: 'l4toan15', ten: 'Robot trên tia số', tuan: 'Toán - Bài 15 Làm quen với dãy số tự nhiên' }
+  ]}
+];
+// link có ?lop=1.14 thì các trò chơi cũng mang theo lớp để ghi kết quả (chỉ dùng cho lớp của cô)
+const lop = (new URLSearchParams(location.search).get('lop') || '').replace(/[^0-9A-Za-z.]/g, '');
+if (lop) document.getElementById('tieu-de').textContent += ' - lớp ' + lop;
+const goc = location.href.replace(/[^/]*$/, '');
+const ds = document.getElementById('ds');
+NHOM.forEach(n => {
+  const khoi = document.createElement('section');
+  if (n.lop) khoi.className = n.lop;
+  const h = document.createElement('h2'); h.textContent = n.ten; khoi.appendChild(h);
+  if (n.ghi) { const g = document.createElement('p'); g.className = 'ghi'; g.textContent = n.ghi; khoi.appendChild(g); }
+  n.TRO.forEach(t => {
+    const dong = document.createElement('div'); dong.className = 'the';
+    const a = document.createElement('a');
+    a.href = t.url ? t.url : t.ma + '.html' + (lop ? '?lop=' + lop : '');
+    const b = document.createElement('b'); b.textContent = t.ten;
+    const s = document.createElement('span'); s.textContent = t.tuan;
+    a.append(b, s);
+    const nut = document.createElement('a'); nut.className = 'vao'; nut.textContent = 'Vào làm bài';
+    nut.href = a.href;
+    dong.append(a, nut);
+    khoi.appendChild(dong);
+  });
+  ds.appendChild(khoi);
+});
+</script>
+</body>
+</html>

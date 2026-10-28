@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Ôn tuần 5: Toán + Tiếng Việt</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* Bố cục: một màn hình xếp dọc - tiêu đề, câu hỏi, khung hình chiếm phần lớn, hàng nút trả lời.
+     20 câu theo phiếu ôn tuần 5: 10 câu Toán rồi 10 câu Tiếng Việt, bé chạm vào đáp án.
+     Mọi kích thước tính theo --u để vừa cả tivi lẫn điện thoại. */
+  :root {
+    --u: min(1vh, 1.3vw);
+    --nen: #e8f6ff;
+    --chu: #12304a;
+    --xanh: #0b5cab;
+    --khung-tren: #ffffff;
+    --khung-duoi: #dff1ff;
+    --o-vien: #4aa3df;
+    --o-nen: #ffffff;
+    --do: #e03131;
+    --dung: #2b8a3e;
+    --dung-nen: #d3f9d8;
+    --sai: #e8590c;
+    --sai-nen: #ffe3e3;
+    --cam: #f08c00;
+    --cam-dam: #b86200;
+    --la: #2f9e44;
+    --la-dam: #1e6b2e;
+    --sao: #c25e00;
+    --trang: #ffffff;
+    --vang-nhat: #ffe066;
+    --phu: rgba(11, 92, 171, 0.93);
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    font-weight: 800;
+    background: var(--nen);
+    color: var(--chu);
+    display: flex;
+    flex-direction: column;
+    padding-block: calc(var(--u) * 1.5);
+    padding-inline: max(16px, 2vw);
+    gap: calc(var(--u) * 1.5);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  button { font-family: inherit; font-weight: 800; }
+  button:focus-visible { outline: 4px solid var(--chu); outline-offset: 3px; }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+  }
+  h1 { font-size: max(20px, calc(var(--u) * 4.2)); color: var(--xanh); line-height: 1.1; }
+  .diem { font-size: max(16px, calc(var(--u) * 3.2)); color: var(--sao); font-variant-numeric: tabular-nums; }
+
+  #cau-hoi {
+    text-align: center;
+    text-wrap: balance;
+    line-height: 1.2;
+    font-size: max(22px, calc(var(--u) * 5));
+  }
+
+  #khung {
+    flex: 1;
+    min-height: calc(var(--u) * 30);
+    background: linear-gradient(var(--khung-tren), var(--khung-duoi));
+    border: 6px solid var(--xanh);
+    border-radius: calc(var(--u) * 4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--u) * 2);
+    overflow: hidden;
+  }
+
+  /* đếm: bóng xếp 5 quả một hàng */
+  .luoi { display: grid; grid-template-columns: repeat(5, auto); gap: calc(var(--u) * 2); }
+  .bong {
+    width: max(34px, calc(var(--u) * 10)); height: max(34px, calc(var(--u) * 10));
+    border-radius: 50%; background: var(--m);
+    box-shadow: inset calc(var(--u) * -0.8) calc(var(--u) * -1) 0 rgba(0,0,0,.18), inset calc(var(--u) * 1) calc(var(--u) * 1) 0 rgba(255,255,255,.45);
+    animation: nay 2.4s ease-in-out infinite;
+  }
+  @keyframes nay { 0%, 100% { transform: translateY(calc(var(--u) * -0.6)); } 50% { transform: translateY(calc(var(--u) * 0.6)); } }
+  @media (prefers-reduced-motion: reduce) { .bong { animation: none; } }
+
+  /* thẻ số dùng cho dãy số và so sánh */
+  .day { display: flex; align-items: center; justify-content: center; gap: max(6px, calc(var(--u) * 1.6)); }
+  .the {
+    width: max(48px, calc(var(--u) * 13)); height: max(48px, calc(var(--u) * 13));
+    display: flex; align-items: center; justify-content: center;
+    font-size: max(30px, calc(var(--u) * 9)); line-height: 1;
+    background: var(--o-nen); color: var(--m, var(--xanh));
+    border: 5px solid var(--o-vien); border-radius: calc(var(--u) * 2.5);
+  }
+  .the.trong { border-style: dashed; border-color: var(--do); color: var(--do); }
+  .the.tron { border-radius: 50%; }
+  .the.xong { border-style: solid; border-color: var(--la); background: var(--dung-nen); color: var(--dung); }
+  .ss .the { width: max(64px, calc(var(--u) * 18)); height: max(64px, calc(var(--u) * 18)); font-size: max(40px, calc(var(--u) * 12)); }
+  .ss { gap: max(10px, calc(var(--u) * 3)); }
+
+  /* mấy và mấy */
+  .tach { height: 100%; max-height: calc(var(--u) * 46); width: auto; max-width: 100%; }
+  .tach text { font-family: var(--font); font-weight: 800; font-size: 52px; text-anchor: middle; dominant-baseline: central; }
+
+  #thong-bao {
+    min-height: max(26px, calc(var(--u) * 5.5));
+    text-align: center;
+    text-wrap: balance;
+    line-height: 1.2;
+    font-size: max(19px, calc(var(--u) * 4.4));
+  }
+  #thong-bao.dung { color: var(--dung); }
+  #thong-bao.sai { color: var(--sai); }
+
+  .lua-chon { display: flex; justify-content: center; flex-wrap: wrap; gap: max(10px, calc(var(--u) * 2.2)); padding-bottom: 8px; }
+  .lua-chon button, .nut-lon {
+    border: none; border-radius: calc(var(--u) * 2.5); cursor: pointer; color: var(--trang);
+  }
+  .lua-chon button {
+    width: max(62px, calc(var(--u) * 13)); height: max(62px, calc(var(--u) * 13)); padding: 0;
+    font-size: max(32px, calc(var(--u) * 8)); line-height: 1;
+    background: var(--cam); box-shadow: 0 6px 0 var(--cam-dam);
+  }
+  .lua-chon button:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--cam-dam); }
+  .lua-chon button.sai { animation: lac 0.4s; background: #b9c2cc; box-shadow: 0 6px 0 #8a949e; }
+  .lua-chon button.dung { background: var(--la); box-shadow: 0 6px 0 var(--la-dam); }
+  .lua-chon.to button { width: max(64px, calc(var(--u) * 17)); height: max(64px, calc(var(--u) * 17)); font-size: max(40px, calc(var(--u) * 11)); }
+  .lua-chon.to { padding-bottom: 0; flex-wrap: nowrap; gap: max(10px, calc(var(--u) * 3)); }
+  /* đáp án là chữ (r, s, ua, ưa, tiếng): nút rộng theo chữ */
+  .lua-chon.chu button, .lua-chon.to.chu button { width: auto; min-width: max(70px, calc(var(--u) * 15)); padding: 0 max(14px, calc(var(--u) * 3)); }
+  .lua-chon.to.chu { flex-wrap: wrap; }
+  .tu { font-size: max(44px, calc(var(--u) * 13)); line-height: 1.2; white-space: pre; display: flex; align-items: center; justify-content: center; }
+  .tu .the { display: inline-flex; margin: 0 calc(var(--u) * 0.8); width: auto; min-width: max(56px, calc(var(--u) * 14)); padding: 0 calc(var(--u) * 1.5); height: max(60px, calc(var(--u) * 16)); font-size: inherit; }
+  .mon { font-size: max(15px, calc(var(--u) * 2.8)); color: #fff; background: var(--xanh); border-radius: 30px; padding: 2px 14px; }
+  .mon.tv { background: var(--do); }
+  @keyframes lac { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .nut-lon { font-size: max(26px, calc(var(--u) * 5.5)); padding: calc(var(--u) * 1) calc(var(--u) * 5); background: var(--la); box-shadow: 0 6px 0 var(--la-dam); }
+  .hang-nut { text-align: center; padding-bottom: 8px; }
+
+  .man-phu {
+    position: fixed; inset: 0; background: var(--phu);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: calc(var(--u) * 3); color: var(--trang); text-align: center; padding: 16px;
+    overflow-y: auto;
+  }
+  .man-phu h2 { font-size: max(32px, calc(var(--u) * 8)); line-height: 1.1; }
+  .man-phu p { font-size: max(22px, calc(var(--u) * 5)); color: var(--vang-nhat); line-height: 1.2; }
+  .man-phu .nho { font-size: max(16px, calc(var(--u) * 3)); color: var(--trang); }
+  #ten-hs {
+    font-family: inherit; font-weight: 800; text-align: center;
+    font-size: max(22px, calc(var(--u) * 5));
+    width: min(100%, 22em); padding: 0.3em 0.5em;
+    border: 5px solid var(--vang-nhat); border-radius: 16px;
+    background: var(--o-nen); color: var(--chu);
+  }
+  #phieu {
+    background: var(--o-nen); color: var(--chu);
+    border-radius: 20px; padding: 16px 24px;
+    font-size: max(18px, calc(var(--u) * 3.4)); line-height: 1.45;
+    width: min(100%, 24em);
+  }
+  #phieu b { color: var(--xanh); }
+  .nut-phu {
+    font-size: max(16px, calc(var(--u) * 3)); padding: 0.3em 1em;
+    background: transparent; color: var(--trang);
+    border: 3px solid var(--trang); border-radius: 14px; cursor: pointer;
+  }
+  /* tên thương hiệu của cô, hiện ở màn mở đầu và màn kết quả */
+  .thuong-hieu { font-size: max(18px, calc(var(--u) * 3.6)); color: var(--chu); background: var(--vang-nhat); border-radius: 30px; padding: 2px 20px; letter-spacing: 1px; }
+</style>
+
+<header>
+  <h1>Ôn tuần 5: Toán + Tiếng Việt</h1>
+  <div class="mon" id="mon">Toán</div>
+  <div class="diem">Câu <span id="so-cau">1</span>/<span id="tong-cau">10</span> · Sao: <span id="so-sao">0</span></div>
+</header>
+
+<div id="cau-hoi"></div>
+<div id="khung"></div>
+<div id="thong-bao"></div>
+<div class="lua-chon" id="lua-chon"></div>
+<div class="hang-nut" id="hang-tiep" hidden><button class="nut-lon" id="nut-tiep">Câu tiếp</button></div>
+
+<div id="ket-thuc" class="man-phu" hidden>
+  <div class="thuong-hieu">Cô Điệp AI</div>
+  <h2>Hoàn thành!</h2>
+  <p>Con được <span id="tong-sao">0</span> ngôi sao</p>
+  <div id="phieu"></div>
+  <div class="nho" id="loi-nhan">Ba mẹ chụp màn hình này gửi cô nhé.</div>
+  <button class="nut-lon" id="nut-choi-lai">Chơi lại</button>
+  <button class="nut-phu" id="nut-ban-khac">Bạn khác chơi</button>
+</div>
+
+<div id="mo-dau" class="man-phu">
+  <div class="thuong-hieu">Cô Điệp AI</div>
+  <h2>Ôn tuần 5: Toán + Tiếng Việt</h2>
+  <p><label for="ten-hs">Con tên là gì?</label></p>
+  <input id="ten-hs" type="text" maxlength="40" autocomplete="off" placeholder="Họ và tên, lớp">
+  <button class="nut-lon" id="nut-bat-dau">Bắt đầu</button>
+</div>
+
+<script>
+const TEN_BAI = 'Ôn tuần 5: Toán + Tiếng Việt';
+const MAU = ['#e8202a', '#1565d8', '#2fa65a', '#f2891f', '#8e24aa', '#ec5a93'];
+// [mã dạng, tên dạng, môn, số câu] - theo đúng các bài trên phiếu ôn tuần 5
+const DANG = [
+  ['day', 'Dãy số', 'Toán', 2], ['ss', 'So sánh', 'Toán', 3], ['tach', 'Mấy và mấy', 'Toán', 3], ['lonbe', 'Lớn nhất, bé nhất', 'Toán', 2],
+  ['gg', 'Điền g, gh', 'Tiếng Việt', 3], ['ng', 'Điền ng, ngh', 'Tiếng Việt', 3], ['ghep', 'Ghép từ', 'Tiếng Việt', 2], ['van', 'Tìm âm', 'Tiếng Việt', 2]
+];
+// Lớp học đến bài 20 (m, n, g, gi, gh, nh, ng, ngh) ở cuối tuần 5: chỉ dùng các âm đã học đến đó.
+// Mỗi mục: [phần trước chỗ trống, phần sau, chữ cần điền]
+const GG = [['', 'à gô', 'g'], ['', 'ế gỗ', 'gh'], ['', 'ẹ đỏ', 'gh'], ['đồ ', 'ỗ', 'g'], ['nhà ', 'a', 'g'],
+  ['', 'é chợ', 'gh'], ['ghế ', 'ỗ', 'g'], ['', 'à mẹ', 'g']];
+const NG = [['', 'õ nhỏ', 'ng'], ['củ ', 'ệ', 'ngh'], ['', 'ỉ hè', 'ngh'], ['', 'ã ba', 'ng'], ['cá ', 'ừ', 'ng'], ['bé ', 'ủ', 'ng'],
+  ['', 'é ọ', 'ngh'], ['đề ', 'ị', 'ngh'], ['', 'ủ khì', 'ng'], ['bẻ ', 'ô', 'ng'], ['', 'e mẹ kể', 'ngh']];
+// [tiếng đầu, tiếng đúng, hai tiếng sai]: tiếng sai được chọn sẵn để không vô tình ghép thành từ có nghĩa
+const GHEP = [['ca', 'nô', ['nghệ', 'đỗ']], ['gà', 'gô', ['nghệ', 'hè']], ['lá', 'nho', ['ngừ', 'đủ']], ['nghỉ', 'hè', ['gô', 'đỗ']],
+  ['ngã', 'ba', ['ngừ', 'nho']], ['củ', 'nghệ', ['đủ', 'hè']], ['ghế', 'gỗ', ['ngừ', 'hè']], ['ghẹ', 'đỏ', ['nô', 'nghệ']],
+  ['nho', 'khô', ['đủ', 'ngừ']], ['nhổ', 'cỏ', ['gô', 'nô']], ['cá', 'ngừ', ['đủ', 'nghệ']], ['giá', 'đỗ', ['ngừ', 'gô']], ['đu', 'đủ', ['nho', 'ba']]];
+const VAN = { m: ['mẹ', 'má', 'mỡ', 'mè', 'me', 'mũ', 'mơ'], gi: ['giá', 'giò', 'giỗ', 'già', 'gió', 'giỏ', 'giữ'], nh: ['nhà', 'nho', 'nhỏ', 'nhẹ', 'nhớ', 'nhổ', 'nhị'] };
+let hangDoi = [], thuTu = 0, sao = 0, cau = null, khoa = false, daSai = false;
+let dungLanDau = 0, dungTheoDang = {};
+let amThanh = null, ten = '';
+
+const $ = id => document.getElementById(id);
+const ngau = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const mau = () => MAU[ngau(0, MAU.length - 1)];
+const lay = m => m[ngau(0, m.length - 1)];
+
+function tron(m) {
+  for (let i = m.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [m[i], m[j]] = [m[j], m[i]];
+  }
+  return m;
+}
+
+// 4 số để chọn: số đúng và 3 số gần nó, trong khoảng min-max, xếp từ bé đến lớn
+function boSo(dung, max = 10, min = 0) {
+  const ds = new Set([dung]);
+  for (const d of tron([-3, -2, -1, 1, 2, 3])) {
+    const v = dung + d;
+    if (v >= min && v <= max && ds.size < 4) ds.add(v);
+  }
+  return [...ds].sort((a, b) => a - b);
+}
+
+function keu(dsTanSo) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    dsTanSo.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain();
+      const t = amThanh.currentTime + i * 0.13;
+      o.frequency.value = f; o.type = 'triangle';
+      g.gain.setValueAtTime(0.25, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      o.connect(g); g.connect(amThanh.destination);
+      o.start(t); o.stop(t + 0.26);
+    });
+  } catch (e) {}
+}
+
+// câu điền chữ: hiện từ có một ô trống, bé chọn chữ để điền
+function cauDien(ds, chon, hoi, truoc) {
+  let i; do { i = ngau(0, ds.length - 1); } while (i === truoc);
+  const [dau, sau, dap] = ds[i];
+  return {
+    so: i, hoi, chon, dung: dap, chu: true,
+    ve: xong => `<div class="tu">${dau}<span class="the trong${xong ? ' xong' : ''}">${xong ? dap : '?'}</span>${sau}</div>`,
+    khen: `Đúng rồi! ${dau}${dap}${sau}.`
+  };
+}
+
+// Mỗi hàm trả về một câu: { so, hoi, ve(xong), chon[], dung, khen, trongKhung, chu }
+const TAO = {
+  day() {
+    const nguoc = Math.random() < 0.5;
+    const dau = nguoc ? ngau(4, 10) : ngau(0, 6);
+    const ds = Array.from({ length: 5 }, (_, i) => nguoc ? dau - i : dau + i);
+    const vt = ngau(1, 4), dap = ds[vt];
+    return {
+      so: 1, hoi: 'Số nào còn thiếu?', chon: boSo(dap), dung: dap,
+      ve: xong => `<div class="day">${ds.map((v, i) => i === vt
+        ? `<div class="the trong${xong ? ' xong' : ''}">${xong ? v : '?'}</div>`
+        : `<div class="the" style="--m:${MAU[i % MAU.length]}">${v}</div>`).join('')}</div>`,
+      khen: `Đúng rồi! Số còn thiếu là ${dap}.`
+    };
+  },
+  ss(truoc) {
+    let a = ngau(0, 10), b = ngau(0, 10);
+    // câu thứ hai: nếu câu đầu chưa có dấu = thì hay ra hai số bằng nhau
+    if (truoc !== undefined && truoc !== '=' && Math.random() < 0.6) b = a;
+    else if (truoc === undefined) while (b === a) b = ngau(0, 10);
+    const dau = a > b ? '>' : a < b ? '<' : '=';
+    const doc = a > b ? 'lớn hơn' : a < b ? 'bé hơn' : 'bằng';
+    return {
+      so: dau, hoi: 'Chọn dấu đúng', chon: ['>', '<', '='], dung: dau,
+      ve: xong => `<div class="day ss"><div class="the" style="--m:${MAU[0]}">${a}</div>
+        <div class="the trong tron${xong ? ' xong' : ''}">${xong ? dau : '?'}</div>
+        <div class="the" style="--m:${MAU[1]}">${b}</div></div>`,
+      khen: `Đúng rồi! ${a} ${dau} ${b}. ${a} ${doc} ${b}.`
+    };
+  },
+  tach(truoc) {
+    // lớp học đến trang 21 vở bài tập Toán (bài 5 tiết 2): chỉ tách các số 3, 4, 5
+    let t; do { t = ngau(3, 5); } while (t === truoc);
+    const a = ngau(1, t - 1), b = t - a, anTrai = Math.random() < 0.5;
+    const biet = anTrai ? b : a, dap = anTrai ? a : b, m = mau();
+    const nut = (x, v, an, xong) => an
+      ? `<rect x="${x - 38}" y="132" width="76" height="76" rx="14" fill="${xong ? '#d3f9d8' : '#fff'}" stroke="${xong ? '#2f9e44' : '#e03131'}" stroke-width="5" ${xong ? '' : 'stroke-dasharray="10 7"'}/>
+         <text x="${x}" y="172" fill="${xong ? '#2b8a3e' : '#e03131'}">${xong ? v : '?'}</text>`
+      : `<circle cx="${x}" cy="170" r="40" fill="#fff" stroke="${m}" stroke-width="5"/><text x="${x}" y="172" fill="${m}">${v}</text>`;
+    return {
+      so: t, hoi: `${t} gồm ${biet} và mấy?`, chon: boSo(dap, 5, 1), dung: dap,
+      ve: xong => `<svg class="tach" viewBox="0 0 240 216">
+        <path d="M120 52 L60 170 M120 52 L180 170" stroke="${m}" stroke-width="6" fill="none"/>
+        <circle cx="120" cy="48" r="44" fill="${m}"/><text x="120" y="50" fill="#fff">${t}</text>
+        ${nut(60, a, anTrai, xong)}${nut(180, b, !anTrai, xong)}</svg>`,
+      khen: `Đúng rồi! ${t} gồm ${a} và ${b}.`
+    };
+  },
+  lonbe() {
+    const lon = Math.random() < 0.5;
+    const ds = tron([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).slice(0, 3);
+    const dap = lon ? Math.max(...ds) : Math.min(...ds);
+    return {
+      so: 1, hoi: lon ? 'Chạm vào số lớn nhất' : 'Chạm vào số bé nhất', chon: ds, dung: dap, trongKhung: true,
+      khen: `Đúng rồi! Số ${lon ? 'lớn' : 'bé'} nhất là ${dap}.`
+    };
+  },
+  gg(truoc) { return cauDien(GG, ['g', 'gh'], 'Điền g hay gh?', truoc); },
+  ng(truoc) { return cauDien(NG, ['ng', 'ngh'], 'Điền ng hay ngh?', truoc); },
+  ghep() {
+    const i = ngau(0, GHEP.length - 1), [dau, dap, khac] = GHEP[i];
+    return {
+      so: i, hoi: 'Chọn tiếng để tạo từ', chon: tron([dap, ...khac]), dung: dap, chu: true,
+      ve: xong => `<div class="tu">${dau} <span class="the trong${xong ? ' xong' : ''}">${xong ? dap : '?'}</span></div>`,
+      khen: `Đúng rồi! ${dau} ${dap}.`
+    };
+  },
+  van() {
+    const ds = Object.keys(VAN), v = lay(ds), dap = lay(VAN[v]);
+    const khac = ds.filter(k => k !== v).map(k => lay(VAN[k]));
+    return {
+      so: v, hoi: `Chạm vào tiếng có âm ${v}`, chon: tron([dap, ...khac]), dung: dap, trongKhung: true, chu: true,
+      khen: `Đúng rồi! Tiếng ${dap} có âm ${v}.`
+    };
+  }
+};
+
+function taoHangDoi() {
+  const ds = [], daCo = new Set();
+  DANG.forEach(([dang, , mon, soCau]) => {
+    let truoc;
+    for (let k = 0; k < soCau; k++) {
+      // không ra lại câu đã có trong lượt này
+      let c, lan = 0;
+      do { c = TAO[dang](truoc); lan++; } while (daCo.has(dang + c.hoi + c.khen) && lan < 40);
+      daCo.add(dang + c.hoi + c.khen);
+      c.dang = dang; c.mon = mon; truoc = c.so;
+      ds.push(c);
+    }
+  });
+  return ds;
+}
+
+function batDau() {
+  hangDoi = taoHangDoi(); thuTu = 0; sao = 0; dungLanDau = 0; dungTheoDang = {};
+  $('tong-cau').textContent = hangDoi.length;
+  $('ket-thuc').hidden = true;
+  raCau();
+}
+
+function raCau() {
+  cau = hangDoi[thuTu]; khoa = false; daSai = false;
+  $('so-cau').textContent = thuTu + 1;
+  $('so-sao').textContent = sao;
+  $('mon').textContent = cau.mon;
+  $('mon').className = 'mon' + (cau.mon === 'Toán' ? '' : ' tv');
+  $('cau-hoi').textContent = cau.hoi;
+  $('thong-bao').textContent = ''; $('thong-bao').className = '';
+  $('hang-tiep').hidden = true;
+
+  const hang = $('lua-chon'), khung = $('khung');
+  hang.textContent = ''; khung.textContent = '';
+  hang.className = 'lua-chon' + (cau.chu ? ' chu' : '');
+  let noiDat = hang;
+  if (cau.trongKhung) {
+    // các đáp án nằm ngay trong khung, bé chạm vào
+    noiDat = document.createElement('div');
+    noiDat.className = 'lua-chon to' + (cau.chu ? ' chu' : '');
+    khung.appendChild(noiDat);
+    hang.hidden = true;
+  } else {
+    khung.innerHTML = cau.ve(false);
+    hang.hidden = false;
+  }
+  cau.chon.forEach(v => {
+    const b = document.createElement('button');
+    b.textContent = v;
+    b.onclick = () => chon(v, b);
+    noiDat.appendChild(b);
+  });
+}
+
+function chon(v, nut) {
+  if (khoa) return;
+  if (v === cau.dung) {
+    khoa = true; sao++;
+    if (!daSai) { dungLanDau++; dungTheoDang[cau.dang] = (dungTheoDang[cau.dang] || 0) + 1; }
+    nut.classList.add('dung');
+    if (!cau.trongKhung) { $('khung').innerHTML = cau.ve(true); $('lua-chon').hidden = true; }
+    $('so-sao').textContent = sao;
+    $('thong-bao').className = 'dung';
+    $('thong-bao').textContent = cau.khen;
+    $('hang-tiep').hidden = false;
+    $('nut-tiep').textContent = thuTu === hangDoi.length - 1 ? 'Xem kết quả' : 'Câu tiếp';
+    keu([523, 659, 784, 1047]);
+  } else {
+    daSai = true;
+    nut.classList.add('sai'); nut.disabled = true;
+    $('thong-bao').className = 'sai';
+    $('thong-bao').textContent = 'Con thử lại nhé!';
+    keu([220, 196]);
+  }
+}
+
+$('nut-tiep').onclick = () => {
+  thuTu++;
+  if (thuTu >= hangDoi.length) {
+    $('tong-sao').textContent = sao;
+    vePhieu();
+    guiKetQua();
+    $('ket-thuc').hidden = false;
+    keu([523, 659, 784, 1047, 1319]);
+  } else raCau();
+};
+$('nut-choi-lai').onclick = batDau;
+
+// điểm từng môn và các dạng còn sai, để cô biết con yếu chỗ nào
+function theoMon(mon) {
+  let dung = 0, tong = 0;
+  DANG.forEach(([dang, , m, soCau]) => { if (m === mon) { tong += soCau; dung += dungTheoDang[dang] || 0; } });
+  return `${dung}/${tong}`;
+}
+function dangSai() {
+  return DANG.filter(([dang, , , soCau]) => (dungTheoDang[dang] || 0) < soCau).map(d => d[1]);
+}
+function chiTiet() {
+  const sai = dangSai();
+  return `Toán ${theoMon('Toán')}, Tiếng Việt ${theoMon('Tiếng Việt')}` + (sai.length ? `. Cần ôn: ${sai.join(', ')}` : '');
+}
+
+function vePhieu() {
+  const d = new Date(), hai = n => String(n).padStart(2, '0');
+  const luc = `${hai(d.getHours())}:${hai(d.getMinutes())} ngày ${hai(d.getDate())}/${hai(d.getMonth() + 1)}/${d.getFullYear()}`;
+  const sai = dangSai(), dong = [];
+  if (ten) dong.push(['Tên', ten]);
+  dong.push(['Bài', TEN_BAI]);
+  dong.push(['Đúng ngay lần đầu', `${dungLanDau}/${hangDoi.length} câu`]);
+  dong.push(['Toán', theoMon('Toán')]);
+  dong.push(['Tiếng Việt', theoMon('Tiếng Việt')]);
+  dong.push(['Cần ôn thêm', sai.length ? sai.join(', ') : 'Không, con làm đúng hết']);
+  dong.push(['Lúc', luc]);
+  const phieu = $('phieu');
+  phieu.textContent = '';
+  dong.forEach(([nhan, gt]) => {
+    const p = document.createElement('div'), b = document.createElement('b');
+    b.textContent = gt;
+    p.append(nhan + ': ', b);
+    phieu.appendChild(p);
+  });
+}
+
+// Link Apps Script nhận kết quả (bản web trên GitHub Pages gửi thẳng tới đây)
+const LINK_SHEET = 'https://script.google.com/macros/s/AKfycbzE5tlog_osSNJ7Tsr4SnJPQCiv5LpyfQaDj8jNHNYzT9YEMGnQHTJrrpNXV_45lq1t/exec';
+
+// Chỉ ghi kết quả khi link có &lop=... (link lớp mình); link chia sẻ thì không ghi
+function guiKetQua() {
+  const CHUP = 'Ba mẹ chụp màn hình này gửi cô nhé.';
+  // lớp lấy từ Apps Script (window.LOP) hoặc từ link web (?lop=...)
+  const lop = window.LOP || new URLSearchParams(location.search).get('lop') || '';
+  if (!lop) { $('loi-nhan').textContent = CHUP; return; }
+  $('loi-nhan').textContent = 'Đang gửi kết quả cho cô...';
+  const d = { lop, ten, bai: TEN_BAI, dungLanDau, soCau: hangDoi.length, chiTiet: chiTiet() };
+  const xong = () => { $('loi-nhan').textContent = 'Đã gửi kết quả cho cô.'; };
+  const loi = () => { $('loi-nhan').textContent = 'Chưa gửi được. ' + CHUP; };
+  if (window.google && google.script && google.script.run) {
+    google.script.run.withSuccessHandler(xong).withFailureHandler(loi).ghiKetQua(d);
+  } else {
+    fetch(LINK_SHEET, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }).then(xong, loi);
+  }
+}
+
+function vaoChoi() {
+  ten = $('ten-hs').value.trim();
+  try { localStorage.setItem('ten-hs', ten); } catch (e) {}
+  $('mo-dau').hidden = true;
+  batDau();
+}
+try { $('ten-hs').value = localStorage.getItem('ten-hs') || ''; } catch (e) {}
+$('nut-bat-dau').onclick = vaoChoi;
+$('nut-ban-khac').onclick = () => {
+  $('ket-thuc').hidden = true;
+  $('ten-hs').value = '';
+  $('mo-dau').hidden = false;
+};
+
+document.addEventListener('keydown', e => {
+  if (!$('mo-dau').hidden) { if (e.key === 'Enter') vaoChoi(); return; }
+  if (e.key === 'Enter' && !$('hang-tiep').hidden) $('nut-tiep').click();
+});
+
+batDau();
+</script>
+</body>
+</html>

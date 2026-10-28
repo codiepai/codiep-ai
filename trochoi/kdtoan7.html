@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Ngôi nhà bí mật - Khởi động Toán 1 Bài 7</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* Khởi động chiếu tivi, cô điều khiển. Ngôi nhà bị 5 tấm ván che. Mỗi tấm ván là 1 câu ôn Bài 1-6
+     (đếm, so sánh, mấy và mấy, dãy số, nhiều hơn ít hơn). Trả lời đúng thì gỡ tấm ván.
+     Gỡ hết thì ngôi nhà hiện ra, bấm "Ngôi nhà ghép từ những hình nào?" để giới thiệu Bài 7.
+     Đổi nội dung: chỉ sửa mảng CAU. */
+  :root {
+    --u: min(1vh, 1.25vw);
+    --chu: #12304a; --xanh: #0b5cab; --do: #e03131; --la: #2f9e44; --la-dam: #1e6b2e; --cam: #f08c00; --cam-dam: #b86200; --vang: #ffe066;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu);
+    background: linear-gradient(#bfe6ff 0 70%, #8fd16a 70%);
+    display: flex; flex-direction: column; gap: calc(var(--u) * 1);
+    padding: calc(var(--u) * 1.2) max(14px, 2vw);
+    user-select: none; -webkit-user-select: none; touch-action: manipulation; overflow: hidden;
+  }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 4px solid var(--chu); outline-offset: 3px; }
+  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 14px; }
+  h1 { font-size: max(20px, calc(var(--u) * 4.4)); color: var(--xanh); line-height: 1.1; }
+  .sao { font-size: max(18px, calc(var(--u) * 4)); font-family: var(--emoji); letter-spacing: 2px; }
+  #loi { text-align: center; font-size: max(20px, calc(var(--u) * 4.6)); line-height: 1.2; text-wrap: balance; }
+
+  #canh { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  #nha { height: 100%; max-height: calc(var(--u) * 72); width: auto; max-width: 100%; overflow: visible; }
+  #nha .hinh { transition: opacity .4s, filter .4s; }
+  #nha.soi .hinh { opacity: .18; }
+  #nha.soi .hinh.sang { opacity: 1; filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 4px #ffd43b); }
+  .van { cursor: pointer; transition: transform 1s ease-in, opacity 1s; transform-box: fill-box; }
+  .van.mo { transform: translateY(140%) rotate(8deg); opacity: 0; pointer-events: none; }
+  .van:hover rect.ván { filter: brightness(1.08); }
+
+  #nut-soi { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); font-size: max(18px, calc(var(--u) * 4.4)); padding: 8px 26px; white-space: nowrap;
+    border: none; border-radius: 22px; color: #fff; background: var(--la); box-shadow: 0 6px 0 var(--la-dam); animation: nhip 1.2s infinite; }
+  @keyframes nhip { 50% { transform: translateX(-50%) scale(1.06); } }
+  #nhan { position: absolute; top: 6%; left: 50%; transform: translateX(-50%); background: #fff; border: 6px solid var(--do); border-radius: 22px;
+    padding: 6px 28px; font-size: max(30px, calc(var(--u) * 8)); color: var(--do); white-space: nowrap; box-shadow: 0 8px 0 rgba(0,0,0,.15); }
+
+  .phu { position: fixed; inset: 0; z-index: 10; background: rgba(11, 92, 171, .9); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .the { background: #fff; border-radius: 28px; border: 8px solid var(--vang); padding: calc(var(--u) * 3) calc(var(--u) * 4); text-align: center;
+    width: min(100%, calc(var(--u) * 130)); display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2.4); }
+  .the .so-van { font-size: max(18px, calc(var(--u) * 3.6)); color: #fff; background: #a0561a; border-radius: 30px; padding: 2px 18px; }
+  .the h2 { font-size: max(28px, calc(var(--u) * 7)); line-height: 1.15; text-wrap: balance; }
+  .the .tranh { font-family: var(--emoji); font-size: max(40px, calc(var(--u) * 9)); line-height: 1.15; display: flex; gap: calc(var(--u) * 5); justify-content: center; flex-wrap: wrap; }
+  .the .tranh .nhom { display: flex; flex-wrap: wrap; justify-content: center; max-width: 6em; gap: 4px; border: 4px dashed #74c0fc; border-radius: 16px; padding: 6px; }
+  .the .so { font-size: max(48px, calc(var(--u) * 13)); color: var(--xanh); letter-spacing: 4px; }
+  .the .so i { font-style: normal; display: inline-block; min-width: 1.1em; border: 5px dashed var(--do); border-radius: 14px; color: var(--do); }
+  .chon { display: flex; gap: calc(var(--u) * 3); justify-content: center; flex-wrap: wrap; }
+  .chon button { border: none; border-radius: 20px; color: #fff; background: var(--cam); box-shadow: 0 7px 0 var(--cam-dam);
+    font-size: max(34px, calc(var(--u) * 9)); min-width: max(80px, calc(var(--u) * 18)); padding: 4px 20px; line-height: 1.2; }
+  .chon button:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--cam-dam); }
+  .chon button.sai { background: #b9c2cc; box-shadow: 0 7px 0 #8a949e; animation: lac .4s; }
+  .chon button.dung { background: var(--la); box-shadow: 0 7px 0 var(--la-dam); }
+  @keyframes lac { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+  .bao { min-height: 1.3em; font-size: max(22px, calc(var(--u) * 5)); }
+  .bao.dung { color: var(--la); } .bao.sai { color: #e8590c; }
+  .hang-nut { display: flex; gap: 12px; }
+  .nut-phu { font-size: max(16px, calc(var(--u) * 3.2)); padding: 4px 16px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+  .nut-xanh { font-size: max(22px, calc(var(--u) * 5)); padding: 6px 28px; border: none; border-radius: 20px; color: #fff; background: var(--la); box-shadow: 0 6px 0 var(--la-dam); }
+
+  /* màn giới thiệu bài mới */
+  .bai-moi { font-size: max(20px, calc(var(--u) * 4.4)); color: #fff; background: var(--do); border-radius: 30px; padding: 2px 22px; }
+  .bon-hinh { display: flex; gap: calc(var(--u) * 4); justify-content: center; flex-wrap: wrap; }
+  .bon-hinh div { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: max(18px, calc(var(--u) * 4)); animation: nay .8s ease-out both; }
+  .bon-hinh svg { width: max(70px, calc(var(--u) * 16)); height: max(70px, calc(var(--u) * 16)); }
+  @keyframes nay { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 11; }
+  #phao i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  #loi-may { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 20; background: #fff; color: #c00; border: 3px solid #c00; border-radius: 12px; padding: 8px; font-size: 15px; }
+  @media (prefers-reduced-motion: reduce) { .van, .bon-hinh div, #nut-soi { transition: none; animation: none; } #phao { display: none; } }
+</style>
+
+<header>
+  <h1>🏠 Ngôi nhà bí mật</h1>
+  <div class="sao" id="sao"></div>
+</header>
+<div id="loi">Ngôi nhà đang bị che! Chọn một tấm ván, trả lời đúng để gỡ ván ra nhé.</div>
+<div id="canh">
+  <svg id="nha" viewBox="0 0 460 300">
+    <g id="hinh-nha"></g>
+    <g id="cac-van"></g>
+  </svg>
+  <button id="nut-soi" hidden>🔍 Ngôi nhà ghép từ những hình nào?</button>
+  <div id="nhan" hidden></div>
+</div>
+
+<div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
+<div id="phao"></div>
+
+<script>
+// nếu máy nào báo lỗi, hiện lỗi lên màn hình để chụp gửi cô
+window.onerror = (m, f, d) => {
+  const goc = s => String(s || "").split(/[?#]/)[0];
+  if (/zalo|FBNav|instagram/i.test(m) || !f || goc(f) !== goc(location.href)) return; // lỗi của app Zalo/Facebook chèn vào, không phải của trò chơi
+  const o = document.getElementById('loi-may') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'loi-may' }));
+  o.textContent = 'Lỗi: ' + m + ' (dòng ' + d + ')';
+};
+
+// ====== 5 câu ôn Bài 1-6 (chưa dùng hình phẳng của bài mới) ======
+// hoi: câu hỏi; tranh: hình minh họa (HTML); chon: các đáp án; dung: đáp án đúng; noi: câu máy đọc; khen: câu khen
+const nhom = (vat, n) => `<div class="nhom">${vat.repeat(n)}</div>`;
+const CAU = [
+  { hoi: 'Có mấy con cá?', tranh: `<div class="tranh">${nhom('🐟', 7)}</div>`, chon: ['6', '7', '8'], dung: '7', khen: 'Có 7 con cá.' },
+  { hoi: 'Điền dấu nào?', tranh: '<div class="so">6 <i>?</i> 9</div>', chon: ['>', '<', '='], dung: '<', noi: 'Sáu và chín, điền dấu nào?', khen: '6 bé hơn 9.' },
+  { hoi: '3 và 2 được mấy?', tranh: `<div class="tranh">${nhom('🔴', 3)}${nhom('🔵', 2)}</div>`, chon: ['4', '5', '6'], dung: '5', noi: 'Ba và hai được mấy?', khen: '3 và 2 được 5.' },
+  { hoi: 'Số nào còn thiếu?', tranh: '<div class="so">6, 7, <i>?</i>, 9, 10</div>', chon: ['5', '8', '3'], dung: '8', noi: 'Sáu, bảy, mấy, chín, mười. Số nào còn thiếu?', khen: '6, 7, 8, 9, 10.' },
+  { hoi: 'Quả nào nhiều hơn?', tranh: `<div class="tranh">${nhom('🍎', 4)}${nhom('🍐', 6)}</div>`, chon: ['🍎 Táo', '🍐 Lê'], dung: '🍐 Lê', noi: 'Táo và lê, quả nào nhiều hơn?', khen: 'Lê nhiều hơn táo.' }
+];
+const BAI_MOI = 'Bài 7: Hình vuông, hình tròn, hình tam giác, hình chữ nhật';
+// ==============================================================
+
+const $ = id => document.getElementById(id);
+const lay = m => m[Math.floor(Math.random() * m.length)];
+const KHEN = ['Giỏi quá!', 'Đúng rồi!', 'Hoan hô!', 'Tuyệt vời!'];
+let daMo = new Set(), amThanh = null;
+
+// ngôi nhà ghép từ hình phẳng, giống tranh hoạt động 3 trong sách
+const NHA = [
+  ['tamgiac', '<polygon points="40,140 100,50 160,140"/>', '#f7c600'], ['tamgiac', '<polygon points="100,50 220,50 160,140"/>', '#e8590c'],
+  ['tamgiac', '<polygon points="160,140 220,50 280,140"/>', '#f7c600'], ['tamgiac', '<polygon points="220,50 340,50 280,140"/>', '#e8590c'],
+  ['tamgiac', '<polygon points="280,140 340,50 400,140"/>', '#f7c600'],
+  ['vuong', '<rect x="60" y="140" width="110" height="110"/>', '#4dabf7'], ['chunhat', '<rect x="170" y="140" width="100" height="110"/>', '#82c91e'],
+  ['vuong', '<rect x="270" y="140" width="110" height="110"/>', '#4dabf7'],
+  ['tron', '<circle cx="115" cy="195" r="28"/>', '#ffd43b'], ['tron', '<circle cx="325" cy="195" r="28"/>', '#ffd43b'],
+  ['tron', '<circle cx="420" cy="34" r="26"/>', '#ff922b']
+];
+const TEN = { tamgiac: 'Hình tam giác', vuong: 'Hình vuông', tron: 'Hình tròn', chunhat: 'Hình chữ nhật' };
+const MAU_MAU = { vuong: '#fab005', tron: '#1c7ed6', chunhat: '#82c91e', tamgiac: '#e03131' };
+const MAU_HINH = { vuong: '<rect x="8" y="8" width="84" height="84"/>', tron: '<circle cx="50" cy="50" r="44"/>', tamgiac: '<polygon points="50,6 96,92 4,92"/>', chunhat: '<rect x="2" y="25" width="96" height="50"/>' };
+const veMau = k => `<svg viewBox="0 0 100 100">${MAU_HINH[k].replace(/\/>$/, ` fill="${MAU_MAU[k]}" stroke="#12304a" stroke-width="4" stroke-linejoin="round"/>`)}</svg>`;
+
+function veNha() {
+  $('hinh-nha').innerHTML = '<rect x="0" y="250" width="460" height="10" rx="5" fill="#5c940d"/>' +
+    NHA.map(([k, el, mau]) => el.replace(/^<(\w+)/, `<$1 class="hinh" data-k="${k}" fill="${mau}" stroke="#12304a" stroke-width="3" stroke-linejoin="round"`)).join('');
+  // 5 tấm ván dọc che kín ngôi nhà
+  $('cac-van').innerHTML = CAU.map((c, i) => {
+    const x = 30 + i * 80;
+    return `<g class="van" data-i="${i}" role="button" aria-label="Tấm ván ${i + 1}">
+      <rect class="ván" x="${x}" y="20" width="80" height="235" rx="6" fill="${i % 2 ? '#c8873d' : '#b5732f'}" stroke="#6b3e1f" stroke-width="3"/>
+      <path d="M${x + 10} 70 H${x + 70} M${x + 10} 200 H${x + 70}" stroke="#8a5221" stroke-width="3"/>
+      <circle cx="${x + 15}" cy="40" r="4" fill="#495057"/><circle cx="${x + 65}" cy="40" r="4" fill="#495057"/>
+      <circle cx="${x + 40}" cy="135" r="28" fill="#fff8e7" stroke="#6b3e1f" stroke-width="3"/>
+      <text x="${x + 40}" y="149" text-anchor="middle" font-size="40" font-weight="800" fill="#a0561a" font-family="Baloo 2, Segoe UI, sans-serif">${i + 1}</text></g>`;
+  }).join('');
+  document.querySelectorAll('.van').forEach(v => v.addEventListener('click', () => moCau(+v.dataset.i)));
+}
+
+// ---------- âm thanh, giọng đọc (chỉ đọc khi bấm nút loa) ----------
+let giongViet = null, choDoc = false;
+function timGiong() {
+  if (!window.speechSynthesis) return;
+  const ds = speechSynthesis.getVoices().filter(v => /^vi/i.test(v.lang));
+  giongViet = ds.find(v => /natural|online|hoaimy/i.test(v.name)) || ds[0] || null;
+}
+if (window.speechSynthesis) { timGiong(); speechSynthesis.onvoiceschanged = timGiong; }
+document.addEventListener('click', e => { if (e.target.closest('.nut-nghe, #nut-loa, #nghe, #nut-nghe')) { choDoc = true; setTimeout(() => choDoc = false, 0); } }, true);
+function doc(chu) {
+  if (!window.speechSynthesis || !giongViet) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(chu); u.voice = giongViet; u.lang = giongViet.lang; u.rate = 0.9; speechSynthesis.speak(u);
+}
+function keu(ds) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    if (amThanh.state === 'suspended') amThanh.resume();
+    ds.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + 0.02 + i * 0.12;
+      o.frequency.value = f; o.type = 'triangle';
+      g.gain.setValueAtTime(0.6, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      o.connect(g); g.connect(amThanh.destination); o.start(t); o.stop(t + 0.26);
+    });
+  } catch (e) {}
+}
+
+// ---------- câu hỏi trên tấm ván ----------
+function moCau(i) {
+  if (daMo.has(i)) return;
+  const c = CAU[i];
+  $('the').innerHTML = `<div class="so-van">Tấm ván số ${i + 1}</div><h2></h2>${c.tranh}<div class="chon"></div><div class="bao"></div>
+    <div class="hang-nut"><button class="nut-phu" id="nut-loa">🔊 Nghe</button><button class="nut-phu" id="nut-dong">Chọn ván khác</button></div>`;
+  $('the').querySelector('h2').textContent = c.hoi;
+  const hang = $('the').querySelector('.chon'), bao = $('the').querySelector('.bao');
+  c.chon.forEach(v => {
+    const b = document.createElement('button'); b.textContent = v;
+    b.onclick = () => {
+      if (v === c.dung) {
+        b.classList.add('dung'); bao.className = 'bao dung'; bao.textContent = `${lay(KHEN)} ${c.khen}`;
+        hang.querySelectorAll('button').forEach(x => x.disabled = true);
+        keu([523, 659, 784, 1047]);
+        setTimeout(() => { $('phu').hidden = true; goVan(i); }, 1300);
+      } else { b.classList.add('sai'); b.disabled = true; bao.className = 'bao sai'; bao.textContent = 'Chưa đúng, bạn thử lại nhé!'; keu([220, 196]); }
+    };
+    hang.appendChild(b);
+  });
+  $('nut-loa').onclick = () => {
+    if (!giongViet) timGiong();
+    if (!giongViet) { alert('Máy này chưa có giọng đọc tiếng Việt. Thầy cô thử mở bằng Microsoft Edge nhé.'); return; }
+    doc(c.noi || c.hoi);
+  };
+  $('nut-dong').onclick = () => { $('phu').hidden = true; };
+  $('phu').hidden = false;
+}
+function goVan(i) {
+  daMo.add(i);
+  document.querySelector(`.van[data-i="${i}"]`).classList.add('mo');
+  $('sao').textContent = '⭐'.repeat(daMo.size);
+  const con = CAU.length - daMo.size;
+  $('loi').textContent = con ? `Gỡ được ${daMo.size} tấm ván rồi! Còn ${con} tấm nữa.` : 'Ngôi nhà hiện ra rồi! Ngôi nhà được ghép từ những gì nhỉ?';
+  if (!con) setTimeout(() => { $('nut-soi').hidden = false; keu([523, 659, 784, 1047, 1319]); }, 900);
+}
+
+// ---------- soi từng loại hình, rồi giới thiệu bài mới ----------
+const THU_TU = ['tamgiac', 'vuong', 'tron', 'chunhat'];
+let buoc = -1;
+$('nut-soi').onclick = () => { $('nut-soi').hidden = true; buoc = -1; soiTiep(); };
+function soiTiep() {
+  buoc++;
+  const nha = $('nha');
+  if (buoc < THU_TU.length) {
+    const k = THU_TU[buoc], ds = nha.querySelectorAll('.hinh');
+    nha.classList.add('soi');
+    ds.forEach(h => h.classList.toggle('sang', h.dataset.k === k));
+    const n = [...ds].filter(h => h.dataset.k === k).length;
+    $('nhan').hidden = false; $('nhan').style.borderColor = MAU_MAU[k]; $('nhan').textContent = TEN[k];
+    $('loi').textContent = `Có ${n} ${TEN[k].toLowerCase()}. Bấm vào ngôi nhà để xem tiếp.`;
+    keu([600 + buoc * 120, 800 + buoc * 120]);
+  } else {
+    nha.classList.remove('soi'); $('nhan').hidden = true;
+    $('the').innerHTML = `<div class="bai-moi">Bài học hôm nay</div><h2>${BAI_MOI}</h2>
+      <div class="bon-hinh">${['vuong', 'tron', 'tamgiac', 'chunhat'].map((k, i) => `<div style="animation-delay:${i * 0.3}s">${veMau(k)}<span>${TEN[k]}</span></div>`).join('')}</div>
+      <div class="hang-nut"><button class="nut-phu" id="nut-lai">Chơi lại</button></div>`;
+    $('nut-lai').onclick = () => { $('phu').hidden = true; batDau(); };
+    $('phu').hidden = false;
+    phaoGiay(); keu([392, 523, 659, 784, 1047, 1319]);
+  }
+}
+$('canh').addEventListener('click', e => { if (buoc >= 0 && buoc < THU_TU.length && !e.target.closest('button')) soiTiep(); });
+
+function phaoGiay() {
+  const p = $('phao'); p.textContent = '';
+  const MAU = ['#e03131', '#1c7ed6', '#2f9e44', '#f08c00', '#ae3ec9', '#ffe066'];
+  for (let i = 0; i < 70; i++) {
+    const g = document.createElement('i');
+    g.style.left = Math.random() * 100 + 'vw'; g.style.background = lay(MAU);
+    g.style.animationDuration = (2.5 + Math.random() * 2.5) + 's'; g.style.animationDelay = Math.random() * 1.2 + 's';
+    p.appendChild(g);
+  }
+  setTimeout(() => { p.textContent = ''; }, 7000);
+}
+function batDau() {
+  daMo = new Set(); buoc = -1; $('sao').textContent = '';
+  $('nut-soi').hidden = true; $('nhan').hidden = true; $('nha').classList.remove('soi');
+  $('loi').textContent = 'Ngôi nhà đang bị che! Chọn một tấm ván, trả lời đúng để gỡ ván ra nhé.';
+  veNha();
+}
+batDau();
+</script>
+</body>
+</html>

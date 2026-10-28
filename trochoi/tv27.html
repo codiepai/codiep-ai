@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trò chơi luyện tập</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* KHUÔN TRÒ CHƠI LUYỆN TẬP TIẾNG VIỆT 1 (dùng chung cho nhiều bài).
+     Nội dung từng bài nằm ở khối DU_LIEU cuối file (do tao-tro-luyen-tap.ps1 chèn vào).
+     Chặng 1: lật thẻ đọc tiếng hoặc bảng ghép. Chặng 2: vật bay tha chữ, chạm đúng chữ cô yêu cầu.
+     Chặng 3: đọc đoạn rồi trả lời, hoặc điền chữ.
+     Mở file trên máy ở lớp = cả lớp chơi trên tivi; mở bằng link web = con tự chơi ở nhà, gửi kết quả. */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --chu: #12304a; --xanh: #0b5cab; --do: #e03131; --la: #2f9e44; --la-dam: #1e6b2e;
+    --cam: #f08c00; --cam-dam: #b86200; --tim: #ae3ec9;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  @media (max-aspect-ratio: 1/1) { :root { --u: min(0.62vh, 0.95vw); } }
+  /* màn hình rộng: ô và thẻ rộng ra cho đỡ trống hai bên */
+  :root { --kx: 1; --ky: 1; }
+  @media (min-aspect-ratio: 16/9) { :root { --kx: 1.5; --ky: .68; } }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu);
+    background: linear-gradient(#ffffff 0%, #dff1fb 30%, #8fd0f2 75%, #5bb8ea 100%);
+    display: flex; flex-direction: column; overflow: hidden;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  body.cd-ca { background: linear-gradient(#e7f5ff 0%, #a5d8ff 25%, #4dabf7 70%, #1c7ed6 100%); }
+  body.cd-xe { background: linear-gradient(#ffffff 0%, #d0ebff 40%, #c3fae8 70%, #8ce99a 100%); }
+  body.cd-buom { background: linear-gradient(#fff9db 0%, #e6fcf5 40%, #b2f2bb 85%, #8ce99a 100%); }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 5px solid var(--xanh); outline-offset: 4px; }
+
+  header { display: flex; align-items: center; gap: calc(var(--u) * 2); padding: calc(var(--u) * 1.2) 16px; flex-wrap: wrap; justify-content: center; }
+  h1 { font-size: max(24px, calc(var(--u) * 5.5)); line-height: 1; color: var(--do); text-shadow: 0 3px 0 #fff; white-space: nowrap; }
+  .chang { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chang button { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 16px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+  .chang button.dang { background: var(--xanh); color: #fff; }
+  .chang button.xong::after { content: " ✓"; color: var(--la); }
+  .chang button.dang.xong::after { color: #b2f2bb; }
+  .chang button:disabled { cursor: default; }
+
+  main { flex: 1; min-height: 0; position: relative; }
+  .man-chang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 0 16px calc(var(--u) * 2); gap: calc(var(--u) * 1.6); overflow-y: auto; }
+  #c2 { overflow: hidden; }
+  .huong-dan { font-size: max(18px, calc(var(--u) * 3.6)); color: var(--xanh); text-align: center; background: rgba(255,255,255,.85); border-radius: 20px; padding: 2px 20px; }
+  .hang-nut { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: auto; }
+  .nut-lon { font-size: max(22px, calc(var(--u) * 4.6)); padding: calc(var(--u) * .3) calc(var(--u) * 5); color: #fff; background: var(--la); border: none; border-radius: calc(var(--u) * 3); box-shadow: 0 7px 0 var(--la-dam); }
+  .nut-lon:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--la-dam); }
+  .nut-lon.cam { background: var(--cam); box-shadow: 0 7px 0 var(--cam-dam); }
+  .nut-nho { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 18px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+
+  /* ===== Chặng 1 ===== */
+  .khu1 { display: flex; gap: calc(var(--u) * 4); flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  table { border-collapse: separate; border-spacing: calc(var(--u) * .7); }
+  th, td { width: calc(var(--u) * 15 * var(--kx)); height: calc(var(--u) * 9.5 * var(--ky)); border-radius: calc(var(--u) * 1.4); text-align: center; font-size: max(26px, calc(var(--u) * 6 * var(--ky))); line-height: 1; }
+  th { background: #ffe066; color: var(--chu); }
+  th.trong { background: none; }
+  th.sang { background: #ff922b; color: #fff; }
+  td { padding: 0; }
+  td button { width: 100%; height: 100%; border: none; border-radius: inherit; font-size: inherit; }
+  .o-lat { background: #fff3bf; color: #c9a227; box-shadow: inset 0 -5px 0 #f2d16b; }
+  .o-lat.mo { background: #fff; box-shadow: inset 0 0 0 4px #ffe066; color: var(--chu); animation: lat .35s; }
+  .o-lat .dau, .o-lat .do { color: var(--do); }
+  .o-lat .van { color: var(--xanh); }
+  @keyframes lat { from { transform: rotateY(90deg); } to { transform: rotateY(0); } }
+  .nhom { display: flex; align-items: center; gap: calc(var(--u) * 1.4); flex-wrap: wrap; justify-content: center; background: rgba(255,255,255,.55); border-radius: calc(var(--u) * 2.5); padding: calc(var(--u) * 1) calc(var(--u) * 2); }
+  .nhom .chip { font-size: max(26px, calc(var(--u) * 6.5)); color: #fff; background: var(--do); border-radius: calc(var(--u) * 2); padding: 0 calc(var(--u) * 2.4); line-height: 1.3; }
+  .nhom .o-lat { width: calc(var(--u) * 15 * var(--kx)); height: calc(var(--u) * 10); border-radius: calc(var(--u) * 1.6); border: none; font-size: max(26px, calc(var(--u) * 6)); }
+  .khu1.nho-the .nhom .o-lat { width: calc(var(--u) * 11.5 * var(--kx)); height: calc(var(--u) * 8.5); font-size: max(22px, calc(var(--u) * 5)); }
+  .khu1.nho-the .nhom .chip { font-size: max(22px, calc(var(--u) * 5)); }
+  .khu1.nho-the { gap: calc(var(--u) * 1.6); }
+
+  /* ===== Chặng 2 ===== */
+  #troi { position: absolute; inset: 0; overflow: hidden; }
+  .yeu-cau { position: relative; z-index: 3; display: flex; align-items: center; gap: calc(var(--u) * 2); background: #fff; border: 6px solid var(--cam); border-radius: calc(var(--u) * 3); padding: calc(var(--u) * .5) calc(var(--u) * 3); box-shadow: 0 6px 0 rgba(0,0,0,.12); flex-wrap: wrap; justify-content: center; text-align: center; }
+  .yeu-cau .nhan { font-size: max(18px, calc(var(--u) * 3.6)); color: var(--xanh); }
+  .yeu-cau .tu-tim { font-size: max(34px, calc(var(--u) * 8)); color: var(--do); line-height: 1.05; }
+  .yeu-cau .con { font-size: max(16px, calc(var(--u) * 3)); color: #fff; background: var(--cam); border-radius: 30px; padding: 0 14px; }
+  .vat { position: absolute; left: 0; top: 0; cursor: pointer; z-index: 2; will-change: transform; }
+  .vat svg { width: 100%; height: auto; display: block; overflow: visible; filter: drop-shadow(0 6px 4px rgba(0,0,0,.18)); }
+  .vat text { font-family: var(--font); font-weight: 800; }
+  .canh-y { transform-box: fill-box; transform-origin: 50% 100%; animation: voY .7s ease-in-out infinite alternate; }
+  @keyframes voY { from { transform: scaleY(1); } to { transform: scaleY(-.55); } }
+  .canh-x { transform-box: fill-box; transform-origin: 50% 50%; animation: voX .35s ease-in-out infinite alternate; }
+  @keyframes voX { from { transform: scaleX(1); } to { transform: scaleX(.35); } }
+  .canh-tr { transform-box: fill-box; transform-origin: 100% 100%; animation: voR .45s ease-in-out infinite alternate; }
+  .canh-ph { transform-box: fill-box; transform-origin: 0% 100%; animation: voL .45s ease-in-out infinite alternate; }
+  @keyframes voR { from { transform: rotate(0); } to { transform: rotate(-28deg); } }
+  @keyframes voL { from { transform: rotate(0); } to { transform: rotate(28deg); } }
+  .duoi-ca { transform-box: fill-box; transform-origin: 100% 50%; animation: quay .5s ease-in-out infinite alternate; }
+  @keyframes quay { from { transform: skewY(-12deg); } to { transform: skewY(12deg); } }
+  .banh { transform-box: fill-box; transform-origin: 50% 50%; animation: lan 1s linear infinite; }
+  @keyframes lan { to { transform: rotate(360deg); } }
+  .dung-bay .vat *, .dung-bay .vat { animation-play-state: paused !important; }
+  .vat.lac svg { animation: lac .45s; }
+  @keyframes lac { 20% { transform: translateX(-14px) rotate(-6deg); } 60% { transform: translateX(14px) rotate(6deg); } }
+  .dem-sao { position: absolute; right: 16px; bottom: calc(var(--u) * 1.5); z-index: 3; background: #fff; border: 5px solid var(--cam); border-radius: 30px; padding: 2px 18px; font-size: max(20px, calc(var(--u) * 4.4)); display: flex; align-items: center; gap: 8px; }
+  .dem-sao .e { font-family: var(--emoji); }
+  .nut-dung { position: absolute; left: 16px; bottom: calc(var(--u) * 1.5); z-index: 3; }
+
+  /* ===== Chặng 3 ===== */
+  .doan { background: #fff9c4; border: 6px solid #ffe066; border-radius: calc(var(--u) * 3); padding: calc(var(--u) * 2) calc(var(--u) * 4); font-size: max(28px, calc(var(--u) * 6.6)); line-height: 1.35; max-width: 1250px; text-wrap: pretty; }
+  .hoi { font-size: max(26px, calc(var(--u) * 6)); text-align: center; color: var(--xanh); background: rgba(255,255,255,.85); border-radius: 20px; padding: 0 20px; text-wrap: balance; }
+  .tu-dien { font-size: max(52px, calc(var(--u) * 14)); line-height: 1.15; white-space: pre; background: rgba(255,255,255,.85); border-radius: 24px; padding: 0 24px; }
+  .tu-dien .o { display: inline-block; min-width: 1.1em; border: 6px dashed var(--do); border-radius: 18px; color: var(--do); padding: 0 .12em; text-align: center; }
+  .tu-dien .o.xong { border-style: solid; border-color: var(--la); color: var(--la); background: #d3f9d8; }
+  .qua { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 3); }
+  .qua button { min-width: max(110px, calc(var(--u) * 22 * var(--kx))); padding: calc(var(--u) * 1.2) calc(var(--u) * 3); font-size: max(34px, calc(var(--u) * 8.5)); line-height: 1.05; color: #fff; background: var(--cam); border: none; border-radius: calc(var(--u) * 3); box-shadow: 0 8px 0 var(--cam-dam); }
+  .qua button:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--cam-dam); }
+  .qua button.dung { background: var(--la); box-shadow: 0 8px 0 var(--la-dam); }
+  .qua button.sai { background: #b9c2cc; box-shadow: 0 8px 0 #8a949e; animation: lac .4s; }
+  .loi { min-height: 1.3em; font-size: max(22px, calc(var(--u) * 5)); text-align: center; }
+  .loi.sai { color: #e8590c; } .loi.dung { color: var(--la); }
+  #buoc-hoi { display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2); }
+
+  /* thẻ to giữa màn hình */
+  .phu { position: fixed; inset: 0; background: rgba(18,48,74,.78); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 8; }
+  .the { width: min(100%, 1000px); min-width: min(94vw, calc(var(--u) * 80)); max-height: 100%; overflow-y: auto; background: #fff; border-radius: calc(var(--u) * 4); border: 8px solid var(--mau, var(--cam)); padding: calc(var(--u) * 3) calc(var(--u) * 4); display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2.5); text-align: center; animation: bung .45s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes bung { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .the .nhan { font-size: max(20px, calc(var(--u) * 4.4)); color: var(--xanh); }
+  .the .tu-to { font-size: max(64px, calc(var(--u) * 18)); line-height: 1.05; color: var(--do); }
+  .the .ket { font-size: max(36px, calc(var(--u) * 9)); color: var(--do); line-height: 1.1; }
+  .the .sao { font-family: var(--emoji); font-size: max(50px, calc(var(--u) * 13)); }
+  .thuong-hieu { font-size: max(15px, calc(var(--u) * 2.6)); color: #fff; background: var(--tim); border-radius: 30px; padding: 2px 16px; }
+  #ten-hs { font-family: inherit; font-weight: 800; font-size: max(22px, calc(var(--u) * 5)); text-align: center; width: min(100%, 520px); padding: 6px 14px; border: 4px solid #74c0fc; border-radius: 20px; color: var(--chu); }
+  .phieu { text-align: left; font-size: max(17px, calc(var(--u) * 3.4)); line-height: 1.45; background: #f8f9fa; border-radius: 16px; padding: 10px 20px; width: min(100%, 700px); }
+  .phieu b { color: var(--xanh); }
+  .nho { font-size: max(15px, calc(var(--u) * 3)); color: #6b7280; }
+
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9; }
+  #phao i { position: absolute; top: -20px; width: 14px; height: 20px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  @media (prefers-reduced-motion: reduce) { .the { animation: none; } #phao { display: none; } .vat * { animation: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="ten-tro"></h1>
+  <div class="chang" id="chang">
+    <button data-c="1"></button>
+    <button data-c="2"></button>
+    <button data-c="3"></button>
+  </div>
+</header>
+
+<main>
+  <section class="man-chang" id="c1">
+    <div class="huong-dan" id="hd1"></div>
+    <div class="khu1" id="khu1"></div>
+    <div class="hang-nut">
+      <button class="nut-nho" id="mo-het">Mở hết</button>
+      <button class="nut-lon" id="sang2">Sang chặng 2 ➜</button>
+    </div>
+  </section>
+
+  <section class="man-chang" id="c2" hidden>
+    <div id="troi"></div>
+    <div class="yeu-cau"><span class="nhan" id="nhan-tim"></span><span class="tu-tim" id="tu-tim"></span><span class="con" id="con-lai" hidden></span></div>
+    <button class="nut-nho nut-dung" id="nut-dung">⏸ Dừng lại</button>
+    <div class="dem-sao"><span class="e">⭐</span><span id="dem"></span></div>
+  </section>
+
+  <section class="man-chang" id="c3" hidden>
+    <div class="doan" id="doan" hidden></div>
+    <div id="buoc-doc" hidden><button class="nut-lon" id="doc-xong"></button></div>
+    <div id="buoc-hoi" hidden>
+      <div class="hoi" id="hoi"></div>
+      <div class="tu-dien" id="tu-dien" hidden></div>
+      <div class="qua" id="qua"></div>
+      <div class="loi" id="loi3"></div>
+    </div>
+  </section>
+</main>
+
+<div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
+
+<div class="phu" id="mo-dau" hidden>
+  <div class="the" style="--mau:#1c7ed6">
+    <div class="thuong-hieu">Cô Điệp AI</div>
+    <div class="ket" id="md-ten"></div>
+    <div class="nhan" id="md-bai"></div>
+    <label class="nhan" for="ten-hs">Con tên là gì?</label>
+    <input id="ten-hs" type="text" maxlength="40" autocomplete="off" placeholder="Họ và tên">
+    <button class="nut-lon" id="nut-bat-dau">Bắt đầu!</button>
+  </div>
+</div>
+<div id="phao"></div>
+
+<script>
+// ====== NỘI DUNG BÀI (tao-tro-luyen-tap.ps1 thay dòng dưới bằng dữ liệu trong du-lieu-luyen-tap.txt) ======
+const D = {
+  ten: 'Đoàn xe chở chữ', bai: 'Bài 27: V v, X x', tenBai: 'Đoàn xe chở chữ: Bài 27 Tiếng Việt',
+  to: 'v|x',
+  chang1: { ten: 'Đọc tiếng', kieu: 'the', nhom: [
+    { dau: 'v', the: ['vẽ', 'võ', 'vở', 'vua'] },
+    { dau: 'x', the: ['xe', 'xỉa', 'xứ', 'xưa'] } ] },
+  chang2: { ten: 'Đón xe chữ', chude: 'xe', nhan: 'Chạm chiếc xe chở chữ:', dot: [
+    { tu: ['vở vẽ', 'vỉa hè', 'xe lu', 'thị xã', 'xứ sở', 'về quê', 'vẽ xe'] } ] },
+  chang3: { ten: 'Đọc câu', doan: 'Nghỉ hè, bố mẹ cho Hà về quê. Quê Hà là xứ sở của dừa.', hoi: [
+    { hoi: 'Nghỉ hè, Hà đi đâu?', dung: ['về quê'], chon: ['ra phố', 'về quê', 'đi chợ'] },
+    { hoi: 'Ai cho Hà về quê?', dung: ['bố mẹ'], chon: ['bà', 'bố mẹ', 'dì'] },
+    { hoi: 'Quê Hà là xứ sở của gì?', dung: ['dừa'], chon: ['mía', 'dừa', 'khế'] } ] }
+};
+// ==========================================================================================================
+
+const O_NHA = location.protocol !== 'file:' || new URLSearchParams(location.search).has('nha');
+const L = O_NHA
+  ? { hd1: 'Con chạm vào từng ô, đọc to tiếng hiện ra nhé!', docTo: 'Đúng rồi! Con đọc to nào:', docXong: 'Con đọc xong rồi ✓', hoanHo: 'Con giỏi quá!', xongChang2: 'Con làm xong chặng 2 rồi!', luotMoi: 'Giỏi quá! Sang lượt mới nhé!' }
+  : { hd1: 'Bạn chạm vào một ô, cả lớp đọc to tiếng hiện ra nhé!', docTo: 'Đúng rồi! Cả lớp đọc to nào:', docXong: 'Cả lớp đọc đúng rồi ✓', hoanHo: 'Hoan hô cả lớp!', xongChang2: 'Cả lớp xong chặng 2 rồi!', luotMoi: 'Giỏi quá! Sang lượt mới nhé!' };
+const MAU = ['#e03131', '#1c7ed6', '#2f9e44', '#f08c00', '#ae3ec9', '#0ca678', '#f06595', '#fab005'];
+const PASTEL = [['#b2dfa0', '#6aa84f'], ['#d0bfff', '#8c6fd1'], ['#ffc9c9', '#e8737a'], ['#ffd8a8', '#f59f50'], ['#c5d8ff', '#7d9de0'], ['#fff3a3', '#e0b400']];
+const $ = id => document.getElementById(id);
+let ten = '', chang = 1, xongChang = {}, amThanh = null;
+
+function keu(ds, kieu = 'triangle', cach = 0.12) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    ds.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + i * cach;
+      o.frequency.value = f; o.type = kieu;
+      g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      o.connect(g); g.connect(amThanh.destination); o.start(t); o.stop(t + 0.22);
+    });
+  } catch (e) {}
+}
+const vui = () => keu([523, 659, 784]);
+const tiec = () => keu([220, 196]);
+function phaoGiay(n) {
+  const p = $('phao'); p.textContent = '';
+  for (let i = 0; i < n; i++) {
+    const g = document.createElement('i');
+    g.style.left = Math.random() * 100 + 'vw'; g.style.background = MAU[i % MAU.length];
+    g.style.animationDuration = (2.2 + Math.random() * 2.5) + 's'; g.style.animationDelay = Math.random() + 's';
+    p.appendChild(g);
+  }
+  setTimeout(() => { p.textContent = ''; }, 6500);
+}
+const tron = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function moThe(html, mau) { $('the').style.setProperty('--mau', mau || '#f08c00'); $('the').innerHTML = html; $('phu').hidden = false; }
+function dongThe() { $('phu').hidden = true; }
+function toDo(w) { return D.to ? w.replace(new RegExp(D.to), m => `<span class="do">${m}</span>`) : w; }
+
+function denChang(n) {
+  chang = n;
+  [1, 2, 3].forEach(i => { $('c' + i).hidden = i !== n; });
+  danhDauChang();
+  if (n === 2) batDauBay(); else dungHet();
+  if (n === 3) batDauChang3();
+}
+function danhDauChang() {
+  document.querySelectorAll('#chang button').forEach(b => {
+    b.classList.toggle('dang', +b.dataset.c === chang);
+    b.classList.toggle('xong', !!xongChang[b.dataset.c]);
+  });
+}
+document.querySelectorAll('#chang button').forEach(b => b.onclick = () => denChang(+b.dataset.c));
+
+// ===================== Chặng 1 =====================
+function veChang1() {
+  const k = $('khu1'), c = D.chang1;
+  k.textContent = '';
+  if (c.kieu === 'bang') {
+    c.bang.forEach((b, bi) => {
+      const t = document.createElement('table');
+      let h = '<tr><th class="trong"></th>' + b.van.map((v, j) => `<th data-cot="${bi}-${j}">${v}</th>`).join('') + '</tr>';
+      b.dau.forEach((d, r) => {
+        h += `<tr><th data-hang="${bi}-${r}">${d}</th>` + b.van.map((v, j) =>
+          `<td><button class="o-lat" data-hien="<span class=&quot;dau&quot;>${d}</span><span class=&quot;van&quot;>${v}</span>" data-hang="${bi}-${r}" data-cot="${bi}-${j}" aria-label="ô ${d} ${v}">?</button></td>`).join('') + '</tr>';
+      });
+      t.innerHTML = h; k.appendChild(t);
+    });
+  } else {
+    const tong = c.nhom.reduce((s, n) => s + n.the.length, 0);
+    k.classList.toggle('nho-the', tong > 12);
+    c.nhom.forEach(n => {
+      const d = document.createElement('div'); d.className = 'nhom';
+      d.innerHTML = `<span class="chip">${n.dau}</span>` + n.the.map(w =>
+        `<button class="o-lat" data-hien="${toDo(w).replace(/"/g, '&quot;')}" aria-label="thẻ chữ">?</button>`).join('');
+      k.appendChild(d);
+    });
+  }
+  k.querySelectorAll('.o-lat').forEach(b => b.onclick = () => moO(b, true));
+}
+function moO(b, coTieng) {
+  document.querySelectorAll('th.sang').forEach(x => x.classList.remove('sang'));
+  if (b.dataset.hang) {
+    document.querySelector(`th[data-hang="${b.dataset.hang}"]`).classList.add('sang');
+    document.querySelector(`th[data-cot="${b.dataset.cot}"]`).classList.add('sang');
+  }
+  if (!b.classList.contains('mo')) {
+    b.classList.add('mo'); b.innerHTML = b.dataset.hien;
+    if (coTieng) keu([660, 880], 'sine', 0.08);
+  }
+  if ([...document.querySelectorAll('#khu1 .o-lat')].every(x => x.classList.contains('mo'))) { xongChang[1] = true; danhDauChang(); }
+}
+$('mo-het').onclick = () => document.querySelectorAll('#khu1 .o-lat').forEach(b => moO(b, false));
+$('sang2').onclick = () => { xongChang[1] = true; denChang(2); };
+
+// ===================== Chặng 2: vật bay tha chữ =====================
+// Mỗi chủ đề: hình SVG (chữ nằm trên vật), cỡ (theo --u), hướng bay ('ngang' hoặc 'len').
+function chuSVG(tu, cx, y1, y2, co, mau = '#e03131') {
+  const dong = tu.split(' ');
+  if (dong.length > 1) return `<text x="${cx}" y="${y1}" font-size="${co}" text-anchor="middle" fill="${mau}">${dong[0]}</text><text x="${cx}" y="${y2}" font-size="${co}" text-anchor="middle" fill="${mau}">${dong.slice(1).join(' ')}</text>`;
+  return `<text x="${cx}" y="${(y1 + y2) / 2 + 4}" font-size="${co + 4}" text-anchor="middle" fill="${mau}">${tu}</text>`;
+}
+const CHU_DE = {
+  co: { co: 34, huong: 'ngang', ve: (tu, [nen, vien]) => `<svg viewBox="0 0 256 210">
+    <line x1="40" y1="62" x2="2" y2="70" stroke="#f08c00" stroke-width="4" stroke-linecap="round"/><line x1="44" y1="64" x2="6" y2="76" stroke="#f08c00" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 50 L18 44 L22 56 Z" fill="#222"/><ellipse cx="88" cy="56" rx="50" ry="17" fill="#fff" stroke="#6b7280" stroke-width="3"/>
+    <path d="M130 50 Q150 30 168 30" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="170" cy="30" r="10" fill="#fff" stroke="#6b7280" stroke-width="3"/><circle cx="173" cy="27" r="2.4" fill="#222"/>
+    <path d="M178 27 L206 36 L178 34 Z" fill="#f08c00" stroke="#c96d00" stroke-width="1.5"/>
+    <g class="canh-y"><path d="M70 50 Q60 10 30 -2 Q90 4 112 48 Z" fill="#fff" stroke="#6b7280" stroke-width="3"/><path d="M30 -2 Q48 6 56 20 L44 24 Q38 10 30 -2 Z" fill="#222"/></g>
+    <line x1="200" y1="36" x2="190" y2="74" stroke="#8d6e63" stroke-width="3"/>
+    <path d="M186 72 C176 70 172 80 178 84 C124 114 122 200 186 204 C250 200 248 114 194 84 C200 80 196 70 186 72 Z" fill="${nen}" stroke="${vien}" stroke-width="4"/>
+    ${chuSVG(tu, 186, 140, 178, 31)}</svg>` },
+  bong: { co: 24, huong: 'len', ve: (tu, [nen, vien]) => `<svg viewBox="0 0 150 250">
+    <path d="M75 168 Q62 190 80 208 Q96 226 74 248" fill="none" stroke="#868e96" stroke-width="3"/>
+    <ellipse cx="75" cy="84" rx="70" ry="80" fill="${nen}" stroke="${vien}" stroke-width="4"/>
+    <ellipse cx="46" cy="44" rx="13" ry="22" fill="#fff" opacity=".55" transform="rotate(25 46 44)"/>
+    <path d="M66 162 L84 162 L80 172 L70 172 Z" fill="${vien}"/>
+    ${chuSVG(tu, 75, 76, 114, 31)}</svg>` },
+  xe: { co: 40, huong: 'ngang', ve: (tu, [nen, vien]) => `<svg viewBox="0 0 270 160">
+    <rect x="160" y="14" width="86" height="58" rx="14" fill="${vien}"/><rect x="172" y="24" width="62" height="34" rx="8" fill="#d0ebff"/>
+    <rect x="8" y="50" width="252" height="74" rx="18" fill="${nen}" stroke="${vien}" stroke-width="4"/>
+    <circle cx="256" cy="96" r="7" fill="#ffd43b" stroke="#e0a800" stroke-width="2"/>
+    <g class="banh"><circle cx="62" cy="128" r="24" fill="#343a40"/><circle cx="62" cy="128" r="9" fill="#adb5bd"/><rect x="59" y="106" width="6" height="12" fill="#adb5bd"/></g>
+    <g class="banh"><circle cx="206" cy="128" r="24" fill="#343a40"/><circle cx="206" cy="128" r="9" fill="#adb5bd"/><rect x="203" y="106" width="6" height="12" fill="#adb5bd"/></g>
+    <text x="88" y="102" font-size="40" text-anchor="middle" fill="#e03131">${tu}</text></svg>` },
+  buom: { co: 32, huong: 'ngang', ve: (tu, [nen, vien]) => `<svg viewBox="0 0 220 220">
+    <g class="canh-x"><ellipse cx="72" cy="40" rx="44" ry="34" fill="${nen}" stroke="${vien}" stroke-width="4"/><ellipse cx="148" cy="40" rx="44" ry="34" fill="${nen}" stroke="${vien}" stroke-width="4"/>
+      <ellipse cx="82" cy="86" rx="30" ry="24" fill="${vien}" opacity=".85"/><ellipse cx="138" cy="86" rx="30" ry="24" fill="${vien}" opacity=".85"/>
+      <circle cx="68" cy="38" r="10" fill="#fff" opacity=".7"/><circle cx="152" cy="38" r="10" fill="#fff" opacity=".7"/></g>
+    <rect x="102" y="20" width="16" height="86" rx="8" fill="#5c3d2e"/>
+    <path d="M106 22 Q96 2 86 0 M114 22 Q124 2 134 0" fill="none" stroke="#5c3d2e" stroke-width="3"/>
+    <line x1="110" y1="106" x2="110" y2="122" stroke="#8d6e63" stroke-width="3"/>
+    <rect x="22" y="120" width="176" height="94" rx="20" fill="#fff" stroke="${vien}" stroke-width="5"/>
+    ${chuSVG(tu, 110, 158, 200, 36)}</svg>` },
+  ca: { co: 34, huong: 'ngang', ve: (tu, [nen, vien]) => `<svg viewBox="0 0 260 160">
+    <path class="duoi-ca" d="M42 80 L4 40 Q14 80 4 120 Z" fill="${vien}"/>
+    <path d="M120 30 Q150 4 176 30 Z" fill="${vien}"/>
+    <ellipse cx="140" cy="80" rx="104" ry="56" fill="${nen}" stroke="${vien}" stroke-width="4"/>
+    <circle cx="210" cy="66" r="11" fill="#fff" stroke="#343a40" stroke-width="2"/><circle cx="213" cy="66" r="5" fill="#343a40"/>
+    <path d="M232 92 Q240 96 236 102" fill="none" stroke="#343a40" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="252" cy="40" r="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="258" cy="20" r="4" fill="none" stroke="#fff" stroke-width="2"/>
+    <text x="132" y="96" font-size="44" text-anchor="middle" fill="#e03131">${tu}</text></svg>` },
+  sach: { co: 36, huong: 'ngang', ve: (tu, [nen, vien]) => `<svg viewBox="0 0 280 200">
+    <g class="canh-tr"><path d="M42 80 Q4 50 2 96 Q18 90 14 120 Q40 104 46 112 Z" fill="${nen}" stroke="${vien}" stroke-width="3"/></g>
+    <g class="canh-ph"><path d="M238 80 Q276 50 278 96 Q262 90 266 120 Q240 104 234 112 Z" fill="${nen}" stroke="${vien}" stroke-width="3"/></g>
+    <path d="M140 52 Q92 34 38 48 L44 176 Q92 162 140 178 Q188 162 236 176 L242 48 Q188 34 140 52 Z" fill="#8d99ae"/>
+    <path d="M140 48 Q94 30 46 42 L50 168 Q94 156 140 170 Z" fill="#fff" stroke="#adb5bd" stroke-width="2"/>
+    <path d="M140 48 Q186 30 234 42 L230 168 Q186 156 140 170 Z" fill="#fff" stroke="#adb5bd" stroke-width="2"/>
+    <circle cx="124" cy="24" r="13" fill="#fff" stroke="#343a40" stroke-width="2.5"/><circle cx="156" cy="24" r="13" fill="#fff" stroke="#343a40" stroke-width="2.5"/>
+    <circle cx="127" cy="27" r="5" fill="#343a40"/><circle cx="159" cy="27" r="5" fill="#343a40"/>
+    ${chuSVG(tu, 140, 102, 148, 40)}</svg>` }
+};
+
+let dsVat = [], dsHoi = [], dot = 0, hoiDot = 0, daBatHoi = [], dangBay = false, khung = null, tamDung = false, soHoiXong = 0;
+let saiHoi2 = [], hoiChang2 = [];   // tính điểm: mỗi lượt tìm là một câu
+function tongHoi2() { return D.chang2.dot.reduce((s, d) => s + (d.hoi ? d.hoi.length : d.tu.length), 0); }
+function chiSoHoi() { let s = 0; for (let i = 0; i < dot; i++) s += (D.chang2.dot[i].hoi ? D.chang2.dot[i].hoi.length : D.chang2.dot[i].tu.length); return s + hoiDot; }
+
+function taoDot() {
+  const d = D.chang2.dot[dot], cd = CHU_DE[D.chang2.chude], troi = $('troi');
+  troi.textContent = ''; dsVat = [];
+  dsHoi = d.hoi ? d.hoi.slice() : tron(d.tu).map(w => ({ tim: w, dung: [w] }));
+  hoiDot = 0; daBatHoi = [];
+  const doc = innerHeight > innerWidth, n = d.tu.length;
+  const ngang = cd.huong === 'ngang';
+  // màn ngang: mỗi làn 2 vật; điện thoại dựng đứng: chữ to hơn nên mỗi làn 1 vật (bay ngang) hoặc 2 vật (bay lên)
+  const soLan = ngang ? (doc ? n : Math.ceil(n / 2)) : (doc ? Math.ceil(n / 2) : n);
+  tron(d.tu).forEach((tu, i) => {
+    const el = document.createElement('div');
+    el.className = 'vat';
+    el.style.width = `calc(var(--u) * ${cd.co * (doc ? 1.25 : 1)})`;
+    el.innerHTML = cd.ve(tu, PASTEL[i % PASTEL.length]);
+    troi.appendChild(el);
+    const motLan = soLan >= n;
+    const p = motLan ? ((i * 0.55) % 1.5) - 0.35 : -0.3 + (i % soLan) * (1.5 / n) * 2 * 0.63 + Math.floor(i / soLan) * 0.75;
+    const v = { el, tu, p, toc: ngang ? 0.055 : 0.07, pha: Math.random() * 6, lan: i % soLan, soLan, bat: false };
+    el.onclick = () => chamVat(v);
+    dsVat.push(v);
+  });
+  hienYeuCau();
+}
+function hienYeuCau() {
+  const h = dsHoi[hoiDot];
+  $('nhan-tim').textContent = h.nhan || D.chang2.nhan;
+  $('tu-tim').textContent = h.tim;
+  const con = h.dung.length - daBatHoi.length;
+  $('con-lai').hidden = h.dung.length < 2;
+  $('con-lai').textContent = `còn ${con}`;
+  $('dem').textContent = `${soHoiXong}/${tongHoi2()}`;
+}
+function batDauBay() {
+  if (!dsVat.length) { dot = 0; soHoiXong = 0; taoDot(); }
+  tamDung = false; $('troi').classList.remove('dung-bay'); $('nut-dung').textContent = '⏸ Dừng lại';
+  if (!dangBay) {
+    dangBay = true; let truoc = performance.now();
+    const buoc = t => { if (!dangBay) return; const dt = Math.min(0.05, (t - truoc) / 1000); truoc = t; if (!tamDung) bay(dt); khung = requestAnimationFrame(buoc); };
+    khung = requestAnimationFrame(buoc);
+  }
+}
+function dungHet() { dangBay = false; if (khung) cancelAnimationFrame(khung); }
+function bay(dt) {
+  const W = innerWidth, H = $('troi').clientHeight, ngang = CHU_DE[D.chang2.chude].huong === 'ngang';
+  dsVat.forEach(v => {
+    if (v.bat) return;
+    v.p += v.toc * dt; if (v.p > 1.15) v.p = -0.35;
+    v.pha += dt * 1.6;
+    const w = v.el.offsetWidth, h = v.el.offsetHeight, ti = v.lan / Math.max(1, v.soLan - 1);
+    if (ngang) {
+      const tren = H * 0.17, duoi = Math.max(tren, H - h - H * 0.09);
+      v.el.style.transform = `translate(${v.p * W}px, ${tren + (duoi - tren) * ti + Math.sin(v.pha) * H * 0.025}px)`;
+    } else {
+      const trai = W * 0.02, phai = Math.max(trai, W - w - W * 0.02);
+      v.el.style.transform = `translate(${trai + (phai - trai) * ti + Math.sin(v.pha) * W * 0.008}px, ${(1 - v.p) * H - h * 0.3}px)`;
+    }
+  });
+}
+function chamVat(v) {
+  if (v.bat || !$('phu').hidden) return;
+  const h = dsHoi[hoiDot];
+  if (h.dung.includes(v.tu) && !daBatHoi.includes(v.tu)) {
+    v.bat = true; v.el.style.visibility = 'hidden'; daBatHoi.push(v.tu);
+    vui();
+    moThe(`<div class="nhan">${L.docTo}</div><div class="tu-to">${toDo(v.tu)}</div><button class="nut-lon" id="doc-dung">${L.docXong}</button>`, '#2f9e44');
+    $('doc-dung').onclick = () => { dongThe(); xongMotChu(); };
+  } else {
+    tiec(); const k = chiSoHoi(); saiHoi2[k] = (saiHoi2[k] || 0) + 1;
+    v.el.classList.remove('lac'); void v.el.offsetWidth; v.el.classList.add('lac');
+  }
+}
+function xongMotChu() {
+  const h = dsHoi[hoiDot];
+  phaoGiay(20); keu([523, 659, 784, 1047]);
+  if (daBatHoi.length < h.dung.length) { hienYeuCau(); return; }
+  soHoiXong++; hoiDot++; daBatHoi = [];
+  if (hoiDot < dsHoi.length) { hienYeuCau(); return; }
+  dot++;
+  if (dot < D.chang2.dot.length) {
+    $('dem').textContent = `${soHoiXong}/${tongHoi2()}`;
+    moThe(`<div class="sao">⭐</div><div class="ket">${L.luotMoi}</div><button class="nut-lon" id="luot">Chơi tiếp ➜</button>`, '#f2b705');
+    $('luot').onclick = () => { dongThe(); taoDot(); };
+    return;
+  }
+  xongChang[2] = true; danhDauChang(); dungHet();
+  $('dem').textContent = `${soHoiXong}/${tongHoi2()}`;
+  moThe(`<div class="sao">⭐⭐</div><div class="ket">${L.xongChang2}</div><button class="nut-lon" id="qua3">Sang chặng 3 ➜</button>`, '#f2b705');
+  $('qua3').onclick = () => { dongThe(); denChang(3); };
+  phaoGiay(70);
+}
+$('nut-dung').onclick = () => {
+  tamDung = !tamDung;
+  $('troi').classList.toggle('dung-bay', tamDung);
+  $('nut-dung').textContent = tamDung ? '▶ Chạy tiếp' : '⏸ Dừng lại';
+};
+
+// ===================== Chặng 3 =====================
+let cauHoi = 0, daChon = [], saiHoi3 = [];
+function batDauChang3() {
+  cauHoi = 0;
+  if (D.chang3.doan) {
+    $('doan').textContent = D.chang3.doan; $('doan').hidden = false;
+    $('buoc-doc').hidden = false; $('buoc-hoi').hidden = true;
+  } else { $('doan').hidden = true; $('buoc-doc').hidden = true; $('buoc-hoi').hidden = false; veHoi(); }
+}
+$('doc-xong').onclick = () => { vui(); $('buoc-doc').hidden = true; $('buoc-hoi').hidden = false; veHoi(); };
+function veHoi() {
+  const h = D.chang3.hoi[cauHoi]; daChon = [];
+  $('hoi').textContent = h.hoi + (h.dung.length > 1 ? ` (chọn ${h.dung.length})` : '');
+  $('loi3').textContent = ''; $('loi3').className = 'loi';
+  if (h.tu) { $('tu-dien').hidden = false; $('tu-dien').innerHTML = `${h.tu[0]}<span class="o" id="o">?</span>${h.tu[2]}`; }
+  else $('tu-dien').hidden = true;
+  $('qua').innerHTML = '';
+  h.chon.forEach(v => {
+    const b = document.createElement('button'); b.textContent = v;
+    b.onclick = () => {
+      if (b.classList.contains('dung') || b.disabled) return;
+      if (h.dung.includes(v)) {
+        b.classList.add('dung'); daChon.push(v); vui();
+        if (h.tu) { $('o').textContent = v; $('o').classList.add('xong'); }
+        $('loi3').className = 'loi dung';
+        if (daChon.length === h.dung.length) {
+          $('loi3').textContent = 'Đúng rồi! Giỏi quá!';
+          setTimeout(() => { cauHoi++; if (cauHoi < D.chang3.hoi.length) veHoi(); else hetBai(); }, 1300);
+        } else $('loi3').textContent = `Đúng rồi! Còn ${h.dung.length - daChon.length} nữa!`;
+      } else {
+        b.classList.add('sai'); b.disabled = true; tiec(); (saiHoi3[cauHoi] = saiHoi3[cauHoi] || []).push(v);
+        $('loi3').className = 'loi sai';
+        $('loi3').textContent = D.chang3.doan ? 'Bạn đọc lại đoạn văn rồi thử lại nhé!' : 'Chưa đúng, bạn thử lại nhé!';
+      }
+    };
+    $('qua').appendChild(b);
+  });
+}
+
+// ===================== Kết thúc, điểm, gửi kết quả =====================
+function dung2() { const n = tongHoi2(); let d = 0; for (let i = 0; i < n; i++) if (!saiHoi2[i]) d++; return d; }
+function dung3() { return D.chang3.hoi.filter((_, i) => !(saiHoi3[i] && saiHoi3[i].length)).length; }
+function tenHoi2(k) { let s = 0; for (const d of D.chang2.dot) { const hs = d.hoi || null, n = hs ? hs.length : d.tu.length; if (k < s + n) return hs ? hs[k - s].tim : null; s += n; } return null; }
+function chiTiet() {
+  const on = [];
+  saiHoi2.forEach((n, k) => { if (n) on.push(`chặng 2 lượt ${k + 1}${tenHoi2(k) ? ' (' + tenHoi2(k) + ')' : ''}: chạm nhầm ${n} lần`); });
+  D.chang3.hoi.forEach((h, i) => { if (saiHoi3[i] && saiHoi3[i].length) on.push(`${h.hoi} chọn nhầm ${saiHoi3[i].join(', ')}`); });
+  return `${D.chang2.ten} ${dung2()}/${tongHoi2()}, ${D.chang3.ten} ${dung3()}/${D.chang3.hoi.length}` + (on.length ? `. Cần ôn: ${on.join('; ')}` : '');
+}
+function hetBai() {
+  xongChang[3] = true; danhDauChang();
+  if (!O_NHA) {
+    moThe(`<div class="sao">⭐⭐⭐</div><div class="ket">${L.hoanHo}</div><div class="nhan">Các con đã luyện xong ${D.bai}!</div>
+      <button class="nut-lon cam" id="lai">Chơi lại từ đầu</button>`, '#f2b705');
+    $('lai').onclick = () => { dongThe(); choiLai(); };
+  } else {
+    const d = new Date(), hai = n => String(n).padStart(2, '0'), dong = [];
+    if (ten) dong.push(['Tên', ten]);
+    dong.push(['Bài', D.tenBai]);
+    dong.push(['Đúng ngay lần đầu', `${dung2() + dung3()}/${tongHoi2() + D.chang3.hoi.length} câu`]);
+    dong.push([D.chang2.ten, `${dung2()}/${tongHoi2()}`]);
+    dong.push([D.chang3.ten, `${dung3()}/${D.chang3.hoi.length}`]);
+    dong.push(['Cần ôn thêm', chiTiet().split('. Cần ôn: ')[1] || 'Không, con làm đúng hết']);
+    dong.push(['Lúc', `${hai(d.getHours())}:${hai(d.getMinutes())} ngày ${hai(d.getDate())}/${hai(d.getMonth() + 1)}/${d.getFullYear()}`]);
+    moThe(`<div class="thuong-hieu">Cô Điệp AI</div><div class="sao">⭐⭐⭐</div><div class="ket">${L.hoanHo}</div>
+      <div class="phieu" id="phieu"></div><div class="nho" id="loi-nhan"></div><button class="nut-lon cam" id="lai">Chơi lại</button>`, '#f2b705');
+    dong.forEach(([nhan, gt]) => { const p = document.createElement('div'), b = document.createElement('b'); b.textContent = gt; p.append(nhan + ': ', b); $('phieu').appendChild(p); });
+    $('lai').onclick = () => { dongThe(); choiLai(); };
+    guiKetQua();
+  }
+  phaoGiay(100); keu([392, 523, 659, 784, 1047, 1319, 1568]);
+}
+const LINK_SHEET = 'https://script.google.com/macros/s/AKfycbzE5tlog_osSNJ7Tsr4SnJPQCiv5LpyfQaDj8jNHNYzT9YEMGnQHTJrrpNXV_45lq1t/exec';
+// Chỉ ghi kết quả khi link có ?lop=... (link lớp mình); link chia sẻ thì không ghi
+function guiKetQua() {
+  const CHUP = 'Ba mẹ chụp màn hình này gửi cô nhé.';
+  const lop = window.LOP || new URLSearchParams(location.search).get('lop') || '';
+  if (!lop) { $('loi-nhan').textContent = CHUP; return; }
+  $('loi-nhan').textContent = 'Đang gửi kết quả cho cô...';
+  const d = { lop, ten, bai: D.tenBai, dungLanDau: dung2() + dung3(), soCau: tongHoi2() + D.chang3.hoi.length, chiTiet: chiTiet() };
+  const xong = () => { $('loi-nhan').textContent = 'Đã gửi kết quả cho cô.'; };
+  const loi = () => { $('loi-nhan').textContent = 'Chưa gửi được. ' + CHUP; };
+  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(xong).withFailureHandler(loi).ghiKetQua(d);
+  else fetch(LINK_SHEET, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }).then(xong, loi);
+}
+
+function choiLai() {
+  xongChang = {}; saiHoi2 = []; saiHoi3 = []; dungHet(); dsVat = []; $('troi').textContent = '';
+  veChang1(); denChang(1);
+}
+
+// ===== dựng giao diện theo dữ liệu bài =====
+document.title = `${D.ten} - ${D.bai}`;
+document.body.classList.add('cd-' + D.chang2.chude);
+$('ten-tro').textContent = D.ten;
+['1. ' + D.chang1.ten, '2. ' + D.chang2.ten, '3. ' + D.chang3.ten].forEach((t, i) => { document.querySelectorAll('#chang button')[i].textContent = t; });
+$('hd1').textContent = D.chang1.huongDan || L.hd1;
+$('doc-xong').textContent = L.docXong;
+$('md-ten').textContent = D.ten; $('md-bai').textContent = D.bai + ' - Tiếng Việt 1';
+if (O_NHA) {
+  document.querySelectorAll('#chang button').forEach(b => b.disabled = true);
+  $('mo-dau').hidden = false;
+  $('nut-bat-dau').onclick = () => { ten = $('ten-hs').value.trim(); $('mo-dau').hidden = true; keu([523, 659]); };
+  $('ten-hs').addEventListener('keydown', e => { if (e.key === 'Enter') $('nut-bat-dau').click(); });
+}
+choiLai();
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản lý lớp - CÔ ĐIỆP AI</title>
+<meta name="description" content="Bốc thăm gọi tên, chia nhóm, bảng sao thi đua và đồng hồ đếm ngược cho lớp học. Dữ liệu chỉ lưu trên máy của cô.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378;--vien:#d3e6f8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:radial-gradient(900px 480px at 90% -10%,#9fd4ff55,transparent 60%),linear-gradient(180deg,#e3f3ff,#f6fbff 40%,#fff8e8);min-height:100vh}
+.bia{background:linear-gradient(135deg,#06285a,#0b5cab 55%,#1d7bd8);color:#fff;padding:18px 16px 50px;position:relative;overflow:hidden}
+.bia::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#ffffff33,transparent 65%)}
+.rong{max-width:860px;margin:0 auto;position:relative}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(28px,6vw,40px)/1.1 "Baloo 2",sans-serif;margin:10px 0 4px}.bia h1 b{color:var(--gold)}
+.bia p{margin:0;opacity:.92;max-width:560px}
+main{max-width:860px;margin:-30px auto 0;padding:0 14px 50px;position:relative}
+.the{background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(11,92,171,.16);padding:18px;margin-bottom:16px}
+.the h2{font:800 20px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 10px}
+textarea,input[type=text],input[type=number]{width:100%;font:500 16px "Be Vietnam Pro",sans-serif;padding:11px 13px;border:2px solid var(--vien);border-radius:14px}
+textarea{min-height:120px;resize:vertical}
+textarea:focus,input:focus{outline:3px solid #9fd4ff;border-color:var(--blue)}
+.ghi{color:var(--phu);font-size:13.5px;margin:6px 0 0}
+.go{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.nutl{border:0;border-radius:16px;padding:12px 18px;font:800 17px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 5px 0 #b86200;cursor:pointer}
+.nutl:active{transform:translateY(2px);box-shadow:0 3px 0 #b86200}
+.nutl.xanh{background:linear-gradient(180deg,#3d9bf0,#0b5cab);box-shadow:0 5px 0 #073d73}
+.nutl.xam{background:#fff;color:var(--royal);border:2px solid var(--vien);box-shadow:0 4px 0 var(--vien)}
+.tab{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab button{border:2px solid var(--vien);background:#fff;border-radius:999px;padding:9px 16px;font:700 15px "Be Vietnam Pro",sans-serif;color:var(--royal);cursor:pointer}
+.tab button.on{background:var(--royal);border-color:var(--royal);color:#fff}
+.pane{display:none}.pane.on{display:block}
+/* bốc thăm */
+.san{background:linear-gradient(135deg,#0b5cab,#1d7bd8);border-radius:22px;color:#fff;text-align:center;padding:26px 14px;min-height:150px;display:grid;place-items:center;position:relative;overflow:hidden}
+.san .ten{font:800 clamp(34px,9vw,64px)/1.1 "Baloo 2",sans-serif;text-shadow:0 3px 0 rgba(0,0,0,.2);word-break:break-word}
+.san .ten.nhay{opacity:.85}
+.san small{opacity:.85;font-weight:600}
+.san.chon{animation:no .5s}
+@keyframes no{0%{box-shadow:0 0 0 0 #ffc94aaa}100%{box-shadow:0 0 0 30px #ffc94a00}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chips span{background:#eaf5ff;border:1.5px solid var(--vien);border-radius:999px;padding:4px 11px;font-size:14px;font-weight:600;color:var(--royal)}
+.chips span.da{background:#f1f1f1;color:#999;text-decoration:line-through;border-color:#e3e3e3}
+/* nhóm */
+.nhom{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:14px}
+.nhom div{border:2px solid var(--vien);border-radius:18px;padding:12px;background:#fbfdff}
+.nhom b{font:800 18px "Baloo 2",sans-serif;color:var(--royal);display:block;margin-bottom:4px}
+.nhom ul{margin:0;padding-left:18px}
+/* sao */
+.sao{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px}
+.sao button{border:2px solid var(--vien);background:#fff;border-radius:16px;padding:10px;text-align:left;cursor:pointer;font:600 15px "Be Vietnam Pro",sans-serif;color:var(--ink);transition:.12s}
+.sao button:active{transform:scale(.96);background:#fff8dc}
+.sao button b{display:block;font-size:18px;color:#c77d00;letter-spacing:1px;min-height:1.3em}
+/* đồng hồ */
+.dh{font:800 clamp(64px,22vw,140px)/1 "Baloo 2",sans-serif;text-align:center;color:var(--royal);letter-spacing:2px}
+.dh.het{color:var(--bad);animation:nhay .6s infinite}
+@keyframes nhay{50%{opacity:.35}}
+.mau{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header class="bia"><div class="rong">
+  <a href="./">&larr; Về trang chủ CÔ ĐIỆP AI</a>
+  <h1>Quản lý <b>lớp học</b></h1>
+  <p>Bốc thăm gọi tên, chia nhóm, bảng sao thi đua và đồng hồ đếm ngược. Tên học sinh chỉ lưu trên máy của cô, không gửi đi đâu.</p>
+</div></header>
+<main>
+  <section class="the">
+    <h2>Danh sách lớp</h2>
+    <textarea id="ds" placeholder="Dán tên học sinh, mỗi bạn một dòng"></textarea>
+    <div class="go"><button class="nutl xanh" id="luu">Lưu danh sách</button><span class="ghi" id="dem"></span></div>
+  </section>
+
+  <section class="the">
+    <div class="tab" id="tab"><button data-p="boc" class="on">Bốc thăm gọi tên</button><button data-p="nhom">Chia nhóm</button><button data-p="sao">Bảng sao</button><button data-p="gio">Đồng hồ</button></div>
+
+    <div class="pane on" id="p-boc">
+      <div class="san" id="san"><div><div class="ten" id="ten">Bấm để gọi tên</div><small id="conlai"></small></div></div>
+      <div class="go"><button class="nutl" id="goi">Gọi một bạn</button><button class="nutl xam" id="lam">Làm lại từ đầu</button><label class="ghi"><input type="checkbox" id="khong" checked> Không gọi lại bạn đã được gọi</label></div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="pane" id="p-nhom">
+      <div class="go" style="margin-top:0"><label style="font-weight:600">Số nhóm <input type="number" id="sn" min="2" max="12" value="4" style="width:90px;display:inline-block"></label><button class="nutl" id="chia">Chia nhóm ngẫu nhiên</button></div>
+      <div class="nhom" id="kqn"></div>
+    </div>
+
+    <div class="pane" id="p-sao">
+      <p class="ghi" style="margin:0 0 8px">Bấm vào tên bạn để thêm 1 sao. Bấm giữ (hoặc chuột phải) để bớt 1 sao.</p>
+      <div class="sao" id="luoisao"></div>
+      <div class="go"><button class="nutl xam" id="xs">Xóa hết sao</button></div>
+    </div>
+
+    <div class="pane" id="p-gio">
+      <div class="dh" id="dh">05:00</div>
+      <div class="mau" id="mau"></div>
+      <div class="go" style="justify-content:center"><button class="nutl" id="chay">Bắt đầu</button><button class="nutl xam" id="dung">Tạm dừng</button><button class="nutl xam" id="dat">Đặt lại</button></div>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id), KHO = 'codiep-lop-hoc';
+const r = n => Math.floor(Math.random() * n);
+const tron = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--){ const j = r(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let L = {ds: [], da: [], sao: {}};
+try { const c = JSON.parse(localStorage.getItem(KHO)); if (c && Array.isArray(c.ds)) L = Object.assign(L, c); } catch (e) {}
+const luu = () => { try { localStorage.setItem(KHO, JSON.stringify(L)); } catch (e) {} };
+function bip(f, d){ try { const ac = bip.ac = bip.ac || new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f; g.gain.value = .25; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d); } catch (e) {} }
+
+function veDS(){ $('ds').value = L.ds.join('\n'); $('dem').textContent = L.ds.length ? L.ds.length + ' học sinh' : 'Chưa có học sinh'; veChips(); veSao(); }
+$('luu').onclick = () => { L.ds = $('ds').value.split('\n').map(x => x.trim()).filter(Boolean); L.da = L.da.filter(x => L.ds.includes(x)); const s = {}; L.ds.forEach(n => s[n] = L.sao[n] || 0); L.sao = s; luu(); veDS(); };
+document.querySelectorAll('#tab button').forEach(b => b.onclick = () => { document.querySelectorAll('#tab button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + b.dataset.p)); });
+
+/* bốc thăm */
+function veChips(){ $('chips').innerHTML = ''; L.ds.forEach(n => { const s = document.createElement('span'); s.textContent = n; if (L.da.includes(n)) s.className = 'da'; $('chips').appendChild(s); }); const con = L.ds.filter(n => !L.da.includes(n)).length; $('conlai').textContent = L.ds.length ? 'Còn ' + con + '/' + L.ds.length + ' bạn chưa được gọi' : 'Cô dán danh sách lớp ở trên trước nhé'; }
+let dang = false;
+$('goi').onclick = () => {
+  if (dang) return; if (!L.ds.length){ $('ten').textContent = 'Chưa có danh sách'; return; }
+  let ds = $('khong').checked ? L.ds.filter(n => !L.da.includes(n)) : L.ds;
+  if (!ds.length){ $('ten').textContent = 'Đã gọi hết cả lớp'; return; }
+  dang = true; let k = 0; const kq = ds[r(ds.length)], t = $('ten'); t.classList.add('nhay');
+  const chay = () => { if (k < 16){ t.textContent = ds[r(ds.length)]; bip(500 + k * 25, .05); k++; setTimeout(chay, 55 + k * 12); } else { t.textContent = kq; t.classList.remove('nhay'); $('san').classList.remove('chon'); void $('san').offsetWidth; $('san').classList.add('chon'); bip(880, .25); if (!L.da.includes(kq)) L.da.push(kq); luu(); veChips(); dang = false; } };
+  chay();
+};
+$('lam').onclick = () => { L.da = []; luu(); veChips(); $('ten').textContent = 'Bấm để gọi tên'; };
+/* chia nhóm */
+$('chia').onclick = () => {
+  if (!L.ds.length){ $('kqn').innerHTML = '<p class="ghi">Cô dán danh sách lớp ở trên trước nhé.</p>'; return; }
+  const n = Math.max(2, Math.min(12, +$('sn').value || 4)), g = Array.from({length: n}, () => []);
+  tron(L.ds).forEach((x, i) => g[i % n].push(x));
+  $('kqn').innerHTML = g.map((m, i) => '<div><b>Nhóm ' + (i + 1) + '</b><ul>' + m.map(x => '<li></li>').join('') + '</ul></div>').join('');
+  [...$('kqn').children].forEach((d, i) => [...d.querySelectorAll('li')].forEach((li, k) => li.textContent = g[i][k]));
+};
+/* bảng sao */
+function veSao(){
+  $('luoisao').innerHTML = '';
+  L.ds.forEach(n => { const b = document.createElement('button'), s = L.sao[n] || 0; b.innerHTML = '<span></span><b></b>'; b.firstChild.textContent = n; b.lastChild.textContent = s ? (s > 8 ? '⭐ × ' + s : '⭐'.repeat(s)) : ' ';
+    const cong = d => { L.sao[n] = Math.max(0, (L.sao[n] || 0) + d); luu(); veSao(); bip(d > 0 ? 880 : 300, .1); };
+    b.onclick = () => cong(1); b.oncontextmenu = e => { e.preventDefault(); cong(-1); };
+    let tm; b.onpointerdown = () => { tm = setTimeout(() => { tm = 'giu'; cong(-1); }, 700); }; b.onpointerup = b.onpointerleave = () => clearTimeout(tm);
+    $('luoisao').appendChild(b); });
+}
+$('xs').onclick = () => { if (confirm('Xóa hết sao của cả lớp?')){ L.sao = {}; L.ds.forEach(n => L.sao[n] = 0); luu(); veSao(); } };
+/* đồng hồ */
+let giay = 300, goc = 300, tm = null;
+const dinh = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+[60, 180, 300, 600, 900].forEach(s => { const b = document.createElement('button'); b.className = 'nutl xam'; b.textContent = s / 60 + ' phút'; b.onclick = () => { goc = giay = s; dung(); hienGio(); }; $('mau').appendChild(b); });
+function hienGio(){ $('dh').textContent = dinh(giay); $('dh').classList.toggle('het', giay === 0); }
+function dung(){ clearTimeout(tm); tm = null; }
+$('chay').onclick = () => { if (tm || giay <= 0) return; const tick = () => { giay--; hienGio(); if (giay <= 0){ bip(880, .3); setTimeout(() => bip(880, .3), 400); setTimeout(() => bip(1100, .6), 800); tm = null; } else { if (giay <= 5) bip(660, .08); tm = setTimeout(tick, 1000); } }; tm = setTimeout(tick, 1000); };
+$('dung').onclick = dung; $('dat').onclick = () => { dung(); giay = goc; hienGio(); };
+veDS(); hienGio();
+</script>
+</body>
+</html>

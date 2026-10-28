@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bong bóng gọi tên</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* BONG BÓNG GỌI TÊN: bong bóng mang tên (ảnh) học sinh bay nảy khắp màn hình, bấm QUAY để chọn một bạn,
+     rồi hỏi bài và thưởng sao. Danh sách lấy từ danh-sach-lop.js (cùng thư mục, chỉ để trong máy cô);
+     không có file đó thì cô bấm ⚙ dán danh sách vào. Ảnh: anh/1.jpg, anh/2.jpg ... theo số thứ tự. */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --chu: #1d1b4b; --tim: #7048e8; --hong: #e64980; --vang: #fcc419; --la: #2f9e44; --la-dam: #1e6b2e;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu); overflow: hidden;
+    background: radial-gradient(ellipse at 20% 10%, #ffffff 0, transparent 40%), radial-gradient(ellipse at 85% 85%, #ffe3f1 0, transparent 45%), linear-gradient(160deg, #c5f6fa 0%, #d0bfff 55%, #fcc2d7 100%);
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 5px solid var(--tim); outline-offset: 3px; }
+  header { position: fixed; top: 0; left: 0; right: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 10px 16px; flex-wrap: wrap; }
+  h1 { font-size: max(20px, calc(var(--u) * 4.2)); color: var(--tim); text-shadow: 0 3px 0 #fff; white-space: nowrap; }
+  .the-dem { font-size: max(14px, calc(var(--u) * 2.4)); background: rgba(255,255,255,.85); border-radius: 30px; padding: 2px 14px; white-space: nowrap; }
+  .phai { margin-left: auto; display: flex; gap: 8px; }
+  .nut-nho { font-size: max(14px, calc(var(--u) * 2.4)); padding: 4px 14px; border-radius: 30px; border: 3px solid var(--tim); background: #fff; color: var(--tim); }
+  .nut-nho.bat { background: var(--tim); color: #fff; }
+
+  #san { position: fixed; inset: 0; }
+  .bong { position: absolute; left: 0; top: 0; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; will-change: transform;
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.95) 0 12%, rgba(255,255,255,.35) 13% 60%, rgba(255,255,255,.15) 61%); border: 4px solid rgba(255,255,255,.9);
+    box-shadow: 0 8px 18px rgba(80,40,160,.18), inset 0 -6px 14px rgba(112,72,232,.18); cursor: pointer; }
+  .bong .mat { width: 72%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #fff; font-size: calc(var(--d) * .26); border: 3px solid #fff; }
+  .bong .mat img { width: 100%; height: 100%; object-fit: cover; }
+  .bong .ten { position: absolute; bottom: -2px; font-size: max(11px, calc(var(--d) * .15)); background: #fff; color: var(--chu); border-radius: 20px; padding: 0 8px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,.12); }
+  .bong .sao { position: absolute; top: -4px; right: -4px; font-size: max(11px, calc(var(--d) * .14)); background: var(--vang); border-radius: 20px; padding: 0 6px; color: #5c3d00; }
+  .bong.da-goi { opacity: .3; filter: grayscale(.8); }
+  .bong.sang { box-shadow: 0 0 0 8px var(--vang), 0 0 40px 10px rgba(252,196,25,.9); z-index: 3; }
+
+  #quay { position: fixed; left: 50%; bottom: calc(var(--u) * 3); transform: translateX(-50%); z-index: 6; width: max(120px, calc(var(--u) * 20)); aspect-ratio: 1; border-radius: 50%; border: 6px solid #fff;
+    background: radial-gradient(circle at 35% 30%, #ff8cc6, var(--hong) 60%, #a61e4d); color: #fff; font-size: max(26px, calc(var(--u) * 5.5)); box-shadow: 0 0 0 10px rgba(230,73,128,.25), 0 10px 26px rgba(166,30,77,.45); animation: tho 1.6s ease-in-out infinite; }
+  #quay small { display: block; font-size: .42em; opacity: .9; }
+  #quay:disabled { animation: none; filter: grayscale(.4); cursor: default; }
+  @keyframes tho { 50% { box-shadow: 0 0 0 22px rgba(230,73,128,.12), 0 10px 26px rgba(166,30,77,.45); } }
+
+  .phu { position: fixed; inset: 0; z-index: 10; background: rgba(29,27,75,.7); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .the { width: min(100%, 860px); max-height: 100%; overflow-y: auto; background: #fff; border-radius: 28px; border: 8px solid var(--mau, var(--tim)); padding: 24px 28px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; animation: bung .45s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes bung { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .nhan { font-size: max(16px, calc(var(--u) * 3)); color: #fff; background: var(--vang); color: #5c3d00; border-radius: 30px; padding: 2px 18px; }
+  .anh-to { width: max(140px, calc(var(--u) * 26)); aspect-ratio: 1; border-radius: 50%; overflow: hidden; border: 8px solid var(--vang); display: flex; align-items: center; justify-content: center; color: #fff; font-size: max(50px, calc(var(--u) * 9)); }
+  .anh-to img { width: 100%; height: 100%; object-fit: cover; }
+  .ten-to { font-size: max(40px, calc(var(--u) * 9)); color: var(--tim); line-height: 1.05; }
+  .ho-ten { font-size: max(16px, calc(var(--u) * 3)); color: #868e96; }
+  .hang { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .nut { font-size: max(20px, calc(var(--u) * 4)); padding: 6px 28px; border: none; border-radius: 22px; color: #fff; background: var(--tim); box-shadow: 0 6px 0 #4c2fb0; }
+  .nut.hong { background: var(--hong); box-shadow: 0 6px 0 #a61e4d; }
+  .nut.la { background: var(--la); box-shadow: 0 6px 0 var(--la-dam); }
+  .nut.xam { background: #adb5bd; box-shadow: 0 6px 0 #868e96; }
+  .nut:active { transform: translateY(4px); box-shadow: none; }
+  .cau { font-size: max(30px, calc(var(--u) * 7)); line-height: 1.25; color: var(--chu); text-wrap: balance; }
+  .dap-an { font-size: max(26px, calc(var(--u) * 6)); color: var(--la); background: #ebfbee; border-radius: 18px; padding: 4px 22px; }
+  textarea { width: 100%; min-height: 260px; font: 600 18px/1.5 var(--font); padding: 10px 14px; border: 4px solid #b197fc; border-radius: 16px; user-select: text; -webkit-user-select: text; }
+  .ds-ls { width: 100%; text-align: left; font-size: max(16px, calc(var(--u) * 2.8)); columns: 2; }
+  .ds-ls div { break-inside: avoid; padding: 2px 0; }
+  .nho { font-size: 15px; color: #868e96; font-weight: 600; }
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 11; }
+  #phao i { position: absolute; top: -20px; width: 14px; height: 20px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  #loi-may { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 99; background: #c92a2a; color: #fff; font: 16px/1.3 Arial, sans-serif; padding: 8px 12px; border-radius: 10px; }
+  @media (prefers-reduced-motion: reduce) { #quay { animation: none; } .the { animation: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎈 Bong bóng gọi tên</h1>
+  <span class="the-dem" id="dem-tong"></span>
+  <span class="the-dem" id="dem-con"></span>
+  <div class="phai">
+    <button class="nut-nho" id="nut-lap" title="Bạn đã được gọi thì không gọi lại">Không lặp lại</button>
+    <button class="nut-nho" id="nut-ls">📜 Lịch sử</button>
+    <button class="nut-nho" id="nut-ds">⚙ Danh sách</button>
+  </div>
+</header>
+<div id="san"></div>
+<button id="quay"><small>Nhấn để</small>QUAY</button>
+<div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
+<div id="phao"></div>
+
+<script src="danh-sach-lop.js"></script>
+<script>
+window.onerror = (m, f, d) => {
+  const goc = s => String(s || "").split(/[?#]/)[0];
+  if (/zalo|FBNav|instagram/i.test(m) || !f || goc(f) !== goc(location.href)) return; // lỗi của app Zalo/Facebook chèn vào, không phải của trò chơi
+  const o = document.getElementById('loi-may') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'loi-may' }));
+  o.textContent = 'Lỗi: ' + m + ' (dòng ' + d + ')';
+};
+// ====== CÂU HỎI "HỎI BÀI" (cô sửa ở đây theo tuần): [câu hỏi, đáp án] ======
+const HOI_BAI = [
+  ['2 + 3 bằng mấy?', '5'], ['4 + 1 bằng mấy?', '5'], ['1 + 2 bằng mấy?', '3'], ['2 + 2 bằng mấy?', '4'], ['3 + 1 bằng mấy?', '4'],
+  ['Hình vuông có mấy cạnh?', '4 cạnh'], ['Hình tam giác có mấy cạnh?', '3 cạnh'],
+  ['Con đọc: bạn thân', 'bạn thân'], ['Con đọc: khăn rằn', 'khăn rằn'], ['Con đọc: quả mận', 'quả mận'],
+  ['Con đọc: nón lá', 'nón lá'], ['Con đọc: con chồn', 'con chồn'], ['Con đọc: sơn ca', 'sơn ca'],
+  ['Con đọc: ngọn nến', 'ngọn nến'], ['Con đọc: đèn pin', 'đèn pin'], ['Con đọc: cún con', 'cún con'],
+  ['Con đọc: quả cam', 'quả cam'], ['Con đọc: tăm tre', 'tăm tre'], ['Con đọc: củ sâm', 'củ sâm'],
+  ['Con đọc câu: Nhà bé ở gần bến đò.', 'Nhà bé ở gần bến đò.'], ['Con đọc câu: Sen nở thắm hồ.', 'Sen nở thắm hồ.'],
+  ['Tiếng "khăn" có vần gì?', 'ăn'], ['Tiếng "chồn" có vần gì?', 'ôn'], ['Tiếng "nến" có vần gì?', 'ên'], ['Tiếng "nấm" có vần gì?', 'âm'],
+  ['Con nói một tiếng có vần "an".', 'bạn, bàn, lan, gan...'], ['Con nói một tiếng có vần "on".', 'con, nón, ngon...'],
+  ['Con nói một tiếng có vần "un".', 'cún, vun, bún...'], ['Con nói một tiếng có vần "am".', 'cam, làm, tám...']
+];
+// ==========================================================================
+
+const $ = id => document.getElementById(id);
+const MAU = ['#f06595', '#7048e8', '#1c7ed6', '#0ca678', '#f59f00', '#e8590c', '#ae3ec9', '#2f9e44', '#d6336c', '#1098ad'];
+const KHOA = 'bongbong-' + location.pathname;
+const luu = (k, v) => { try { localStorage.setItem(KHOA + k, JSON.stringify(v)); } catch (e) {} };
+const doc = k => { try { return JSON.parse(localStorage.getItem(KHOA + k)); } catch (e) { return null; } };
+const tron = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+// ----- danh sách: file danh-sach-lop.js, hoặc danh sách cô đã dán (lưu trong trình duyệt), hoặc mẫu -----
+function layDanhSach() {
+  const dan = doc('ds');
+  if (dan && dan.length) return dan.map(t => ({ ten: t, goi: t.split(' ').slice(-2).join(' ') }));
+  if (window.DANH_SACH_LOP) return window.DANH_SACH_LOP.hs;
+  return ['Bạn số 1', 'Bạn số 2', 'Bạn số 3', 'Bạn số 4', 'Bạn số 5', 'Bạn số 6', 'Bạn số 7', 'Bạn số 8', 'Bạn số 9', 'Bạn số 10']
+    .map(t => ({ ten: t, goi: t, mau: true }));
+}
+let HS = [], sao = {}, daGoi = new Set(), lichSu = [], khongLap = doc('khongLap') !== false;
+function chuDau(goi) { return goi.split(' ').map(w => w[0]).slice(-2).join('').toUpperCase(); }
+function matHTML(i, lop) {
+  const h = HS[i];
+  // ảnh anh/<số thứ tự>.jpg nếu có, không thì chữ cái đầu trên nền màu
+  return `<div class="${lop}" style="position:relative;background:${MAU[i % MAU.length]}"><span>${chuDau(h.goi)}</span><img src="anh/${i + 1}.jpg" alt="" style="position:absolute;inset:0" onerror="this.remove()"></div>`;
+}
+
+// ----- bong bóng nảy -----
+let bong = [], W = 0, H = 0, tocNhan = 1, khung = null;
+function dungBong() {
+  const san = $('san'); san.textContent = ''; bong = [];
+  W = innerWidth; H = innerHeight;
+  const n = HS.length, d = Math.max(64, Math.min(150, Math.sqrt(W * H / n) * 0.62));
+  HS.forEach((h, i) => {
+    const el = document.createElement('div');
+    el.className = 'bong'; el.style.width = el.style.height = d + 'px'; el.style.setProperty('--d', d + 'px');
+    el.innerHTML = matHTML(i, 'mat') + `<span class="ten">${h.goi}</span><span class="sao" hidden></span>`;
+    el.querySelector('.mat').style.position = 'relative';
+    el.onclick = () => { if (!dangQuay && $('phu').hidden) chonBan(i); };
+    san.appendChild(el);
+    const goc = Math.random() * Math.PI * 2, v = 40 + Math.random() * 40;
+    bong.push({ el, i, r: d / 2, x: d / 2 + Math.random() * (W - d), y: 70 + d / 2 + Math.random() * (H - d - 70), vx: Math.cos(goc) * v, vy: Math.sin(goc) * v });
+  });
+  capNhatSao(); capNhatDem();
+}
+function buoc(dt) {
+  const tren = 64;
+  for (const b of bong) {
+    b.x += b.vx * dt * tocNhan; b.y += b.vy * dt * tocNhan;
+    if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); }
+    if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
+    if (b.y < tren + b.r) { b.y = tren + b.r; b.vy = Math.abs(b.vy); }
+    if (b.y > H - b.r) { b.y = H - b.r; b.vy = -Math.abs(b.vy); }
+  }
+  for (let a = 0; a < bong.length; a++) for (let c = a + 1; c < bong.length; c++) {
+    const p = bong[a], q = bong[c], dx = q.x - p.x, dy = q.y - p.y, kc = Math.hypot(dx, dy), min = p.r + q.r;
+    if (kc > 0 && kc < min) {
+      const nx = dx / kc, ny = dy / kc, chong = (min - kc) / 2;
+      p.x -= nx * chong; p.y -= ny * chong; q.x += nx * chong; q.y += ny * chong;
+      const vr = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny;
+      if (vr < 0) { p.vx += vr * nx; p.vy += vr * ny; q.vx -= vr * nx; q.vy -= vr * ny; }
+    }
+  }
+  for (const b of bong) b.el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px)`;
+}
+function chay() {
+  let truoc = performance.now();
+  const f = t => { buoc(Math.min(0.05, (t - truoc) / 1000)); truoc = t; khung = requestAnimationFrame(f); };
+  khung = requestAnimationFrame(f);
+}
+addEventListener('resize', () => { W = innerWidth; H = innerHeight; });
+
+// ----- âm thanh, giọng đọc -----
+let amThanh = null;
+function keu(ds, kieu = 'triangle', cach = 0.1, to = 0.4) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    if (amThanh.state === 'suspended') amThanh.resume();
+    ds.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + i * cach;
+      o.frequency.value = f; o.type = kieu; g.gain.setValueAtTime(to, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      o.connect(g); g.connect(amThanh.destination); o.start(t); o.stop(t + 0.22);
+    });
+  } catch (e) {}
+}
+let giong = null;
+function timGiong() { if (!window.speechSynthesis) return; const ds = speechSynthesis.getVoices().filter(v => /^vi/i.test(v.lang)); giong = ds.find(v => /natural|online|hoaimy/i.test(v.name)) || ds[0] || null; }
+if (window.speechSynthesis) { timGiong(); speechSynthesis.onvoiceschanged = timGiong; }
+// Tự đọc câu mới, nút loa để nghe lại (cô Điệp dặn 16/10/2026)
+let choDoc = false;
+document.addEventListener('click', e => { if (e.target.closest('.nut-nghe, #nut-loa, #nghe, #nut-nghe')) { choDoc = true; setTimeout(() => choDoc = false, 0); } }, true);
+function noi(chu) { if (!choDoc) return; if (!giong) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(chu); u.voice = giong; u.lang = giong.lang; u.rate = 0.9; speechSynthesis.speak(u); }
+function phaoGiay(n) {
+  const p = $('phao'); p.textContent = '';
+  for (let i = 0; i < n; i++) { const g = document.createElement('i'); g.style.left = Math.random() * 100 + 'vw'; g.style.background = MAU[i % MAU.length]; g.style.animationDuration = (2 + Math.random() * 2.5) + 's'; g.style.animationDelay = Math.random() * .8 + 's'; p.appendChild(g); }
+  setTimeout(() => { p.textContent = ''; }, 6000);
+}
+
+// ----- quay chọn bạn -----
+let dangQuay = false;
+function ungVien() { const c = HS.map((_, i) => i).filter(i => !khongLap || !daGoi.has(i)); return c.length ? c : null; }
+$('quay').onclick = () => {
+  if (dangQuay) return;
+  const c = ungVien();
+  if (!c) { moThe(`<div class="ten-to">Cả lớp đã được gọi hết rồi!</div><div class="hang"><button class="nut hong" id="lam-lai">Gọi lại từ đầu</button><button class="nut xam" id="dong">Đóng</button></div>`); $('lam-lai').onclick = () => { daGoi.clear(); luu('daGoi', []); capNhatDem(); dongThe(); }; $('dong').onclick = dongThe; return; }
+  dangQuay = true; $('quay').disabled = true;
+  const chon = c[Math.floor(Math.random() * c.length)];
+  tocNhan = 5; let t = 0, cho = 70, truoc = -1;
+  const nhay = () => {
+    if (truoc >= 0) bong[truoc].el.classList.remove('sang');
+    const k = t < 22 ? c[Math.floor(Math.random() * c.length)] : chon;
+    bong[k].el.classList.add('sang'); truoc = k;
+    keu([500 + Math.random() * 500], 'square', 0, 0.12);
+    t++; tocNhan = Math.max(0.15, tocNhan * 0.9); cho *= 1.09;
+    if (t <= 22) setTimeout(nhay, cho);
+    else setTimeout(() => { bong[chon].el.classList.remove('sang'); tocNhan = 1; dangQuay = false; $('quay').disabled = false; chonBan(chon); }, 600);
+  };
+  nhay();
+};
+let banDangGoi = -1;
+function chonBan(i) {
+  banDangGoi = i; daGoi.add(i); lichSu.push(i); luu('daGoi', [...daGoi]); luu('lichSu', lichSu); capNhatDem();
+  phaoGiay(60); keu([523, 659, 784, 1047]);
+  const h = HS[i];
+  moThe(`<div class="nhan">👑 Bạn may mắn</div>${matHTML(i, 'anh-to')}<div class="ten-to">${h.goi}</div><div class="ho-ten">${h.ten}</div>
+    <div class="hang"><button class="nut xam" id="quay-tiep">🔄 Quay tiếp</button><button class="nut hong" id="hoi-bai">📖 Hỏi bài</button></div>`, '#fcc419');
+  $('the').querySelector('.anh-to').style.position = 'relative';
+  noi(`Xin chúc mừng bạn ${h.goi}`);
+  $('quay-tiep').onclick = dongThe;
+  $('hoi-bai').onclick = hoiBai;
+}
+let conLaiHoi = [];
+function hoiBai() {
+  if (!conLaiHoi.length) conLaiHoi = tron(HOI_BAI);
+  const [cau, dap] = conLaiHoi.pop(), h = HS[banDangGoi];
+  moThe(`<div class="nhan">📖 Câu hỏi cho ${h.goi}</div><div class="cau">${cau}</div><div class="dap-an" id="dap" hidden>${dap}</div>
+    <div class="hang"><button class="nut xam" id="nghe">🔊 Nghe</button><button class="nut" id="hien">Xem đáp án</button></div>
+    <div class="hang"><button class="nut la" id="dung">⭐ Đúng rồi</button><button class="nut xam" id="chua">Chưa đúng</button><button class="nut xam" id="doi">Câu khác</button></div>`, '#7048e8');
+  noi(cau.replace(/"/g, ''));
+  $('nghe').onclick = () => noi(cau.replace(/"/g, ''));
+  $('hien').onclick = () => { $('dap').hidden = false; };
+  $('doi').onclick = hoiBai;
+  $('dung').onclick = () => {
+    sao[banDangGoi] = (sao[banDangGoi] || 0) + 1; luu('sao', sao); capNhatSao();
+    phaoGiay(80); keu([392, 523, 659, 784, 1047]); noi(`Giỏi quá! ${h.goi} được một ngôi sao`);
+    moThe(`<div class="sao" style="font-family:var(--emoji);font-size:80px">⭐</div><div class="ten-to">${h.goi} giỏi quá!</div><div class="ho-ten">Có ${sao[banDangGoi]} ngôi sao</div><button class="nut hong" id="ok">Quay tiếp</button>`, '#fcc419');
+    $('ok').onclick = dongThe;
+  };
+  $('chua').onclick = () => { noi(`Không sao, ${h.goi} cố gắng lần sau nhé`); dongThe(); };
+}
+function moThe(html, mau) { $('the').style.setProperty('--mau', mau || '#7048e8'); $('the').innerHTML = html; $('phu').hidden = false; }
+function dongThe() { $('phu').hidden = true; if (window.speechSynthesis) speechSynthesis.cancel(); }
+
+function capNhatSao() { bong.forEach(b => { const s = b.el.querySelector('.sao'), n = sao[b.i] || 0; s.hidden = !n; s.textContent = '⭐' + n; b.el.classList.toggle('da-goi', khongLap && daGoi.has(b.i)); }); }
+function capNhatDem() {
+  $('dem-tong').textContent = `👥 Tổng ${HS.length}`;
+  $('dem-con').textContent = `🎈 Đã gọi ${daGoi.size}`;
+  $('nut-lap').classList.toggle('bat', khongLap);
+  bong.forEach(b => b.el.classList.toggle('da-goi', khongLap && daGoi.has(b.i)));
+}
+$('nut-lap').onclick = () => { khongLap = !khongLap; luu('khongLap', khongLap); capNhatDem(); };
+$('nut-ls').onclick = () => {
+  const ds = lichSu.map((i, k) => `<div>${k + 1}. ${HS[i] ? HS[i].goi : '?'}</div>`).join('') || '<div>Chưa gọi bạn nào.</div>';
+  const bang = HS.map((h, i) => ({ h, n: sao[i] || 0 })).filter(x => x.n).sort((a, b) => b.n - a.n).map(x => `<div>⭐${x.n} ${x.h.goi}</div>`).join('') || '<div>Chưa có sao.</div>';
+  moThe(`<div class="nhan">📜 Lịch sử gọi tên</div><div class="ds-ls">${ds}</div><div class="nhan">⭐ Bảng sao</div><div class="ds-ls">${bang}</div>
+    <div class="hang"><button class="nut hong" id="xoa-ls">Bắt đầu buổi mới (xóa lịch sử và sao)</button><button class="nut xam" id="dong">Đóng</button></div>`);
+  $('dong').onclick = dongThe;
+  $('xoa-ls').onclick = () => { if (!confirm('Xóa lịch sử gọi tên và toàn bộ sao?')) return; lichSu = []; sao = {}; daGoi.clear(); luu('lichSu', []); luu('sao', {}); luu('daGoi', []); capNhatSao(); capNhatDem(); dongThe(); };
+};
+$('nut-ds').onclick = () => {
+  const coFile = !!window.DANH_SACH_LOP, dan = doc('ds');
+  moThe(`<div class="nhan">⚙ Danh sách lớp</div><div class="nho">${coFile && !dan ? 'Đang dùng danh sách trong file danh-sach-lop.js (' + window.DANH_SACH_LOP.hs.length + ' bạn).' : 'Mỗi dòng một tên học sinh. Danh sách chỉ lưu trong trình duyệt của máy này.'}</div>
+    <textarea id="o-ds" placeholder="Nguyễn Văn An&#10;Trần Thị Bình&#10;...">${HS.filter(h => !h.mau).map(h => h.ten).join('\n')}</textarea>
+    <div class="hang"><button class="nut la" id="luu-ds">Lưu danh sách</button>${dan ? '<button class="nut xam" id="bo-ds">Dùng lại file gốc</button>' : ''}<button class="nut xam" id="dong">Đóng</button></div>`);
+  $('dong').onclick = dongThe;
+  $('luu-ds').onclick = () => {
+    const ds = $('o-ds').value.split('\n').map(s => s.trim()).filter(Boolean);
+    if (!ds.length) return;
+    luu('ds', ds); sao = {}; daGoi.clear(); lichSu = []; luu('sao', {}); luu('daGoi', []); luu('lichSu', []);
+    HS = layDanhSach(); dungBong(); dongThe();
+  };
+  if (dan) $('bo-ds').onclick = () => { try { localStorage.removeItem(KHOA + 'ds'); } catch (e) {} HS = layDanhSach(); dungBong(); dongThe(); };
+};
+
+HS = layDanhSach();
+sao = doc('sao') || {}; daGoi = new Set(doc('daGoi') || []); lichSu = doc('lichSu') || [];
+dungBong(); chay();
+</script>
+</body>
+</html>

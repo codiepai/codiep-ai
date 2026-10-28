@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trò chơi cả lớp - CÔ ĐIỆP AI</title>
+<meta name="description" content="Rung chuông vàng, mảnh ghép bí ẩn, đua thuyền các tổ, hộp quà bí mật. Cô điều khiển trên tivi, cả lớp cùng chơi, dùng câu hỏi của chính thầy cô.">
+<link rel="icon" href="anh-nho.jpg">
+<script src="hinh/index.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378;--vien:#d3e6f8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:radial-gradient(900px 480px at 90% -10%,#9fd4ff55,transparent 60%),linear-gradient(180deg,#e3f3ff,#f6fbff 40%,#fff8e8);min-height:100vh}
+.bia{background:linear-gradient(135deg,#06285a,#0b5cab 55%,#1d7bd8);color:#fff;padding:18px 16px 50px;position:relative;overflow:hidden}
+.bia::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#ffffff33,transparent 65%)}
+.rong{max-width:960px;margin:0 auto;position:relative}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(28px,6vw,40px)/1.1 "Baloo 2",sans-serif;margin:10px 0 4px}.bia h1 b{color:var(--gold)}
+.bia p{margin:0;opacity:.92;max-width:600px}
+main{max-width:960px;margin:-30px auto 0;padding:0 14px 50px;position:relative}
+.the{background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(11,92,171,.16);padding:18px;margin-bottom:16px}
+.the h2{font:800 20px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 10px;display:flex;gap:8px;align-items:center}
+.buoc{flex:none;width:30px;height:30px;border-radius:50%;background:var(--gold);color:#5a3d00;display:grid;place-items:center;font:800 16px "Baloo 2",sans-serif}
+.games{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.games label{position:relative;border:2px solid var(--vien);border-radius:18px;padding:14px 10px;text-align:center;cursor:pointer;background:#fff;transition:.15s;display:block}
+.games label span{display:block;font-size:38px}.games label b{display:block;font:800 17px/1.15 "Baloo 2",sans-serif;color:var(--royal);margin-top:4px}.games label small{display:block;color:var(--phu);font-size:12.5px;line-height:1.3;margin-top:3px}
+.games input{position:absolute;opacity:0}
+.games input:checked+label{border-color:var(--blue);background:#eaf5ff;box-shadow:0 0 0 3px #9fd4ff88}
+label.l{display:block;font-weight:600;font-size:14px;margin:10px 0 5px;color:var(--phu)}
+select,textarea,input[type=text],input[type=number]{width:100%;font:500 16px "Be Vietnam Pro",sans-serif;padding:10px 12px;border:2px solid var(--vien);border-radius:14px;background:#fff;color:var(--ink)}
+textarea{min-height:110px;resize:vertical}
+.l2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ghi{color:var(--phu);font-size:13.5px;margin:6px 0 0}
+.nutl{border:0;border-radius:16px;padding:12px 20px;font:800 18px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 5px 0 #b86200;cursor:pointer}
+.nutl:active{transform:translateY(2px);box-shadow:0 3px 0 #b86200}
+.nutl.xanh{background:linear-gradient(180deg,#3d9bf0,#0b5cab);box-shadow:0 5px 0 #073d73}
+.nutl.xam{background:#fff;color:var(--royal);border:2px solid var(--vien);box-shadow:0 4px 0 var(--vien)}
+.nutl.luc{background:linear-gradient(180deg,#34c97a,#169a50);box-shadow:0 5px 0 #0d6e37}
+.go{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.an{display:none!important}
+
+/* ===== sân khấu ===== */
+.san{position:fixed;inset:0;z-index:20;overflow:auto;background:radial-gradient(1000px 600px at 80% -10%,#2a8cff55,transparent 60%),radial-gradient(800px 500px at 0% 100%,#7b5cff44,transparent 60%),linear-gradient(160deg,#041b3f,#06285a 55%,#0b5cab);color:#fff;padding:14px clamp(14px,3vw,36px) 28px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.top b{font:800 clamp(18px,2.6vw,26px) "Baloo 2",sans-serif;color:var(--gold)}
+.top button{border:1.5px solid #ffffff55;background:#ffffff1a;color:#fff;border-radius:12px;padding:8px 14px;font:700 14px "Be Vietnam Pro";cursor:pointer}
+.cauhoi{background:#ffffff14;border:1px solid #ffffff33;border-radius:24px;padding:clamp(14px,2.5vw,28px);text-align:center;backdrop-filter:blur(6px)}
+.cauhoi .so{font:700 15px "Be Vietnam Pro";color:#bcd7f5}
+.cauhoi .nd{font:800 clamp(26px,4.6vw,54px)/1.25 "Baloo 2",sans-serif;margin:6px 0 10px;white-space:pre-line}
+.cauhoi img.hq{max-height:34vh;max-width:70%;border-radius:14px;margin:4px auto 10px;display:block}
+.dap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dap button{display:flex;align-items:center;gap:14px;text-align:left;border:0;background:#fff;color:var(--ink);border-radius:20px;padding:clamp(10px,1.6vw,18px);font:700 clamp(20px,3vw,36px)/1.2 "Be Vietnam Pro",sans-serif;cursor:default;box-shadow:0 6px 0 #00000033}
+.dap button b{flex:none;width:1.7em;height:1.7em;border-radius:50%;display:grid;place-items:center;background:#eaf5ff;color:var(--royal);font:800 .9em "Baloo 2"}
+.dap button.dung{background:#dff8e8;box-shadow:0 6px 0 #1b8f4b,0 0 0 4px #4ade80;animation:nhun .5s}
+.dap button.sai{background:#ffe9ea;box-shadow:0 6px 0 #b5353a;animation:lac .4s}
+.dap.bam button{cursor:pointer}
+.dap.bam button:hover{transform:translateY(-2px)}
+@keyframes nhun{50%{transform:scale(1.04)}}@keyframes lac{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.dk{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.dk .nutl{font-size:clamp(16px,2vw,22px)}
+.dh{font:800 clamp(48px,9vw,96px)/1 "Baloo 2",sans-serif;color:var(--gold);text-shadow:0 4px 0 #00000044}
+.dh.het{color:#ff6b6b;animation:nhay .5s infinite}
+@keyframes nhay{50%{opacity:.4}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.chips button{border:2px solid #ffffff55;background:#ffffff1f;color:#fff;border-radius:999px;padding:7px 15px;font:700 clamp(15px,1.8vw,20px) "Be Vietnam Pro";cursor:pointer}
+.chips button.out{background:#e5484d;border-color:#ff9b9d;text-decoration:line-through;opacity:.8}
+.tb{min-height:1.4em;font:800 clamp(22px,3.4vw,40px) "Baloo 2";margin-top:10px}
+/* mảnh ghép */
+.manh{position:relative;width:min(92vw,460px);aspect-ratio:1;margin:8px auto;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 14px 40px #00000066}
+.manh img{position:absolute;inset:6%;width:88%;height:88%;object-fit:contain}
+.manh .luoi{position:absolute;inset:0;display:grid}
+.manh .o{background:linear-gradient(135deg,#1d7bd8,#0b5cab);border:2px solid #ffffff55;display:grid;place-items:center;font:800 clamp(26px,5vw,48px) "Baloo 2";color:#ffffffcc;transition:opacity .6s,transform .6s}
+.manh .o.mo{opacity:0;transform:scale(.6);pointer-events:none}
+.hai{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+/* đua thuyền */
+.song{position:relative;border-radius:22px;background:linear-gradient(180deg,#5cc3ff,#2a95e8);padding:10px 12px;box-shadow:0 8px 0 #0b5cab88 inset}
+.lan{position:relative;height:clamp(54px,8vw,78px);border-bottom:3px dashed #ffffff88;display:flex;align-items:center}
+.lan:last-child{border:0}
+.lan .nh{position:absolute;left:8px;top:2px;font:800 clamp(13px,1.6vw,18px) "Be Vietnam Pro";color:#fff;text-shadow:0 1px 3px #0006}
+.lan .th{position:absolute;bottom:4px;font-size:clamp(34px,5vw,56px);transition:left .7s cubic-bezier(.3,1.3,.5,1);transform:translateX(-10%)}
+.lan .dich{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:clamp(26px,4vw,44px)}
+.doi{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.doi button{border:0;border-radius:16px;padding:12px 20px;font:800 clamp(16px,2vw,22px) "Be Vietnam Pro";color:#fff;cursor:pointer;box-shadow:0 5px 0 #00000044}
+/* hộp quà */
+.qua{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(90px,15vw,150px),1fr));gap:14px;margin-top:12px}
+.qua button{aspect-ratio:1;border:0;border-radius:22px;font:800 clamp(34px,6vw,64px) "Baloo 2";color:#fff;background:linear-gradient(145deg,#ff6a3d,#ff3d7f);box-shadow:0 8px 0 #9c1f47,0 14px 24px #0005;cursor:pointer;position:relative}
+.qua button:hover{transform:translateY(-3px)}
+.qua button.xong{background:#ffffff22;box-shadow:none;cursor:default;font-size:clamp(36px,6vw,66px);color:#fff}
+.qua button.xong:hover{transform:none}
+.diem{font:800 clamp(30px,5vw,54px) "Baloo 2";color:var(--gold)}
+.pop{position:fixed;inset:0;z-index:30;background:rgba(2,16,40,.78);display:grid;place-items:center;padding:14px;overflow:auto}
+.pop .cauhoi{max-width:1000px;width:100%;background:linear-gradient(160deg,#0b3a7a,#0b5cab)}
+.ket{text-align:center;padding:30px 10px}
+.ket .to{font:800 clamp(34px,7vw,78px)/1.1 "Baloo 2",sans-serif;color:var(--gold)}
+.ket .em{font-size:clamp(60px,12vw,140px)}
+@media (max-width:760px){.games{grid-template-columns:repeat(2,1fr)}.l2{grid-template-columns:1fr}.hai{grid-template-columns:1fr}.dap{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bia"><div class="rong">
+  <a href="./">&larr; Về trang chủ CÔ ĐIỆP AI</a>
+  <h1>Trò chơi <b>cả lớp</b></h1>
+  <p>Cô điều khiển trên tivi, cả lớp cùng chơi. Dùng câu hỏi của chính thầy cô, không cần đăng nhập, không cần học sinh có điện thoại.</p>
+</div></header>
+
+<main id="cai">
+  <section class="the">
+    <h2><span class="buoc">1</span>Chọn trò chơi</h2>
+    <div class="games" id="games">
+      <div><input type="radio" name="g" id="g1" value="chuong" checked><label for="g1"><span>🔔</span><b>Rung chuông vàng</b><small>Cả lớp viết đáp án, ai sai bị loại, người cuối cùng thắng</small></label></div>
+      <div><input type="radio" name="g" id="g2" value="manh"><label for="g2"><span>🧩</span><b>Mảnh ghép bí ẩn</b><small>Trả lời đúng mở một mảnh, đoán xem hình gì</small></label></div>
+      <div><input type="radio" name="g" id="g3" value="thuyen"><label for="g3"><span>⛵</span><b>Đua thuyền các tổ</b><small>Tổ nào trả lời đúng thì thuyền tiến lên</small></label></div>
+      <div><input type="radio" name="g" id="g4" value="qua"><label for="g4"><span>🎁</span><b>Hộp quà bí mật</b><small>Chọn hộp quà, trả lời đúng để mở quà</small></label></div>
+    </div>
+  </section>
+
+  <section class="the">
+    <h2><span class="buoc">2</span>Bộ câu hỏi</h2>
+    <label class="l" for="nguon">Lấy câu hỏi từ</label>
+    <select id="nguon">
+      <option value="san">Bộ câu hỏi soạn sẵn theo bài (chọn bài là có ngay)</option>
+      <option value="mau">Bộ câu hỏi mẫu Toán lớp 1 (để thử)</option>
+      <option value="may">Câu hỏi cô đã soạn trong công cụ "Tạo trò chơi" (lưu trên máy này)</option>
+      <option value="dan">Dán câu hỏi vào đây</option>
+    </select>
+    <div id="o-san">
+      <div class="l2">
+        <div><label class="l" for="san-mon">Môn</label><select id="san-mon"></select></div>
+        <div></div>
+      </div>
+      <div class="l2">
+        <div><label class="l" for="san-tu">Từ bài</label><select id="san-tu"></select></div>
+        <div><label class="l" for="san-den">Đến bài</label><select id="san-den"></select></div>
+      </div>
+      <p class="ghi">Muốn chơi một bài thì chọn "Từ bài" là đủ. Muốn ôn nhiều bài thì chọn thêm "Đến bài", câu hỏi của các bài sẽ gộp lại.</p>
+    </div>
+    <div id="o-dan" class="an"><label class="l" for="dan">Dán từ Word hoặc Excel (Câu 1: ... A. ... B. ... Đáp án: B)</label><textarea id="dan" placeholder="Câu 1: 3 + 4 = ?&#10;A. 6&#10;B. 7&#10;C. 8&#10;Đáp án: B"></textarea></div>
+    <p class="ghi" id="nguon-ghi"></p>
+  </section>
+
+  <section class="the">
+    <h2><span class="buoc">3</span>Thiết lập</h2>
+    <div class="l2">
+      <div id="o-tg"><label class="l" for="tg">Thời gian mỗi câu</label><select id="tg"><option value="0">Không đếm giờ</option><option value="10">10 giây</option><option value="15" selected>15 giây</option><option value="20">20 giây</option><option value="30">30 giây</option><option value="60">60 giây</option></select></div>
+      <div id="o-xao"><label class="l" for="xao">Thứ tự câu hỏi</label><select id="xao"><option value="1">Xáo trộn</option><option value="0">Giữ nguyên</option></select></div>
+    </div>
+    <div id="o-hs" class="an"><label class="l" for="hs">Tên học sinh (mỗi bạn một dòng, hoặc để trống để dùng số thứ tự)</label><textarea id="hs" placeholder="Bé An&#10;Bé Bình&#10;Bé Chi"></textarea><div class="go" style="margin-top:6px"><button class="nutl xam" id="lay">Lấy từ trang Quản lý lớp</button><label class="ghi" style="margin:0">hoặc số học sinh: <input type="number" id="sohs" value="30" min="2" max="60" style="width:80px;display:inline-block"></label></div></div>
+    <div id="o-to" class="an"><label class="l" for="soto">Số tổ</label><select id="soto"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select><p class="ghi">Tên tổ mặc định là Tổ 1, Tổ 2... Cô có thể sửa ngay trên màn hình chơi.</p></div>
+    <div class="go"><button class="nutl" id="bd">Bắt đầu chơi cả lớp</button></div>
+  </section>
+</main>
+
+<div class="san an" id="san"></div>
+
+<script src="cau-hoi-san.js"></script>
+<script>
+const $ = id => document.getElementById(id), r =n => Math.floor(Math.random() * n);
+const tron = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--){ const j = r(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const CHU = 'ABCD', pick = a => a[r(a.length)];
+function bip(ok){ try { const ac = bip.ac = bip.ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); const t = ac.currentTime, nho = (f, d, v) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(v, t + d); g.gain.exponentialRampToValueAtTime(.001, t + d + .3); o.connect(g); g.connect(ac.destination); o.start(t + d); o.stop(t + d + .32); };
+  if (ok === 'tick') nho(700, 0, .15); else if (ok === 'het'){ nho(440, 0, .3); nho(330, .2, .3); nho(220, .4, .3); } else if (ok){ nho(660, 0, .3); nho(880, .12, .3); nho(1320, .24, .28); } else { nho(220, 0, .3); nho(165, .15, .3); } } catch (e) {} }
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+/* ===== câu hỏi ===== */
+const MAU = [
+  ['3 + 4 = ?', ['6', '7', '8'], 1], ['5 + 2 = ?', ['6', '7', '8', '9'], 1], ['8 - 3 = ?', ['4', '5', '6'], 1], ['Số lớn nhất trong 3, 9, 5 là số nào?', ['3', '9', '5'], 1],
+  ['6 + 0 = ?', ['0', '6', '7'], 1], ['10 - 4 = ?', ['5', '6', '7'], 1], ['2 + 3 + 4 = ?', ['8', '9', '10'], 1], ['Số liền sau của 7 là số nào?', ['6', '8', '9'], 1],
+  ['Hình nào có 3 cạnh?', ['Hình vuông', 'Hình tam giác', 'Hình tròn'], 1], ['9 - 9 = ?', ['0', '1', '9'], 0], ['4 + 4 = ?', ['6', '7', '8', '9'], 2], ['Số bé nhất trong 6, 2, 8 là số nào?', ['6', '2', '8'], 1],
+  ['7 gồm 3 và mấy?', ['3', '4', '5'], 1], ['5 + 5 = ?', ['9', '10', '11'], 1], ['Con xúc xắc có hình dạng khối nào?', ['Khối lập phương', 'Khối hộp chữ nhật'], 0], ['1 + 8 = ?', ['7', '8', '9'], 2]
+].map(x => ({c: x[0], a: x[1], d: x[2]}));
+function phanTich(txt){
+  const out = []; let cur = null; const them = () => { if (cur && cur.c && cur.a.length >= 2){ if (cur.d < 0 || cur.d >= cur.a.length) cur.d = 0; out.push({c: cur.c, a: cur.a.slice(0, 4), d: cur.d}); } cur = null; };
+  for (const l of txt.replace(/\r/g, '').split('\n').map(x => x.trim())){
+    if (!l) continue; let m;
+    if ((m = l.match(/^(\*?)\s*([A-Da-d])\s*[.):\-]\s*(.+)$/)) && cur){ cur.a.push(m[3].trim()); if (m[1]) cur.d = cur.a.length - 1; continue; }
+    if ((m = l.match(/^(?:đáp án|dap an|đ\/a)\s*[:\-]?\s*([A-Da-d])/i)) && cur){ cur.d = 'ABCD'.indexOf(m[1].toUpperCase()); continue; }
+    const q = l.replace(/^(câu|cau)\s*\d+\s*[:.)\-]?\s*/i, '').replace(/^\d+\s*[.):]\s*/, '');
+    if (cur && cur.a.length === 0){ cur.c += ' ' + q; continue; } them(); cur = {c: q, a: [], d: 0};
+  }
+  them(); return out;
+}
+/* ===== bộ câu hỏi soạn sẵn theo bài (cau-hoi-san.js) ===== */
+const SAN = window.CAUHOI_SAN || [];
+function dienSelect(id, ds, giu){ $(id).innerHTML = ds.map((t, i) => '<option value="' + i + '">' + esc(t) + '</option>').join(''); if (giu != null && giu < ds.length) $(id).value = giu; }
+function dienBai(){ const ds = (SAN[+$('san-mon').value] || {bai: []}).bai.map(b => b.ten); dienSelect('san-tu', ds); dienSelect('san-den', ds); }
+function layCauSan(){
+  const m = SAN[+$('san-mon').value]; if (!m) return [];
+  const a = +$('san-tu').value, b = Math.max(a, +$('san-den').value), out = [];
+  for (let i = a; i <= b; i++) if (m.bai[i]) m.bai[i].q.forEach(q => out.push({c: q.c, a: q.a.slice(), d: q.d, i: q.i || ''}));
+  return out;
+}
+dienSelect('san-mon', SAN.map(m => m.mon)); dienBai();
+$('san-mon').onchange = () => { dienBai(); capNhat(); };
+$('san-tu').onchange = () => { $('san-den').value = $('san-tu').value; capNhat(); };
+$('san-den').onchange = capNhat;
+function layCauHoi(){
+  const n = $('nguon').value;
+  if (n === 'san') return layCauSan();
+  if (n === 'mau') return MAU.slice();
+  if (n === 'dan') return phanTich($('dan').value);
+  try { const S = JSON.parse(localStorage.getItem('codiep-tao-tro-choi')); return (S.q || []).map(q => { const a = q.a.map(x => x.trim()), dd = a[q.d], l = a.filter(Boolean); return {c: q.c.trim(), a: l, d: l.indexOf(dd), i: q.i || ''}; }).filter(q => q.c && q.a.length >= 2 && q.d >= 0); } catch (e) { return []; }
+}
+function capNhat(){
+  const g = document.querySelector('input[name=g]:checked').value, nguon = $('nguon').value;
+  $('o-dan').classList.toggle('an', nguon !== 'dan'); $('o-san').classList.toggle('an', nguon !== 'san'); $('o-hs').classList.toggle('an', g !== 'chuong'); $('o-to').classList.toggle('an', g !== 'thuyen');
+  $('o-tg').classList.toggle('an', g === 'manh' || g === 'qua');
+  const n = layCauHoi().length; $('nguon-ghi').textContent = n ? 'Có ' + n + ' câu hỏi sẵn sàng.' : (nguon === 'may' ? 'Chưa có câu hỏi nào trên máy này. Cô vào "Tạo trò chơi từ câu hỏi" soạn trước, hoặc chọn dán câu hỏi.' : 'Chưa nhận ra câu hỏi nào.');
+}
+document.querySelectorAll('input[name=g]').forEach(x => x.onchange = capNhat); $('nguon').onchange = capNhat; $('dan').oninput = capNhat;
+$('lay').onclick = () => { try { const L = JSON.parse(localStorage.getItem('codiep-lop-hoc')); if (L && L.ds && L.ds.length){ $('hs').value = L.ds.join('\n'); } else alert('Trang Quản lý lớp chưa có danh sách.'); } catch (e) { alert('Chưa đọc được danh sách lớp.'); } };
+
+/* ===== sân khấu chung ===== */
+let QS = [], qi = 0, hen = null, giay = 0, tg = 0;
+const san = $('san');
+function vao(tieude, noidung){ san.innerHTML = '<div class="top"><b>' + esc(tieude) + '</b><button id="thoat">Thoát trò chơi</button></div>' + noidung; san.classList.remove('an'); document.body.style.overflow = 'hidden'; $('thoat').onclick = () => { if (confirm('Thoát trò chơi?')) ra(); }; }
+function ra(){ clearInterval(hen); san.classList.add('an'); san.innerHTML = ''; document.body.style.overflow = ''; }
+function dapHtml(c, bam){ return '<div class="dap' + (bam ? ' bam' : '') + '" id="dap">' + c.a.map((x, k) => '<button data-k="' + k + '"><b>' + CHU[k] + '</b><span>' + esc(x) + '</span></button>').join('') + '</div>'; }
+function cauHtml(c, stt, tong){ return '<div class="cauhoi"><div class="so">Câu ' + stt + '/' + tong + '</div><div class="nd">' + esc(c.c) + '</div>' + (c.i ? '<img class="hq" src="' + c.i + '" alt="">' : '') + '</div>'; }
+function hienDap(c){ [...document.querySelectorAll('#dap button')].forEach(b => b.classList.toggle('dung', +b.dataset.k === c.d)); }
+function dem(giayMax, hien, het){ clearInterval(hen); giay = giayMax; hien(giay); if (!giayMax) return; hen = setInterval(() => { giay--; hien(giay); if (giay > 0 && giay <= 5) bip('tick'); if (giay <= 0){ clearInterval(hen); bip('het'); het && het(); } }, 1000); }
+
+$('bd').onclick = () => {
+  const g = document.querySelector('input[name=g]:checked').value; QS = layCauHoi();
+  if (!QS.length){ alert('Cô cần có ít nhất 1 câu hỏi.'); return; }
+  if ($('xao').value === '1') QS = tron(QS); tg = +$('tg').value; qi = 0;
+  ({chuong, manh, thuyen, qua})[g]();
+};
+
+/* ===== 1. RUNG CHUÔNG VÀNG ===== */
+function chuong(){
+  let ds = $('hs').value.split('\n').map(x => x.trim()).filter(Boolean);
+  if (!ds.length) ds = Array.from({length: Math.max(2, Math.min(60, +$('sohs').value || 30))}, (_, i) => String(i + 1));
+  const out = new Set(); let daDap = false;
+  vao('🔔 Rung chuông vàng', '<div id="khung"></div><div class="chips" id="chips"></div><div class="tb" id="tb" style="text-align:center"></div>');
+  const chips = () => { $('chips').innerHTML = ''; ds.forEach(n => { const b = document.createElement('button'); b.textContent = n; if (out.has(n)) b.className = 'out'; b.onclick = () => { if (!daDap) return; out.has(n) ? out.delete(n) : out.add(n); chips(); dem2(); }; $('chips').appendChild(b); }); };
+  const dem2 = () => { $('tb').textContent = 'Còn ' + (ds.length - out.size) + '/' + ds.length + ' bạn'; };
+  const hien = () => {
+    daDap = false; const c = QS[qi];
+    $('khung').innerHTML = cauHtml(c, qi + 1, QS.length).replace('</div></div>', '</div></div>') + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, false) + '<div class="dh" id="dh" style="margin-top:8px"></div></div>'
+      + '<div class="dk"><button class="nutl luc" id="hd">Hiện đáp án</button><button class="nutl xanh an" id="tiep">Câu tiếp</button></div>';
+    $('hd').onclick = () => { clearInterval(hen); hienDap(c); daDap = true; $('hd').classList.add('an'); $('tiep').classList.remove('an'); $('tb').textContent = 'Bấm vào tên bạn trả lời sai để loại. ' ; dem2(); bip(true); };
+    $('tiep').onclick = () => { if (ds.length - out.size <= 1 || qi + 1 >= QS.length) return ketThuc(); qi++; hien(); };
+    dem(tg, s => { if ($('dh')){ $('dh').textContent = tg ? s : ''; $('dh').classList.toggle('het', tg && s <= 5); } }, () => {});
+    if (!tg) $('dh').textContent = '';
+    chips(); $('tb').textContent = '';
+  };
+  const ketThuc = () => {
+    clearInterval(hen); const con = ds.filter(n => !out.has(n));
+    san.innerHTML = '<div class="top"><b>🔔 Rung chuông vàng</b><button id="thoat">Đóng</button></div><div class="ket"><div class="em">🏆</div><div class="to">' + (con.length ? (con.length === 1 ? 'Người chiến thắng: ' + esc(con[0]) : 'Những bạn vượt qua:') : 'Cả lớp đã bị loại') + '</div>' + (con.length > 1 ? '<div class="chips">' + con.map(x => '<button>' + esc(x) + '</button>').join('') + '</div>' : '') + '<div class="dk"><button class="nutl" id="lai">Chơi lại</button></div></div>';
+    $('thoat').onclick = ra; $('lai').onclick = () => { QS = $('xao').value === '1' ? tron(layCauHoi()) : layCauHoi(); out.clear(); qi = 0; chuong(); }; bip(true);
+  };
+  hien();
+}
+
+/* ===== 2. MẢNH GHÉP BÍ ẨN ===== */
+function manh(){
+  const dsH = (typeof HINH !== 'undefined' ? HINH.filter(h => ['Động vật', 'Trái cây', 'Phương tiện giao thông', 'Chim và con vật bay', 'Rau củ', 'Hoa', 'Bánh', 'Đồ chơi xếp hình'].includes(h[2]) && h[0].split(' ').length <= 3) : []);
+  const hinh = dsH.length ? pick(dsH) : null, n = Math.min(QS.length, 9), cot = n <= 4 ? 2 : 3, hang = Math.ceil(n / cot);
+  QS = QS.slice(0, n); let moTong = 0; const mo = new Set(); let xong = false;
+  vao('🧩 Mảnh ghép bí ẩn', '<div class="hai"><div><div class="manh" id="manh">' + (hinh ? '<img src="hinh/' + hinh[1] + '.webp" alt="">' : '<div style="display:grid;place-items:center;height:100%;font-size:120px">🎁</div>') + '<div class="luoi" id="luoi" style="grid-template-columns:repeat(' + cot + ',1fr);grid-template-rows:repeat(' + hang + ',1fr)"></div></div><div class="tb" id="tb" style="text-align:center"></div></div><div id="ben"></div></div>');
+  for (let k = 0; k < cot * hang; k++){ const o = document.createElement('div'); o.className = 'o'; o.textContent = k < n ? k + 1 : ''; if (k >= n) o.style.display = 'none'; o.dataset.k = k; $('luoi').appendChild(o); }
+  const moManh = () => { const con = [...document.querySelectorAll('#luoi .o')].filter(o => +o.dataset.k < n && !o.classList.contains('mo')); if (con.length) pick(con).classList.add('mo'); moTong++; };
+  const hien = () => {
+    const c = QS[qi]; $('ben').innerHTML = cauHtml(c, qi + 1, n) + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, true) + '</div><div class="dk"><button class="nutl xanh an" id="tiep">Câu tiếp</button><button class="nutl luc" id="doan">Đoán hình</button></div>';
+    $('dap').onclick = e => { const b = e.target.closest('button'); if (!b || xong) return; const dung = +b.dataset.k === c.d; hienDap(c); if (!dung) b.classList.add('sai'); $('dap').classList.remove('bam');
+      $('tb').textContent = dung ? 'Đúng rồi! Mở 1 mảnh ghép' : 'Chưa đúng, không mở mảnh nào'; $('tb').style.color = dung ? '#7dffa8' : '#ff9b9d'; bip(dung); if (dung) moManh();
+      $('tiep').classList.remove('an'); if (qi + 1 >= n) $('tiep').textContent = 'Xem hình'; };
+    $('tiep').onclick = () => { if (qi + 1 >= n) return lat(); qi++; $('tb').textContent = ''; hien(); };
+    $('doan').onclick = lat;
+  };
+  const lat = () => { xong = true; document.querySelectorAll('#luoi .o').forEach(o => o.classList.add('mo')); $('tb').style.color = '#ffd978'; $('tb').innerHTML = hinh ? 'Đây là: <b>' + esc(hinh[0]) + '</b>' : 'Hết các mảnh ghép'; $('ben').innerHTML = '<div class="ket"><div class="to">Con đã mở ' + moTong + '/' + n + ' mảnh</div><div class="dk"><button class="nutl" id="lai">Chơi lại</button></div></div>'; $('lai').onclick = () => { QS = tron(layCauHoi()); qi = 0; manh(); }; bip(true); };
+  hien();
+}
+
+/* ===== 3. ĐUA THUYỀN CÁC TỔ ===== */
+function thuyen(){
+  const soTo = +$('soto').value, DICH = 8, MAUT = ['#e5484d', '#1d7bd8', '#22b35e', '#f77f00', '#7b5cff', '#e64980'], TH = ['⛵', '🚤', '🛶', '🚢', '⛴️', '🛥️'];
+  const ten = Array.from({length: soTo}, (_, i) => 'Tổ ' + (i + 1)), diem = Array(soTo).fill(0); let thang = -1;
+  vao('⛵ Đua thuyền các tổ', '<div class="song" id="song"></div><div id="khung" style="margin-top:12px"></div>');
+  const veSong = () => { $('song').innerHTML = ten.map((t, i) => '<div class="lan"><span class="nh" contenteditable="true" spellcheck="false" data-i="' + i + '">' + esc(t) + '</span><span class="th" style="left:calc(' + (diem[i] / DICH * 82) + '% + 6px)">' + TH[i] + '</span><span class="dich">🏁</span></div>').join('');
+    $('song').querySelectorAll('.nh').forEach(e => e.oninput = () => ten[+e.dataset.i] = e.textContent.trim() || 'Tổ ' + (+e.dataset.i + 1)); };
+  const hien = () => {
+    const c = QS[qi % QS.length]; $('khung').innerHTML = cauHtml(c, qi + 1, QS.length) + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, false) + '<div class="dh" id="dh" style="margin-top:8px"></div></div><div class="doi" id="doi"></div><div class="dk"><button class="nutl luc" id="hd">Hiện đáp án</button><button class="nutl xanh" id="tiep">Câu tiếp</button></div>';
+    ten.forEach((t, i) => { const b = document.createElement('button'); b.style.background = MAUT[i]; b.textContent = t + ' đúng +1'; b.onclick = () => { if (thang >= 0) return; diem[i]++; veSong(); bip(true); if (diem[i] >= DICH){ thang = i; ketThuc(); } }; $('doi').appendChild(b); });
+    $('hd').onclick = () => { clearInterval(hen); hienDap(c); bip(true); };
+    $('tiep').onclick = () => { qi++; hien(); };
+    dem(tg, s => { if ($('dh')){ $('dh').textContent = tg ? s : ''; $('dh').classList.toggle('het', tg && s <= 5); } });
+    if (!tg) $('dh').textContent = '';
+  };
+  const ketThuc = () => { clearInterval(hen); $('khung').innerHTML = '<div class="ket"><div class="em">🏆</div><div class="to">' + esc(ten[thang]) + ' về nhất!</div><div class="dk"><button class="nutl" id="lai">Chơi lại</button></div></div>'; $('lai').onclick = () => { QS = $('xao').value === '1' ? tron(layCauHoi()) : layCauHoi(); qi = 0; thuyen(); }; bip(true); };
+  veSong(); hien();
+}
+
+/* ===== 4. HỘP QUÀ BÍ MẬT ===== */
+function qua(){
+  const n = Math.min(QS.length, 16); QS = QS.slice(0, n); const QUA = [['⭐', 1], ['🎁', 2], ['🍀', 1], ['🍭', 1], ['💎', 3], ['🏆', 2]];
+  let diem = 0, mo = 0; const dongNut = [];
+  vao('🎁 Hộp quà bí mật', '<div style="text-align:center"><span class="diem" id="diem">0 điểm</span></div><div class="qua" id="qua"></div>');
+  for (let k = 0; k < n; k++){ const b = document.createElement('button'); b.textContent = k + 1; b.onclick = () => { if (b.classList.contains('xong')) return; hoi(k, b); }; $('qua').appendChild(b); }
+  const hoi = (k, b) => {
+    const c = QS[k], p = document.createElement('div'); p.className = 'pop'; p.innerHTML = cauHtml(c, k + 1, n).replace('<div class="cauhoi">', '<div class="cauhoi">') ;
+    const w = p.firstChild; w.insertAdjacentHTML('beforeend', dapHtml(c, true) + '<div class="tb" id="tb2"></div><div class="dk"><button class="nutl xam" id="dong">Đóng</button></div>');
+    document.body.appendChild(p); let xong = false;
+    p.querySelector('#dap').onclick = e => { const x = e.target.closest('button'); if (!x || xong) return; xong = true; const dung = +x.dataset.k === c.d; hienDap(c); if (!dung) x.classList.add('sai'); p.querySelector('#dap').classList.remove('bam');
+      const tb = p.querySelector('#tb2'); b.classList.add('xong'); mo++;
+      if (dung){ const q = pick(QUA); diem += q[1]; b.textContent = q[0]; tb.textContent = 'Đúng rồi! ' + q[0] + ' +' + q[1] + ' điểm'; tb.style.color = '#7dffa8'; $('diem').textContent = diem + ' điểm'; bip(true); }
+      else { b.textContent = '🌧️'; tb.textContent = 'Chưa đúng, hộp quà này rỗng'; tb.style.color = '#ff9b9d'; bip(false); }
+      if (mo >= n) tb.textContent += '. Đã mở hết hộp quà, cả lớp được ' + diem + ' điểm!'; };
+    p.querySelector('#dong').onclick = () => p.remove();
+  };
+}
+if (/nguon=may/.test(location.search)) $('nguon').value = 'may';
+{ const g = new URLSearchParams(location.search).get('g'), x = {chuong: 'g1', manh: 'g2', thuyen: 'g3', qua: 'g4'}[g]; if (x){ $(x).checked = true; setTimeout(() => $('cai').scrollIntoView(), 50); } }
+capNhat();
+</script>
+</body>
+</html>

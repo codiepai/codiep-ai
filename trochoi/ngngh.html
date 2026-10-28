@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hai ngôi nhà: ng, ngh, g, gh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* ĐỒ DÙNG ÔN TẬP: ng/ngh, g/gh (Tiếng Việt 1, đến Bài 35).
+     Chặng 0 Học luật: chạm chữ e ê i a o ô... xem chữ đó vào nhà nào.
+     Chặng 1 Chọn nhà. Chặng 2 Điền chữ. Chặng 3 Ai viết đúng.
+     Mở file trên máy ở lớp = cả lớp chơi trên tivi; mở bằng link web = con tự ôn ở nhà (có ?lop=... thì gửi kết quả cho cô). */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --chu: #12304a; --xanh: #0b5cab; --do: #e03131; --la: #2f9e44; --la-dam: #1e6b2e;
+    --cam: #f08c00; --cam-dam: #b86200; --tim: #ae3ec9;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  @media (max-aspect-ratio: 1/1) { :root { --u: min(0.62vh, 0.95vw); } }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font-family: var(--font); font-weight: 800; color: var(--chu); background: linear-gradient(#ffffff 0%, #e7f5ff 35%, #fff4e0 100%); display: flex; flex-direction: column; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 5px solid var(--xanh); outline-offset: 4px; }
+  header { display: flex; align-items: center; gap: calc(var(--u) * 2); padding: calc(var(--u) * 1.2) 16px; flex-wrap: wrap; justify-content: center; }
+  h1 { font-size: max(24px, calc(var(--u) * 5.5)); line-height: 1; color: var(--do); text-shadow: 0 3px 0 #fff; white-space: nowrap; }
+  .chang { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chang button { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 16px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+  .chang button.dang { background: var(--xanh); color: #fff; }
+  .chang button.xong::after { content: " ✓"; color: var(--la); }
+  .chang button.dang.xong::after { color: #b2f2bb; }
+  .chang button:disabled { cursor: default; }
+  main { flex: 1; min-height: 0; position: relative; }
+  .man { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 0 16px calc(var(--u) * 2); gap: calc(var(--u) * 1.6); overflow-y: auto; }
+  .hd { font-size: max(18px, calc(var(--u) * 3.6)); color: var(--xanh); text-align: center; background: rgba(255,255,255,.85); border-radius: 20px; padding: 2px 20px; text-wrap: balance; }
+  .nut-lon { font-size: max(22px, calc(var(--u) * 4.6)); padding: calc(var(--u) * .3) calc(var(--u) * 5); color: #fff; background: var(--la); border: none; border-radius: calc(var(--u) * 3); box-shadow: 0 7px 0 var(--la-dam); }
+  .nut-lon:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--la-dam); }
+  .nut-lon.cam { background: var(--cam); box-shadow: 0 7px 0 var(--cam-dam); }
+  .nut-nho { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 18px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+
+  /* hai ngôi nhà */
+  .nhas { display: flex; gap: calc(var(--u) * 6); justify-content: center; align-items: flex-end; width: 100%; }
+  .nha { position: relative; width: min(44%, calc(var(--u) * 62)); padding: calc(var(--u) * 3.2) calc(var(--u) * 2) calc(var(--u) * 2); border: 0; border-radius: 0 0 calc(var(--u) * 2.4) calc(var(--u) * 2.4); color: #fff; text-align: center; margin-top: calc(var(--u) * 5.5); line-height: 1.05; }
+  .nha::before { content: ""; position: absolute; left: -5%; right: -5%; bottom: 100%; height: calc(var(--u) * 5.5); background: inherit; clip-path: polygon(50% 0, 100% 100%, 0 100%); filter: brightness(.82); }
+  .nha.thuong { background: #1c7ed6; box-shadow: 0 8px 0 #12599b; }
+  .nha.dac { background: var(--cam); box-shadow: 0 8px 0 var(--cam-dam); }
+  .nha .ten { font-size: max(26px, calc(var(--u) * 7)); }
+  .nha .ten small { font-size: .55em; opacity: .9; display: block; }
+  .nha .cua { font-size: max(16px, calc(var(--u) * 3.2)); margin-top: calc(var(--u) * .8); background: rgba(255,255,255,.25); border-radius: 20px; padding: 0 14px; display: inline-block; }
+  button.nha:active { transform: translateY(5px); }
+  .nha.dung-roi { animation: nhay .5s; }
+  @keyframes nhay { 30% { transform: translateY(-14px) scale(1.04); } }
+  .nha.sai-roi, .tl.sai { animation: lac .4s; }
+  @keyframes lac { 20% { transform: translateX(-14px) rotate(-3deg); } 60% { transform: translateX(14px) rotate(3deg); } }
+
+  /* chặng 0: học luật */
+  .chips { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 1.6); justify-content: center; }
+  .chip { width: calc(var(--u) * 11); height: calc(var(--u) * 11); border-radius: calc(var(--u) * 2.4); border: 5px solid #b2d8f7; background: #fff; font-size: max(34px, calc(var(--u) * 7.5)); color: var(--chu); }
+  .chip.e { border-color: #ffd08a; color: var(--cam-dam); }
+  .chip.chon { transform: translateY(-6px) scale(1.08); box-shadow: 0 8px 0 rgba(0,0,0,.14); }
+  .chip.chon.e { background: #fff3d6; }
+  .chip.chon:not(.e) { background: #e2f1ff; }
+  .vd { min-height: calc(var(--u) * 21); display: flex; flex-wrap: wrap; gap: calc(var(--u) * 2.4); align-items: center; justify-content: center; background: rgba(255,255,255,.8); border-radius: calc(var(--u) * 3); padding: calc(var(--u) * 1.4) calc(var(--u) * 3); width: min(100%, calc(var(--u) * 140)); text-align: center; }
+  .vd .noi { width: 100%; font-size: max(20px, calc(var(--u) * 4.2)); }
+  .tu { display: flex; flex-direction: column; align-items: center; background: #fff; border-radius: calc(var(--u) * 2.4); padding: calc(var(--u) * .6) calc(var(--u) * 2.6); box-shadow: 0 6px 0 rgba(0,0,0,.1); font-size: max(34px, calc(var(--u) * 9)); line-height: 1.1; }
+  .tu .em { font-family: var(--emoji); font-size: .7em; }
+  .tu button { font-size: max(14px, calc(var(--u) * 2.6)); border: none; background: none; }
+  .d { color: var(--xanh); } .dh { color: var(--cam-dam); } .v { color: var(--do); }
+
+  /* chặng 1, 2, 3: câu hỏi */
+  .cau { background: #fff; border-radius: calc(var(--u) * 3.4); border: 6px solid #ffe066; padding: calc(var(--u) * 1.6) calc(var(--u) * 5); display: flex; align-items: center; gap: calc(var(--u) * 3); box-shadow: 0 8px 0 rgba(0,0,0,.1); }
+  .cau .em { font-family: var(--emoji); font-size: max(60px, calc(var(--u) * 14)); line-height: 1; }
+  .cau .chu { font-size: max(56px, calc(var(--u) * 14)); line-height: 1.1; white-space: nowrap; }
+  .o { display: inline-block; min-width: 1.5em; border: 6px dashed var(--do); border-radius: 18px; color: var(--do); text-align: center; vertical-align: middle; margin: 0 .05em; padding: 0 .1em; }
+  .o.xong { border-style: solid; border-color: var(--la); color: var(--la); background: #d3f9d8; }
+  .loa { font-family: var(--emoji); font-size: max(30px, calc(var(--u) * 7)); border: 4px solid var(--xanh); background: #fff; border-radius: 50%; width: calc(var(--u) * 11); height: calc(var(--u) * 11); line-height: 1; }
+  .qua { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(var(--u) * 3); }
+  .qua button { min-width: max(110px, calc(var(--u) * 22 * var(--kx, 1))); padding: calc(var(--u) * 1.2) calc(var(--u) * 3); font-size: max(34px, calc(var(--u) * 8.5)); line-height: 1.05; color: #fff; background: var(--cam); border: none; border-radius: calc(var(--u) * 3); box-shadow: 0 8px 0 var(--cam-dam); }
+  .qua button:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--cam-dam); }
+  .qua button.dung { background: var(--la); box-shadow: 0 8px 0 var(--la-dam); }
+  .qua button.sai { background: #b9c2cc; box-shadow: 0 8px 0 #8a949e; animation: lac .4s; }
+  .loi { min-height: 2.6em; font-size: max(20px, calc(var(--u) * 4.4)); text-align: center; text-wrap: balance; max-width: min(100%, calc(var(--u) * 130)); }
+  .loi.sai { color: #e8590c; } .loi.dung { color: var(--la); }
+  .tien { font-size: max(16px, calc(var(--u) * 3)); color: var(--xanh); }
+  @media (min-aspect-ratio: 16/9) { :root { --kx: 1.35; } }
+
+  .phu { position: fixed; inset: 0; background: rgba(18,48,74,.78); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 8; }
+  .the { width: min(100%, 1000px); min-width: min(94vw, calc(var(--u) * 80)); max-height: 100%; overflow-y: auto; background: #fff; border-radius: calc(var(--u) * 4); border: 8px solid var(--mau, var(--cam)); padding: calc(var(--u) * 3) calc(var(--u) * 4); display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2.5); text-align: center; animation: bung .45s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes bung { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .the .nhan { font-size: max(20px, calc(var(--u) * 4.4)); color: var(--xanh); }
+  .the .ket { font-size: max(36px, calc(var(--u) * 9)); color: var(--do); line-height: 1.1; }
+  .the .sao { font-family: var(--emoji); font-size: max(50px, calc(var(--u) * 13)); }
+  .luat { background: #fff8e6; border: 4px solid #ffd08a; border-radius: 20px; padding: 6px 18px; font-size: max(18px, calc(var(--u) * 3.6)); text-wrap: balance; }
+  .thuong-hieu { font-size: max(15px, calc(var(--u) * 2.6)); color: #fff; background: var(--tim); border-radius: 30px; padding: 2px 16px; }
+  #ten-hs { font-family: inherit; font-weight: 800; font-size: max(22px, calc(var(--u) * 5)); text-align: center; width: min(100%, 520px); padding: 6px 14px; border: 4px solid #74c0fc; border-radius: 20px; color: var(--chu); }
+  .phieu { text-align: left; font-size: max(17px, calc(var(--u) * 3.4)); line-height: 1.45; background: #f8f9fa; border-radius: 16px; padding: 10px 20px; width: min(100%, 700px); }
+  .phieu b { color: var(--xanh); }
+  .nho { font-size: max(15px, calc(var(--u) * 3)); color: #6b7280; }
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9; }
+  #phao i { position: absolute; top: -20px; width: 14px; height: 20px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  @media (prefers-reduced-motion: reduce) { .the { animation: none; } #phao { display: none; } .nha.dung-roi { animation: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hai ngôi nhà</h1>
+  <div class="chang" id="chang"></div>
+  <button class="nut-nho" id="tieng">🔊 Cô đọc: Bật</button>
+</header>
+
+<main>
+  <section class="man" id="c0">
+    <div class="hd">Chạm một chữ cái. Chữ đó sẽ vào nhà nào?</div>
+    <div class="nhas">
+      <div class="nha thuong"><div class="ten">NHÀ ng · g<small>(nhà thường)</small></div><div class="cua">a ă â o ô ơ u ư</div></div>
+      <div class="nha dac"><div class="ten">NHÀ ngh · gh<small>(nhà đặc biệt)</small></div><div class="cua">chỉ e ê i</div></div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="vd" id="vd"><div class="noi">Chạm vào một chữ ở trên nhé.</div></div>
+    <div class="hang-nut"><button class="nut-lon" id="sang1">Sang chặng 1 ➜</button></div>
+  </section>
+
+  <section class="man" id="c1" hidden>
+    <div class="hd" id="hd1">Chữ ngay sau chỗ trống là gì? Con chọn nhà cho chữ đó.</div>
+    <div class="tien" id="tien1"></div>
+    <div class="cau" id="cau1"></div>
+    <div class="nhas" id="nhas1">
+      <button class="nha thuong" data-n="thuong"><div class="ten">NHÀ ng · g</div><div class="cua">a ă â o ô ơ u ư</div></button>
+      <button class="nha dac" data-n="dac"><div class="ten">NHÀ ngh · gh</div><div class="cua">e ê i</div></button>
+    </div>
+    <div class="loi" id="loi1"></div>
+  </section>
+
+  <section class="man" id="c2" hidden>
+    <div class="hd">Nghe cô đọc, nhìn hình, rồi điền chữ còn thiếu.</div>
+    <div class="tien" id="tien2"></div>
+    <div class="cau" id="cau2"></div>
+    <div class="qua" id="qua2"></div>
+    <div class="loi" id="loi2"></div>
+  </section>
+
+  <section class="man" id="c3" hidden>
+    <div class="hd">Hai bạn viết hai kiểu. Bạn nào viết đúng?</div>
+    <div class="tien" id="tien3"></div>
+    <div class="cau" id="cau3"></div>
+    <div class="qua" id="qua3"></div>
+    <div class="loi" id="loi3"></div>
+  </section>
+</main>
+
+<div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
+
+<div class="phu" id="mo-dau" hidden>
+  <div class="the" style="--mau:#1c7ed6">
+    <div class="thuong-hieu">Cô Điệp AI</div>
+    <div class="ket">Hai ngôi nhà: ng, ngh, g, gh</div>
+    <div class="nhan">Ôn tập Tiếng Việt 1</div>
+    <label class="nhan" for="ten-hs">Con tên là gì?</label>
+    <input id="ten-hs" type="text" maxlength="40" autocomplete="off" placeholder="Họ và tên">
+    <button class="nut-lon" id="nut-bat-dau">Bắt đầu!</button>
+  </div>
+</div>
+<div id="phao"></div>
+
+<script>
+// ====== NỘI DUNG ======
+// t: chữ có chỗ trống _ ; d: đáp án (ng, ngh, g, gh); noi: câu cô đọc; em: hình; sai: cách viết sai cho chặng 3
+// Chỉ dùng chữ đã học đến Bài 35.
+const TU = [
+  { t: '_õ nhỏ',  d: 'ng',  noi: 'ngõ nhỏ',  em: '🛣️', sai: 'nghõ nhỏ' },
+  { t: '_ỉ hè',   d: 'ngh', noi: 'nghỉ hè',  em: '🏖️', sai: 'ngỉ hè' },
+  { t: '_ô',      d: 'ng',  noi: 'ngô',      em: '🌽', sai: 'nghô' },
+  { t: '_e',      d: 'ngh', noi: 'nghe',     em: '👂', sai: 'nge' },
+  { t: 'tre _à',  d: 'ng',  noi: 'tre ngà',  em: '🎋', sai: 'tre nghà' },
+  { t: '_é con',  d: 'ngh', noi: 'nghé con', em: '🐃', sai: 'ngé con' },
+  { t: 'củ _ệ',   d: 'ngh', noi: 'củ nghệ',  em: '🟠', sai: 'củ ngệ' },
+  { t: 'bé _ủ',   d: 'ng',  noi: 'bé ngủ',   em: '😴', sai: 'bé nghủ' },
+  { t: '_ế đá',   d: 'gh',  noi: 'ghế đá',   em: '🪑', sai: 'gế đá' },
+  { t: '_à gô',   d: 'g',   noi: 'gà gô',    em: '🐓', sai: 'ghà gô' },
+  { t: 'tấm _ỗ',  d: 'g',   noi: 'tấm gỗ',   em: '🪵', sai: 'tấm ghỗ' },
+  { t: '_é thăm', d: 'gh',  noi: 'ghé thăm', em: '🏠', sai: 'gé thăm' },
+  { t: '_ắn bó',  d: 'g',   noi: 'gắn bó',   em: '🤝', sai: 'ghắn bó' }
+];
+const NHA = d => (d === 'ngh' || d === 'gh') ? 'dac' : 'thuong';
+const NGUYEN_AM = t => t.replace(/^.*?_/, '').charAt(0);   // chữ ngay sau chỗ trống
+const GOC = c => c.normalize('NFD').replace(/[̀-̣̉]/g, '').normalize('NFC');  // bỏ dấu thanh, giữ ă â ê ô ơ ư
+const SOCAU = [10, 10, 6];
+
+// ====== TIỆN ÍCH ======
+const $ = id => document.getElementById(id);
+const trộn = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+let au; function keu(ds) { try { au = au || new (window.AudioContext || window.webkitAudioContext)(); ds.forEach((f, i) => { const o = au.createOscillator(), g = au.createGain(); o.frequency.value = f; o.type = 'sine'; g.gain.value = .12; o.connect(g); g.connect(au.destination); const t = au.currentTime + i * .11; o.start(t); g.gain.exponentialRampToValueAtTime(.001, t + .22); o.stop(t + .24); }); } catch (e) {} }
+// Thuyết minh bằng giọng đọc tiếng Việt của máy; máy nào không có giọng Việt thì im, không đọc bằng giọng Anh
+let giongViet = null, coTieng = true;
+function timGiong() { if (!window.speechSynthesis) return; const v = speechSynthesis.getVoices().filter(x => /^vi/i.test(x.lang)); giongViet = v.find(x => /natural|online|hoaimy/i.test(x.name)) || v[0] || null; }
+if (window.speechSynthesis) { timGiong(); speechSynthesis.onvoiceschanged = timGiong; }
+// tên chữ khi đọc: ng = ngờ, ngh = ngờ ghép, g = gờ, gh = gờ ghép
+const TEN_CHU = { ng: 'ngờ', ngh: 'ngờ ghép', g: 'gờ', gh: 'gờ ghép' };
+const choDoc = t => t.replace(/(^|[\s,.:])(ngh|gh|ng|g)(?=[\s,.:?!]|$)/g, (m, a, b) => a + TEN_CHU[b]).replace(/NHÀ /g, 'nhà ').replace(/ · /g, ' và ');
+function doc(t, tho) {
+  if (!coTieng || !window.speechSynthesis) return;
+  if (!giongViet) timGiong();
+  if (!giongViet || !$('mo-dau').hidden) return;
+  try { speechSynthesis.cancel(); setTimeout(() => { const u = new SpeechSynthesisUtterance(tho ? t : choDoc(t)); u.voice = giongViet; u.lang = giongViet.lang; u.rate = .85; speechSynthesis.speak(u); }, 80); } catch (e) {}
+}
+// từ cần đọc đúng như viết (không đổi ng, g thành tên chữ): dùng doc(t, true)
+function loaBam() { if (!giongViet) timGiong(); if (!giongViet) { alert('Máy này chưa có giọng đọc tiếng Việt. Thầy cô và ba mẹ thử mở bằng Microsoft Edge hoặc điện thoại nhé.'); return false; } return true; }
+function phaoGiay(n) { const m = ['#e03131', '#f08c00', '#2f9e44', '#1c7ed6', '#ae3ec9', '#fcc419']; for (let i = 0; i < n; i++) { const e = document.createElement('i'); e.style.left = Math.random() * 100 + 'vw'; e.style.background = m[i % m.length]; e.style.animationDuration = (2 + Math.random() * 2.5) + 's'; e.style.animationDelay = Math.random() * .8 + 's'; $('phao').appendChild(e); setTimeout(() => e.remove(), 5500); } }
+const html = (d, v) => v; // chỉ gắn chữ do mình viết, không có dữ liệu người dùng
+function chuTo(t, dien) { // dựng chữ có chỗ trống; dien = chữ đã điền (hoặc null)
+  const [a, b] = t.split('_');
+  const o = `<span class="o${dien ? ' xong' : ''}">${dien || '&nbsp;'}</span>`;
+  return `${a}${o}<span class="v">${b.charAt(0)}</span>${b.slice(1)}`;
+}
+
+// ====== TRẠNG THÁI ======
+const O_NHA = location.protocol.startsWith('http');
+let ten = '', chang = 0, xongChang = {}, ds = [[], [], []], vt = [0, 0, 0], laiLan = {}, sai = [];
+const tenChang = ['0. Học luật', '1. Chọn nhà', '2. Điền chữ', '3. Ai viết đúng'];
+tenChang.forEach((t, i) => { const b = document.createElement('button'); b.textContent = t; b.dataset.c = i; b.onclick = () => denChang(i); $('chang').appendChild(b); });
+$('tieng').onclick = () => { coTieng = !coTieng; $('tieng').textContent = coTieng ? '🔊 Cô đọc: Bật' : '🔇 Cô đọc: Tắt'; if (coTieng && loaBam()) doc($('c' + chang).querySelector('.hd').textContent); else try { speechSynthesis.cancel(); } catch (e) {} };
+function denChang(i) {
+  chang = i;
+  [0, 1, 2, 3].forEach(k => { $('c' + k).hidden = k !== i; });
+  document.querySelectorAll('#chang button').forEach((b, k) => { b.classList.toggle('dang', k === i); b.classList.toggle('xong', !!xongChang[k]); });
+  const hd = $('c' + i).querySelector('.hd'); hd.onclick = () => { if (loaBam()) doc(hd.textContent); };
+  if (i === 0) setTimeout(() => doc('Hai ngôi nhà. ' + hd.textContent), 300);
+  if (i === 1) { khoiDong(1); setTimeout(() => doc(hd.textContent), 200); }
+  if (i === 2) { khoiDong(2); }
+  if (i === 3) { khoiDong(3); }
+}
+function moThe(h, mau) { $('the').style.setProperty('--mau', mau || '#f08c00'); $('the').innerHTML = h; $('phu').hidden = false; }
+function dongThe() { $('phu').hidden = true; }
+
+// ====== CHẶNG 0: HỌC LUẬT ======
+const CHU_CAI = ['a', 'ă', 'â', 'o', 'ô', 'ơ', 'u', 'ư', 'e', 'ê', 'i'];
+const VD = { a: ['ngà', 'gà'], 'ă': ['gắn'], o: ['ngõ'], 'ô': ['ngô', 'gỗ'], u: ['ngủ'], e: ['nghe', 'ghé'], 'ê': ['nghệ', 'ghế'], i: ['nghỉ'] };
+const EM0 = { 'ngà': '🎋', 'gà': '🐓', 'gắn': '🤝', 'ngõ': '🛣️', 'ngô': '🌽', 'gỗ': '🪵', 'ngủ': '😴', 'nghe': '👂', 'ghé': '🏠', 'nghệ': '🟠', 'ghế': '🪑', 'nghỉ': '🏖️' };
+let daChon = {};
+CHU_CAI.forEach(c => {
+  const b = document.createElement('button'); b.className = 'chip' + ('eêi'.includes(c) ? ' e' : ''); b.textContent = c;
+  b.onclick = () => {
+    document.querySelectorAll('.chip').forEach(x => x.classList.remove('chon')); b.classList.add('chon'); daChon[c] = 1;
+    const dac = 'eêi'.includes(c);
+    const ds = (VD[c] || []).map(w => { const m = w.match(/^(ngh|ng|gh|g)(.*)$/); const dau = m[1], van = m[2]; return `<div class="tu"><span class="em">${EM0[w] || ''}</span><span><span class="${dac ? 'dh' : 'd'}">${dau}</span><span class="v">${van.charAt(0)}</span>${van.slice(1)}</span><button data-w="${w}">🔊 cô đọc</button></div>`; }).join('');
+    $('vd').innerHTML = `<div class="noi">Chữ <b class="v">${c}</b> vào <b class="${dac ? 'dh' : 'd'}">${dac ? 'NHÀ ngh · gh' : 'NHÀ ng · g'}</b>${dac ? '. Phải viết <b>ngh</b> hoặc <b>gh</b>.' : '. Viết <b>ng</b> hoặc <b>g</b>.'}</div>${ds}`;
+    $('vd').querySelectorAll('button[data-w]').forEach(x => x.onclick = () => doc(x.dataset.w));
+    keu(dac ? [659, 784] : [523, 659]);
+    doc(`Chữ ${c} vào nhà ${dac ? 'ngờ ghép, gờ ghép. Phải viết ngờ ghép hoặc gờ ghép' : 'ngờ, gờ. Viết ngờ hoặc gờ'}.`, true);
+    if (Object.keys(daChon).length >= CHU_CAI.length) $('sang1').classList.add('cam');
+  };
+  $('chips').appendChild(b);
+});
+$('sang1').onclick = () => { xongChang[0] = 1; denChang(1); };
+
+// ====== CHẶNG 1, 2, 3 ======
+function khoiDong(k) {
+  const lay = trộn(TU);
+  ds[k - 1] = k === 3 ? lay.slice(0, SOCAU[2]) : lay.slice(0, SOCAU[k - 1]);
+  vt[k - 1] = 0; ve(k);
+}
+function ve(k) {
+  const i = vt[k - 1], q = ds[k - 1][i];
+  $('tien' + k).textContent = `Câu ${i + 1} / ${ds[k - 1].length}`;
+  $('loi' + k).textContent = ''; $('loi' + k).className = 'loi';
+  if (k === 1) {
+    $('cau1').innerHTML = `<span class="em">${q.em}</span><span class="chu">${chuTo(q.t)}</span><button class="loa" id="loa1">🔊</button>`;
+    $('loa1').onclick = () => { if (loaBam()) doc(q.noi, true); };
+    document.querySelectorAll('#nhas1 .nha').forEach(n => n.classList.remove('dung-roi', 'sai-roi'));
+  }
+  if (k === 2) {
+    $('cau2').innerHTML = `<span class="em">${q.em}</span><span class="chu" id="chu2">${chuTo(q.t)}</span><button class="loa" id="loa2">🔊</button>`;
+    $('loa2').onclick = () => { if (loaBam()) doc(q.noi, true); };
+    $('qua2').innerHTML = ''; ['ng', 'ngh', 'g', 'gh'].forEach(d => { const b = document.createElement('button'); b.textContent = d; b.onclick = () => chon2(b, d, q); $('qua2').appendChild(b); });
+  }
+  if (k === 3) {
+    const trai = Math.random() < .5, hai = trai ? [q.noi, q.sai] : [q.sai, q.noi];
+    $('cau3').innerHTML = `<span class="em">${q.em}</span><button class="loa" id="loa3">🔊</button>`;
+    $('loa3').onclick = () => { if (loaBam()) doc(q.noi, true); };
+    $('qua3').innerHTML = ''; hai.forEach(w => { const b = document.createElement('button'); b.textContent = w; b.onclick = () => chon3(b, w, q); $('qua3').appendChild(b); });
+  }
+  setTimeout(() => doc(q.noi, true), k === 1 && vt[0] === 0 ? 4200 : 350);
+}
+function ghiSai(k, q, loai) { const key = k + q.noi; if (!laiLan[key]) { laiLan[key] = 1; sai.push({ k, q, loai }); } }
+function xongCau(k, q) {
+  keu([523, 659, 784]);
+  setTimeout(() => {
+    vt[k - 1]++;
+    if (vt[k - 1] >= ds[k - 1].length) { xongChang[k] = 1; if (k < 3) { moThe(`<div class="sao">⭐</div><div class="ket">Giỏi lắm!</div><button class="nut-lon" id="tiep">Sang chặng ${k + 1} ➜</button>`, '#2f9e44'); $('tiep').onclick = () => { dongThe(); denChang(k + 1); }; keu([523, 659, 784, 1047]); } else ketThuc(); }
+    else ve(k);
+  }, 1500);
+}
+// Chặng 1
+document.querySelectorAll('#nhas1 .nha').forEach(n => n.onclick = () => {
+  const q = ds[0][vt[0]]; if (n.classList.contains('khoa')) return;
+  const dung = n.dataset.n === NHA(q.d), am = NGUYEN_AM(q.t);
+  if (dung) {
+    n.classList.add('dung-roi'); $('loi1').className = 'loi dung';
+    $('loi1').textContent = NHA(q.d) === 'dac' ? `Đúng rồi! Sau chỗ trống là ${am}, nên viết ${q.d}.` : `Đúng rồi! Sau chỗ trống là ${am}, nên viết ${q.d}.`;
+    $('cau1').querySelector('.chu').innerHTML = chuTo(q.t, q.d); doc($('loi1').textContent);
+    document.querySelectorAll('#nhas1 .nha').forEach(x => x.classList.add('khoa')); xongCau(1, q);
+    setTimeout(() => document.querySelectorAll('#nhas1 .nha').forEach(x => x.classList.remove('khoa')), 1100);
+  } else {
+    n.classList.remove('sai-roi'); void n.offsetWidth; n.classList.add('sai-roi'); ghiSai(1, q, 'chọn nhà'); keu([220, 196]);
+    $('loi1').className = 'loi sai'; $('loi1').textContent = `Chữ sau chỗ trống là ${am}. Chỉ e, ê, i mới vào nhà ngh, gh. Con thử lại nhé.`; doc($('loi1').textContent);
+  }
+});
+// Chặng 2
+function chon2(b, d, q) {
+  if (b.classList.contains('dung')) return;
+  if (d === q.d) {
+    b.classList.add('dung'); $('chu2').innerHTML = chuTo(q.t, q.d); $('loi2').className = 'loi dung'; $('loi2').textContent = 'Đúng rồi!'; doc('Đúng rồi!');
+    document.querySelectorAll('#qua2 button').forEach(x => x.disabled = true); xongCau(2, q);
+  } else {
+    b.classList.add('sai'); b.disabled = true; ghiSai(2, q, 'điền chữ'); keu([220, 196]);
+    const am = NGUYEN_AM(q.t), cung = ((d === 'ng' || d === 'ngh') && (q.d === 'ng' || q.d === 'ngh')) || ((d === 'g' || d === 'gh') && (q.d === 'g' || q.d === 'gh'));
+    $('loi2').className = 'loi sai';
+    setTimeout(() => doc($('loi2').textContent), 60);
+    $('loi2').textContent = cung ? `Gần đúng rồi. Sau chỗ trống là ${am}, con nhớ luật nhà nhé.` : 'Chưa đúng. Con nghe cô đọc lại rồi chọn nhé.';
+  }
+}
+// Chặng 3
+function chon3(b, w, q) {
+  if (b.classList.contains('dung')) return;
+  if (w === q.noi) {
+    b.classList.add('dung'); $('loi3').className = 'loi dung'; $('loi3').textContent = 'Đúng rồi! Bạn này viết đúng.'; doc('Đúng rồi! Bạn này viết đúng.');
+    document.querySelectorAll('#qua3 button').forEach(x => x.disabled = true); xongCau(3, q);
+  } else {
+    b.classList.add('sai'); b.disabled = true; ghiSai(3, q, 'ai viết đúng'); keu([220, 196]);
+    $('loi3').className = 'loi sai'; $('loi3').textContent = `Bạn này viết chưa đúng. Nhìn chữ sau ${q.d}: ${NGUYEN_AM(q.t)}. Con chọn lại nhé.`; doc($('loi3').textContent);
+  }
+}
+
+// ====== KẾT THÚC ======
+function chiTiet() {
+  if (!sai.length) return 'Không, con làm đúng hết';
+  const dem = {}; sai.forEach(s => { dem[s.q.noi] = (dem[s.q.noi] || 0) + 1; });
+  return 'Cần ôn: ' + Object.keys(dem).map(w => w + ' (' + dem[w] + ')').join(', ');
+}
+function ketThuc() {
+  const tong = SOCAU[0] + SOCAU[1] + SOCAU[2], dung = Math.max(0, tong - sai.length), sao = sai.length <= 2 ? '⭐⭐⭐' : sai.length <= 6 ? '⭐⭐' : '⭐';
+  const d = new Date(), hai = n => String(n).padStart(2, '0');
+  const dong = [['Con', ten || '(không ghi tên)'], ['Bài', 'Ôn ng/ngh, g/gh'], ['Đúng ngay lần đầu', dung + ' / ' + tong + ' câu'], ['Cần ôn thêm', chiTiet().replace('Cần ôn: ', '')], ['Lúc', `${hai(d.getHours())}:${hai(d.getMinutes())} ngày ${hai(d.getDate())}/${hai(d.getMonth() + 1)}/${d.getFullYear()}`]];
+  moThe(`<div class="thuong-hieu">Cô Điệp AI</div><div class="sao">${sao}</div><div class="ket">Hoan hô!</div><div class="luat" id="luat-ket">Nhớ nhé: <b>e, ê, i</b> thì viết <b>ngh, gh</b>. Các chữ còn lại viết <b>ng, g</b>.</div><div class="phieu" id="phieu"></div><div class="nho" id="loi-nhan"></div><button class="nut-lon cam" id="lai">Chơi lại</button>`, '#f2b705');
+  dong.forEach(([nhan, gt]) => { const p = document.createElement('div'), b = document.createElement('b'); b.textContent = gt; p.append(nhan + ': ', b); $('phieu').appendChild(p); });
+  $('lai').onclick = () => { dongThe(); choiLai(); };
+  phaoGiay(100); keu([392, 523, 659, 784, 1047, 1319, 1568]);
+  setTimeout(() => doc('Hoan hô! Nhớ nhé: e, ê, i thì viết ngờ ghép, gờ ghép. Các chữ còn lại viết ngờ, gờ.', true), 800);
+  guiKetQua(tong, dung);
+}
+const LINK_SHEET = 'https://script.google.com/macros/s/AKfycbzE5tlog_osSNJ7Tsr4SnJPQCiv5LpyfQaDj8jNHNYzT9YEMGnQHTJrrpNXV_45lq1t/exec';
+// Chỉ ghi kết quả khi link có ?lop=... (link lớp mình); link chia sẻ thì không ghi
+function guiKetQua(tong, dung) {
+  const CHUP = 'Ba mẹ chụp màn hình này gửi cô nhé.';
+  const lop = window.LOP || new URLSearchParams(location.search).get('lop') || '';
+  if (!lop) { $('loi-nhan').textContent = CHUP; return; }
+  $('loi-nhan').textContent = 'Đang gửi kết quả cho cô...';
+  const d = { lop, ten, bai: 'Hai ngôi nhà: ôn ng/ngh, g/gh', dungLanDau: dung, soCau: tong, chiTiet: chiTiet() };
+  const xong = () => { $('loi-nhan').textContent = 'Đã gửi kết quả cho cô.'; };
+  const loi = () => { $('loi-nhan').textContent = 'Chưa gửi được. ' + CHUP; };
+  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(xong).withFailureHandler(loi).ghiKetQua(d);
+  else fetch(LINK_SHEET, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }).then(xong, loi);
+}
+function choiLai() { xongChang = {}; laiLan = {}; sai = []; daChon = {}; $('sang1').classList.remove('cam'); $('vd').innerHTML = '<div class="noi">Chạm vào một chữ ở trên nhé.</div>'; document.querySelectorAll('.chip').forEach(x => x.classList.remove('chon')); denChang(0); }
+
+if (O_NHA) {
+  document.querySelectorAll('#chang button').forEach(b => b.disabled = true);
+  $('mo-dau').hidden = false;
+  $('nut-bat-dau').onclick = () => { ten = $('ten-hs').value.trim(); $('mo-dau').hidden = true; keu([523, 659]); };
+  $('ten-hs').addEventListener('keydown', e => { if (e.key === 'Enter') $('nut-bat-dau').click(); });
+}
+choiLai();
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mô phỏng Toán lớp 1 - CÔ ĐIỆP AI</title>
+<meta name="description" content="Que tính và hình khối 3D xoay được, chiếu tivi trên lớp hoặc cho bé tự khám phá. Miễn phí.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378;--vien:#d3e6f8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:radial-gradient(900px 480px at 90% -10%,#9fd4ff55,transparent 60%),linear-gradient(180deg,#e3f3ff,#f6fbff 40%,#fff8e8);min-height:100vh}
+.bia{background:linear-gradient(135deg,#06285a,#0b5cab 55%,#1d7bd8);color:#fff;padding:18px 16px 50px;position:relative;overflow:hidden}
+.bia::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#ffffff33,transparent 65%)}
+.rong{max-width:900px;margin:0 auto;position:relative}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(28px,6vw,40px)/1.1 "Baloo 2",sans-serif;margin:10px 0 4px}.bia h1 b{color:var(--gold)}
+.bia p{margin:0;opacity:.92;max-width:560px}
+main{max-width:900px;margin:-30px auto 0;padding:0 14px 50px;position:relative}
+.the{background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(11,92,171,.16);padding:18px;margin-bottom:16px}
+.tab{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab button{border:2px solid var(--vien);background:#fff;border-radius:999px;padding:10px 18px;font:700 16px "Be Vietnam Pro",sans-serif;color:var(--royal);cursor:pointer}
+.tab button.on{background:var(--royal);border-color:var(--royal);color:#fff}
+.pane{display:none}.pane.on{display:block}
+.nutl{border:0;border-radius:16px;padding:12px 18px;font:800 17px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 5px 0 #b86200;cursor:pointer}
+.nutl:active{transform:translateY(2px);box-shadow:0 3px 0 #b86200}
+.nutl.xanh{background:linear-gradient(180deg,#3d9bf0,#0b5cab);box-shadow:0 5px 0 #073d73}
+.nutl.xam{background:#fff;color:var(--royal);border:2px solid var(--vien);box-shadow:0 4px 0 var(--vien)}
+.nutl.luc{background:linear-gradient(180deg,#34c97a,#169a50);box-shadow:0 5px 0 #0d6e37}
+.hang{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.ghi{color:var(--phu);font-size:14px;margin:8px 0 0}
+/* ===== que tính ===== */
+.so{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+.so .lon{font:800 clamp(64px,16vw,110px)/1 "Baloo 2",sans-serif;color:var(--royal);min-width:2ch;text-align:center}
+.so .chu{font:700 clamp(20px,4vw,28px) "Be Vietnam Pro";color:var(--ink)}
+.so .cd{color:var(--phu);font-size:15px;font-weight:600}
+.ban{min-height:240px;border-radius:20px;background:linear-gradient(180deg,#fff7e6,#ffeccb);border:2px dashed #f3c77b;padding:16px;display:flex;gap:26px;align-items:flex-end;flex-wrap:wrap;justify-content:center}
+.nhom{display:flex;flex-direction:column;align-items:center;gap:6px}
+.nhom small{font-weight:700;color:#8a5a00}
+.chuc{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:60%}
+.bo{position:relative;display:flex;gap:2px;padding:6px 4px;cursor:pointer;transition:transform .15s}
+.bo:hover{transform:translateY(-3px)}
+.bo::after{content:"";position:absolute;left:-2px;right:-2px;top:48%;height:9px;border-radius:4px;background:linear-gradient(180deg,#e5484d,#b5353a);box-shadow:0 2px 0 #00000033}
+.q{width:7px;height:92px;border-radius:4px;background:linear-gradient(90deg,#e8b45f,#c98a2b 60%,#a8701e);box-shadow:inset -1px 0 0 #0002,0 2px 4px #0003;animation:ra .25s}
+.le{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:36%;align-items:flex-end}
+.le .q{width:9px;height:92px;cursor:pointer;transition:transform .15s}.le .q:hover{transform:translateY(-4px)}
+@keyframes ra{from{transform:translateY(-30px) rotate(20deg);opacity:0}}
+.thu{background:#f3f9ff;border:2px solid var(--vien);border-radius:18px;padding:14px;margin-top:14px;text-align:center}
+.thu b{font:800 20px "Baloo 2",sans-serif;color:var(--royal)}
+.tb{min-height:28px;font:800 20px "Baloo 2",sans-serif;margin-top:6px}
+/* ===== khối 3D ===== */
+.san3d{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center}
+.canh{height:340px;border-radius:22px;background:radial-gradient(circle at 50% 40%,#fff,#dff0ff 70%);border:2px solid var(--vien);perspective:900px;display:grid;place-items:center;touch-action:none;cursor:grab;overflow:hidden;position:relative}
+.canh:active{cursor:grabbing}
+.sk{transform-style:preserve-3d;position:relative}
+.mat{position:absolute;display:grid;place-items:center;font:800 22px "Baloo 2";color:#fff;border:2px solid #ffffffcc;backface-visibility:visible;transition:opacity .3s}
+.xuyen .mat{opacity:.22}
+.sk.tron-{}
+.thongtin h3{font:800 24px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 6px}
+.thongtin ul{margin:0 0 12px;padding-left:20px;line-height:1.8}
+.thongtin li b{color:var(--royal)}
+.chon{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chon button{border:2px solid var(--vien);background:#fff;border-radius:14px;padding:8px 14px;font:700 15px "Be Vietnam Pro";color:var(--royal);cursor:pointer}
+.chon button.on{background:var(--royal);color:#fff;border-color:var(--royal)}
+.tr{display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:600;font-size:14px}
+.tr input{flex:1;accent-color:var(--royal)}
+.goi{background:#fff8dc;border:1px solid #ffe29a;border-radius:12px;padding:8px 12px;font-size:14px;color:#7a5300;margin-top:10px}
+@media (max-width:700px){.san3d{grid-template-columns:1fr}.canh{height:300px}.chuc{max-width:100%}.le{max-width:100%}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bia"><div class="rong">
+  <a href="./">&larr; Về trang chủ CÔ ĐIỆP AI</a>
+  <h1>Mô phỏng <b>Toán lớp 1</b></h1>
+  <p>Que tính để bé đếm, gộp, bó chục. Hình khối 3D xoay được bằng ngón tay. Chiếu lên tivi là cả lớp cùng quan sát.</p>
+</div></header>
+<main>
+  <section class="the">
+    <div class="tab" id="tab"><button data-p="que" class="on">Que tính</button><button data-p="khoi">Hình khối 3D</button></div>
+
+    <div class="pane on" id="p-que">
+      <div class="so"><div class="lon" id="so">0</div><div><div class="chu" id="chu">không</div><div class="cd" id="cd"></div></div></div>
+      <div class="ban" id="ban"></div>
+      <div class="hang">
+        <button class="nutl xanh" id="them1">+ 1 que</button>
+        <button class="nutl" id="them10">+ 1 bó (10 que)</button>
+        <button class="nutl xam" id="bot1">- 1 que</button>
+        <button class="nutl xam" id="bot10">- 1 bó</button>
+        <button class="nutl xam" id="xoa">Làm lại</button>
+      </div>
+      <p class="ghi">Bấm vào que hoặc bó để lấy ra. Đủ 10 que lẻ thì tự bó lại thành 1 bó. Đây là cách các con hiểu "chục" và "đơn vị".</p>
+      <div class="thu">
+        <b>Thử thách</b>
+        <div class="hang" style="justify-content:center"><span id="de">Bấm "Ra đề" để bắt đầu</span><button class="nutl luc" id="rade">Ra đề</button><button class="nutl xanh" id="kt">Kiểm tra</button>
+          <label class="ghi" style="margin:0">Số lớn nhất <select id="mx"><option value="10">10</option><option value="20" selected>20</option><option value="50">50</option><option value="100">100</option></select></label></div>
+        <div class="tb" id="tb"></div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-khoi">
+      <div class="san3d">
+        <div class="canh" id="canh"><div class="sk" id="sk"></div></div>
+        <div class="thongtin">
+          <div class="chon" id="chonk"><button data-k="lp" class="on">Khối lập phương</button><button data-k="hcn">Khối hộp chữ nhật</button></div>
+          <h3 id="tk"></h3>
+          <ul id="dk"></ul>
+          <div class="tr" id="trd"><span>Chiều dài</span><input type="range" id="rd" min="60" max="170" value="130"></div>
+          <div class="hang" style="margin-top:6px"><button class="nutl xanh" id="tuxoay">Tự xoay</button><button class="nutl xam" id="xuyen">Nhìn xuyên suốt</button><button class="nutl xam" id="dat">Đặt lại</button></div>
+          <div class="goi">Dùng ngón tay (hoặc chuột) kéo trên hình để xoay. Mỗi mặt có số để bé đếm đủ 6 mặt.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id), r = n => Math.floor(Math.random() * n);
+document.querySelectorAll('#tab button').forEach(b => b.onclick = () => { document.querySelectorAll('#tab button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p-' + b.dataset.p)); if (b.dataset.p === 'khoi') ve3d(); });
+function bip(f, d, v){ try { const ac = bip.ac = bip.ac || new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f; g.gain.value = v || .2; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d); } catch (e) {} }
+
+/* ===== đọc số bằng chữ (0 đến 100) ===== */
+const CH = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+function docSo(n){
+  if (n === 100) return 'một trăm';
+  if (n < 10) return CH[n];
+  const c = Math.floor(n / 10), d = n % 10, dau = c === 1 ? 'mười' : CH[c] + ' mươi';
+  if (d === 0) return dau;
+  const cuoi = d === 1 && c > 1 ? 'mốt' : d === 5 ? 'lăm' : d === 4 && c > 1 ? 'tư' : CH[d];
+  return dau + ' ' + cuoi;
+}
+/* ===== que tính ===== */
+let n = 0, dich = null;
+function veQue(){
+  const c = Math.floor(n / 10), l = n % 10;
+  $('so').textContent = n; $('chu').textContent = docSo(n);
+  $('cd').textContent = n ? (c ? c + ' chục ' : '') + (l ? l + ' đơn vị' : (c ? '' : '')) : 'Chưa có que nào';
+  const ban = $('ban'); ban.innerHTML = '';
+  const g1 = document.createElement('div'); g1.className = 'nhom'; g1.innerHTML = '<small>Các bó chục</small><div class="chuc"></div>';
+  for (let k = 0; k < c; k++){ const b = document.createElement('div'); b.className = 'bo'; b.title = 'Bấm để bỏ 1 bó'; b.innerHTML = '<i class="q"></i>'.repeat(10); b.onclick = () => { n -= 10; veQue(); bip(300, .1); }; g1.lastChild.appendChild(b); }
+  if (!c) g1.lastChild.innerHTML = '<span class="ghi">Chưa có bó nào</span>';
+  const g2 = document.createElement('div'); g2.className = 'nhom'; g2.innerHTML = '<small>Que lẻ</small><div class="le"></div>';
+  for (let k = 0; k < l; k++){ const q = document.createElement('i'); q.className = 'q'; q.onclick = () => { n -= 1; veQue(); bip(300, .1); }; g2.lastChild.appendChild(q); }
+  if (!l) g2.lastChild.innerHTML = '<span class="ghi">Chưa có que lẻ</span>';
+  ban.append(g1, g2);
+}
+const cong = d => { n = Math.max(0, Math.min(100, n + d)); veQue(); bip(d > 0 ? 660 : 300, .08); };
+$('them1').onclick = () => { if (n % 10 === 9) bip(990, .2); cong(1); };
+$('them10').onclick = () => cong(10); $('bot1').onclick = () => cong(-1); $('bot10').onclick = () => cong(-10);
+$('xoa').onclick = () => { n = 0; veQue(); };
+$('rade').onclick = () => { const mx = +$('mx').value; dich = r(mx) + 1; n = 0; veQue(); $('de').innerHTML = 'Con xếp <b style="color:#0b5cab;font-size:26px">' + dich + '</b> que tính (' + docSo(dich) + ')'; $('tb').textContent = ''; };
+$('kt').onclick = () => {
+  if (dich === null){ $('tb').textContent = 'Bấm "Ra đề" trước nhé'; $('tb').style.color = '#4a6378'; return; }
+  if (n === dich){ $('tb').textContent = 'Đúng rồi, con giỏi quá!'; $('tb').style.color = '#1b8f4b'; bip(660, .12); setTimeout(() => bip(990, .25), 130); }
+  else { $('tb').textContent = n < dich ? 'Còn thiếu ' + (dich - n) + ' que nữa' : 'Thừa ' + (n - dich) + ' que rồi'; $('tb').style.color = '#b5353a'; bip(200, .25); }
+};
+veQue();
+
+/* ===== hình khối 3D ===== */
+let kind = 'lp', rx = -24, ry = 32, tu = false, xuyen = false, raf = 0;
+const MAU = ['#e5484d', '#1d7bd8', '#22b35e', '#f77f00', '#7b5cff', '#e64980'];
+function ve3d(){
+  const sk = $('sk'); sk.innerHTML = '';
+  const W = kind === 'lp' ? 120 : +$('rd').value, H = kind === 'lp' ? 120 : 90, D = kind === 'lp' ? 120 : 90;
+  sk.style.width = W + 'px'; sk.style.height = H + 'px';
+  const f = [ // trước, sau, phải, trái, trên, dưới
+    {w: W, h: H, t: 'translateZ(' + D / 2 + 'px)'},
+    {w: W, h: H, t: 'rotateY(180deg) translateZ(' + D / 2 + 'px)'},
+    {w: D, h: H, t: 'rotateY(90deg) translateZ(' + W / 2 + 'px)'},
+    {w: D, h: H, t: 'rotateY(-90deg) translateZ(' + W / 2 + 'px)'},
+    {w: W, h: D, t: 'rotateX(90deg) translateZ(' + H / 2 + 'px)'},
+    {w: W, h: D, t: 'rotateX(-90deg) translateZ(' + H / 2 + 'px)'}];
+  f.forEach((m, k) => { const d = document.createElement('div'); d.className = 'mat'; d.textContent = k + 1;
+    d.style.cssText = 'width:' + m.w + 'px;height:' + m.h + 'px;left:' + (W - m.w) / 2 + 'px;top:' + (H - m.h) / 2 + 'px;background:' + MAU[k] + 'dd;transform:' + m.t; sk.appendChild(d); });
+  sk.className = 'sk' + (xuyen ? ' xuyen' : ''); chuyen();
+  $('tk').textContent = kind === 'lp' ? 'Khối lập phương' : 'Khối hộp chữ nhật';
+  $('dk').innerHTML = kind === 'lp'
+    ? '<li><b>6 mặt</b> đều là hình vuông, bằng nhau</li><li><b>12 cạnh</b> bằng nhau</li><li><b>8 đỉnh</b></li><li>Ví dụ: con xúc xắc, hộp quà vuông</li>'
+    : '<li><b>6 mặt</b> đều là hình chữ nhật</li><li><b>12 cạnh</b>, chia thành 3 nhóm 4 cạnh bằng nhau</li><li><b>8 đỉnh</b></li><li>Ví dụ: hộp bánh, viên gạch, quyển sách</li>';
+  $('trd').style.display = kind === 'lp' ? 'none' : '';
+}
+function chuyen(){ $('sk').style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)'; }
+document.querySelectorAll('#chonk button').forEach(b => b.onclick = () => { kind = b.dataset.k; document.querySelectorAll('#chonk button').forEach(x => x.classList.toggle('on', x === b)); ve3d(); });
+$('rd').oninput = ve3d;
+let giu = null;
+$('canh').addEventListener('pointerdown', e => { giu = [e.clientX, e.clientY]; $('canh').setPointerCapture(e.pointerId); });
+$('canh').addEventListener('pointermove', e => { if (!giu) return; ry += (e.clientX - giu[0]) * .6; rx -= (e.clientY - giu[1]) * .6; giu = [e.clientX, e.clientY]; chuyen(); });
+['pointerup', 'pointercancel'].forEach(ev => $('canh').addEventListener(ev, () => giu = null));
+function quay(){ if (tu && !giu){ ry += .6; chuyen(); } raf = requestAnimationFrame(quay); }
+$('tuxoay').onclick = () => { tu = !tu; $('tuxoay').textContent = tu ? 'Dừng xoay' : 'Tự xoay'; };
+$('xuyen').onclick = () => { xuyen = !xuyen; $('xuyen').textContent = xuyen ? 'Nhìn đặc' : 'Nhìn xuyên suốt'; $('sk').classList.toggle('xuyen', xuyen); };
+$('dat').onclick = () => { rx = -24; ry = 32; chuyen(); };
+ve3d(); quay();
+</script>
+</body>
+</html>

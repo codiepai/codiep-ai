@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Thám tử hình - Toán 1 Bài 7</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* Thám tử hình: 3 chặng theo SGK Toán 1 Bài 7 tiết 1.
+     Chặng 1 = Hoạt động 1 (đồ vật có dạng hình gì), chặng 2 = Hoạt động 2 (những hình nào là hình ...?, chọn nhiều),
+     chặng 3 = Hoạt động 3 (đếm hình trong tranh, chạm vào hình để đánh dấu cho dễ đếm).
+     Mở file trên máy ở lớp: cả lớp chơi trên tivi. Mở bằng link (hoặc thêm ?nha): con tự chơi, cuối bài có phiếu kết quả. */
+  :root {
+    --u: min(1vh, 1.25vw);
+    --nen: #fff8e7; --chu: #12304a; --xanh: #0b5cab; --do: #e03131; --la: #2f9e44; --la-dam: #1e6b2e;
+    --cam: #f08c00; --cam-dam: #b86200; --vien: #4aa3df; --trang: #fff; --vang: #ffe066;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu);
+    background: radial-gradient(circle at 15% 10%, #fff 0, transparent 40%), var(--nen);
+    display: flex; flex-direction: column; gap: calc(var(--u) * 1.2);
+    padding: calc(var(--u) * 1.2) max(14px, 2vw);
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 4px solid var(--chu); outline-offset: 3px; }
+  input { -webkit-user-select: text; user-select: text; }
+
+  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 14px; }
+  h1 { font-size: max(20px, calc(var(--u) * 4.2)); color: var(--xanh); line-height: 1.1; }
+  h1 span { font-family: var(--emoji); }
+  #chang { display: flex; gap: 6px; flex-wrap: wrap; }
+  #chang button { font-size: max(14px, calc(var(--u) * 2.6)); padding: 3px 12px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+  #chang button.dang { background: var(--xanh); color: #fff; }
+  #chang button.xong::after { content: " ✓"; }
+  #nut-loa { font-size: max(15px, calc(var(--u) * 2.8)); color: var(--xanh); background: #fff; border: 3px solid var(--xanh); border-radius: 30px; padding: 2px 14px; }
+  .diem { font-size: max(16px, calc(var(--u) * 3.2)); color: #c25e00; }
+
+  #de { text-align: center; text-wrap: balance; line-height: 1.2; font-size: max(22px, calc(var(--u) * 5)); }
+  #de b { color: var(--do); }
+  #san {
+    flex: 1; min-height: 0; position: relative;
+    background: #fff; border: 6px solid var(--xanh); border-radius: calc(var(--u) * 4);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--u) * 2);
+    padding: calc(var(--u) * 2); overflow: hidden;
+  }
+  #bao { min-height: max(26px, calc(var(--u) * 5.5)); text-align: center; text-wrap: balance; font-size: max(19px, calc(var(--u) * 4.2)); line-height: 1.2; }
+  #bao.dung { color: var(--la); } #bao.sai { color: #e8590c; }
+  #hang { display: flex; justify-content: center; flex-wrap: wrap; gap: max(10px, calc(var(--u) * 2)); padding-bottom: 8px; }
+  .nut { border: none; border-radius: calc(var(--u) * 2.5); color: #fff; background: var(--cam); box-shadow: 0 6px 0 var(--cam-dam);
+    font-size: max(24px, calc(var(--u) * 6)); min-width: max(64px, calc(var(--u) * 13)); min-height: max(60px, calc(var(--u) * 12)); padding: 4px max(14px, calc(var(--u) * 3)); line-height: 1.1; }
+  .nut:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--cam-dam); }
+  .nut.sai { background: #b9c2cc; box-shadow: 0 6px 0 #8a949e; animation: lac .4s; }
+  .nut.dung { background: var(--la); box-shadow: 0 6px 0 var(--la-dam); }
+  .nut.xanh { background: var(--la); box-shadow: 0 6px 0 var(--la-dam); }
+  @keyframes lac { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  /* chặng 1: nút tên hình có hình mẫu nhỏ, giống cột bên phải trong sách */
+  .nut-hinh { display: flex; align-items: center; gap: 10px; background: #f1f3f5; color: var(--chu); border: 4px solid #ced4da; border-radius: 16px;
+    font-size: max(20px, calc(var(--u) * 4.4)); padding: 6px 16px; min-height: max(56px, calc(var(--u) * 10)); box-shadow: 0 5px 0 #adb5bd; }
+  .nut-hinh svg { width: max(30px, calc(var(--u) * 6)); height: max(30px, calc(var(--u) * 6)); }
+  .nut-hinh.sai { opacity: .45; animation: lac .4s; }
+  .nut-hinh.dung { background: #d3f9d8; border-color: var(--la); box-shadow: 0 5px 0 var(--la-dam); }
+  .do-vat { font-family: var(--emoji); font-size: max(110px, calc(var(--u) * 30)); line-height: 1; }
+  .do-vat svg { width: max(120px, calc(var(--u) * 32)); height: auto; display: block; }
+  .ten-vat { font-size: max(22px, calc(var(--u) * 5)); color: var(--xanh); }
+
+  /* chặng 2: 5 hình A-E, chạm để chọn (chọn được nhiều hình) */
+  .day-hinh { display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; gap: calc(var(--u) * 2.5); width: 100%; }
+  .o-hinh { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #eef7ff; border: 5px solid transparent; border-radius: 18px; padding: 8px; color: var(--chu); }
+  .o-hinh svg { width: max(70px, calc(var(--u) * 19)); height: max(70px, calc(var(--u) * 19)); overflow: visible; }
+  .o-hinh span { font-size: max(22px, calc(var(--u) * 5)); line-height: 1; }
+  .o-hinh.chon { border-color: var(--xanh); background: #d0ebff; transform: translateY(-6px); }
+  .o-hinh.dung { border-color: var(--la); background: #d3f9d8; }
+  .o-hinh.thieu { border-color: var(--cam); border-style: dashed; animation: lac .4s; }
+  .o-hinh.nham { border-color: var(--do); animation: lac .4s; }
+
+  /* chặng 3: tranh ghép hình, chạm hình để đánh dấu */
+  .tranh { width: min(100%, calc(var(--u) * 95)); height: 100%; max-height: calc(var(--u) * 52); }
+  .tranh [data-k] { cursor: pointer; }
+  .tranh .dd { stroke: #000; stroke-width: 7; filter: drop-shadow(0 0 4px #fff); }
+  .tranh .dau-tick { font-family: var(--emoji); pointer-events: none; }
+  .goi-y { font-size: max(15px, calc(var(--u) * 3)); color: #5c6b7a; text-align: center; }
+
+  .phu { position: fixed; inset: 0; z-index: 10; background: rgba(11, 92, 171, .93); display: flex; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
+  .the { background: #fff; border-radius: 26px; border: 8px solid var(--vang); padding: 22px 28px; text-align: center; width: min(100%, 34em);
+    display: flex; flex-direction: column; align-items: center; gap: 14px; font-size: max(18px, calc(var(--u) * 3.6)); }
+  .the h2 { font-size: max(28px, calc(var(--u) * 7)); color: var(--xanh); line-height: 1.1; }
+  .the .lon { font-family: var(--emoji); font-size: max(64px, calc(var(--u) * 14)); line-height: 1; }
+  .the .nho { font-size: max(15px, calc(var(--u) * 2.8)); color: #5c6b7a; }
+  .thuong-hieu { font-size: max(16px, calc(var(--u) * 3)); background: var(--vang); border-radius: 30px; padding: 2px 18px; }
+  #ten-hs { font-family: inherit; font-weight: 800; text-align: center; font-size: max(22px, calc(var(--u) * 4.6)); width: min(100%, 20em); padding: .25em .5em; border: 5px solid var(--vang); border-radius: 16px; color: var(--chu); }
+  .phieu { text-align: left; line-height: 1.5; background: #f8f9fa; border-radius: 16px; padding: 10px 18px; width: 100%; }
+  .phieu b { color: var(--xanh); }
+  #loi-may { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 20; background: #fff; color: #c00; border: 3px solid #c00; border-radius: 12px; padding: 8px; font-size: 15px; }
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 11; }
+  #phao i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  @media (max-width: 600px) { .o-hinh svg { width: 62px; height: 62px; } .day-hinh { gap: 8px; } }
+  @media (prefers-reduced-motion: reduce) { #phao { display: none; } }
+</style>
+
+<header>
+  <h1><span>🕵️</span> Thám tử hình</h1>
+  <div id="chang"><button data-c="1">1. Đồ vật</button><button data-c="2">2. Tìm hình</button><button data-c="3">3. Đếm hình</button></div>
+  <button id="nut-loa" title="Nghe câu hỏi">🔊 Nghe</button>
+  <div class="diem">⭐ <span id="sao">0</span></div>
+</header>
+<div id="de"></div>
+<div id="san"></div>
+<div id="bao"></div>
+<div id="hang"></div>
+
+<div class="phu" id="mo-dau" hidden>
+  <div class="the">
+    <div class="thuong-hieu">Cô Điệp AI</div>
+    <div class="lon">🕵️🔺🟦⚪</div>
+    <h2>Thám tử hình</h2>
+    <div>Toán 1 - Bài 7: Hình vuông, hình tròn, hình tam giác, hình chữ nhật</div>
+    <label for="ten-hs">Con tên là gì?</label>
+    <input id="ten-hs" type="text" maxlength="40" autocomplete="off" placeholder="Họ và tên">
+    <button class="nut xanh" id="nut-bat-dau">Bắt đầu</button>
+  </div>
+</div>
+<div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
+<div id="phao"></div>
+
+<script>
+// nếu máy nào báo lỗi, hiện lỗi lên màn hình để chụp gửi cô
+window.onerror = (m, f, d) => {
+  const goc = s => String(s || "").split(/[?#]/)[0];
+  if (/zalo|FBNav|instagram/i.test(m) || !f || goc(f) !== goc(location.href)) return; // lỗi của app Zalo/Facebook chèn vào, không phải của trò chơi
+  const o = document.getElementById('loi-may') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'loi-may' }));
+  o.textContent = 'Lỗi: ' + m + ' (dòng ' + d + ')';
+};
+const TEN_BAI = 'Thám tử hình (Toán 1 Bài 7 tiết 1)';
+const O_NHA = location.protocol !== 'file:' || new URLSearchParams(location.search).has('nha');
+const BAN = O_NHA ? 'Con' : 'Bạn';
+const $ = id => document.getElementById(id);
+const ngau = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const lay = m => m[ngau(0, m.length - 1)];
+function tron(m) { for (let i = m.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [m[i], m[j]] = [m[j], m[i]]; } return m; }
+const MAU = ['#e8202a', '#1c7ed6', '#2f9e44', '#f08c00', '#ae3ec9', '#f7c600', '#f06595', '#22b8cf'];
+
+// ---------- vẽ hình phẳng trong khung 100 x 100 ----------
+const TEN = { vuong: 'Hình vuông', tron: 'Hình tròn', tamgiac: 'Hình tam giác', chunhat: 'Hình chữ nhật' };
+const NHO = { vuong: 'hình vuông', tron: 'hình tròn', tamgiac: 'hình tam giác', chunhat: 'hình chữ nhật' };
+function hinh(k, mau, bien = 0, sc = 1) {
+  const a = `fill="${mau}" stroke="#12304a" stroke-width="3" stroke-linejoin="round"`;
+  const c = (x, y) => `${50 + (x - 50) * sc},${50 + (y - 50) * sc}`;
+  if (k === 'tron') return `<circle cx="50" cy="50" r="${44 * sc}" ${a}/>`;
+  if (k === 'vuong') { const s = 84 * sc; return `<rect x="${50 - s / 2}" y="${50 - s / 2}" width="${s}" height="${s}" ${a}/>`; }
+  if (k === 'chunhat') {
+    const [w, h] = bien ? [40, 94] : [96, 50];
+    return `<rect x="${50 - w * sc / 2}" y="${50 - h * sc / 2}" width="${w * sc}" height="${h * sc}" ${a}/>`;
+  }
+  if (k === 'tamgiac') {
+    const ds = [[[50, 6], [96, 92], [4, 92]], [[8, 8], [8, 92], [92, 92]], [[12, 92], [92, 10], [70, 92]], [[4, 10], [96, 10], [50, 94]]][bien % 4];
+    return `<polygon points="${ds.map(p => c(...p)).join(' ')}" ${a}/>`;
+  }
+  // hình thang: để bé nhận ra không phải hình chữ nhật
+  if (k === 'thang') return `<polygon points="${[[24, 28], [76, 28], [97, 76], [3, 76]].map(p => c(...p)).join(' ')}" ${a}/>`;
+  return '';
+}
+const svg = (noiDung, them = '') => `<svg viewBox="0 0 100 100" ${them}>${noiDung}</svg>`;
+const MAU_MAU = { vuong: '#fab005', tron: '#1c7ed6', chunhat: '#82c91e', tamgiac: '#e03131' };
+
+// ---------- giọng đọc: tự đọc câu mới, nút loa để nghe lại (cô Điệp dặn 16/10/2026) ----------
+let giongViet = null, choDoc = false, amThanh = null;
+function timGiong() {
+  if (!window.speechSynthesis) return;
+  const ds = speechSynthesis.getVoices().filter(v => /^vi/i.test(v.lang));
+  giongViet = ds.find(v => /natural|online|hoaimy/i.test(v.name)) || ds[0] || null;
+}
+if (window.speechSynthesis) { timGiong(); speechSynthesis.onvoiceschanged = timGiong; }
+document.addEventListener('click', e => { if (e.target.closest('.nut-nghe, #nut-loa, #nghe, #nut-nghe')) { choDoc = true; setTimeout(() => choDoc = false, 0); } }, true);
+function doc(chu) {
+  if (!window.speechSynthesis || !giongViet) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(chu); u.voice = giongViet; u.lang = giongViet.lang; u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+function keu(ds) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    if (amThanh.state === 'suspended') amThanh.resume();
+    ds.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + 0.02 + i * 0.12;
+      o.frequency.value = f; o.type = 'triangle';
+      g.gain.setValueAtTime(0.6, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      o.connect(g); g.connect(amThanh.destination); o.start(t); o.stop(t + 0.26);
+    });
+  } catch (e) {}
+}
+const KHEN = ['Giỏi quá!', 'Đúng rồi!', 'Tuyệt vời!', 'Thám tử giỏi!'];
+
+// ====== DỮ LIỆU ======
+// Chặng 1: đồ vật quen thuộc (emoji hoặc tự vẽ), tên, dạng hình
+const KHAN = svg(`<rect x="8" y="8" width="84" height="84" fill="#fff3bf" stroke="#12304a" stroke-width="4"/><rect x="16" y="16" width="68" height="68" fill="none" stroke="#f06595" stroke-width="3" stroke-dasharray="5 4"/>
+  <circle cx="35" cy="35" r="4" fill="#f06595"/><circle cx="65" cy="35" r="4" fill="#20c997"/><circle cx="35" cy="65" r="4" fill="#20c997"/><circle cx="65" cy="65" r="4" fill="#f06595"/><circle cx="50" cy="50" r="5" fill="#fab005"/>`);
+const BANH_CHUNG = svg(`<rect x="8" y="8" width="84" height="84" rx="3" fill="#3a9d3a" stroke="#12304a" stroke-width="4"/><path d="M36 8 V92 M64 8 V92 M8 36 H92 M8 64 H92" stroke="#f3e6b3" stroke-width="5"/>`);
+const HOP_QUA = svg(`<rect x="8" y="8" width="84" height="84" fill="#ffd43b" stroke="#12304a" stroke-width="4"/><path d="M50 8 V92 M8 50 H92" stroke="#e03131" stroke-width="10"/><rect x="8" y="8" width="84" height="84" fill="none" stroke="#12304a" stroke-width="4"/>`);
+const CO = svg(`<polygon points="10,14 90,14 50,94" fill="#e03131" stroke="#12304a" stroke-width="4" stroke-linejoin="round"/><polygon points="50,30 54,42 66,42 56,49 60,61 50,54 40,61 44,49 34,42 46,42" fill="#ffd43b"/>`);
+const KHUNG_TRANH = svg(`<rect x="3" y="20" width="94" height="60" fill="#f783ac" stroke="#12304a" stroke-width="4"/><rect x="12" y="28" width="76" height="44" fill="#a5d8ff"/><path d="M12 72 L35 50 L52 64 L66 54 L88 72 Z" fill="#69db7c"/><circle cx="72" cy="38" r="6" fill="#ffd43b"/>`);
+const TAM_GO = svg(`<rect x="3" y="24" width="94" height="52" fill="#d9822b" stroke="#12304a" stroke-width="4"/><path d="M8 38 Q50 30 92 40 M8 52 Q50 46 92 56 M8 66 Q50 60 92 68" stroke="#a0561a" stroke-width="3" fill="none"/>`);
+const DONG_HO = svg(`<circle cx="50" cy="50" r="44" fill="#fff" stroke="#2f9e44" stroke-width="7"/><path d="M50 50 V20 M50 50 L72 58" stroke="#12304a" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#12304a"/>`);
+const DIA = svg(`<circle cx="50" cy="50" r="44" fill="#e7f5ff" stroke="#12304a" stroke-width="4"/><circle cx="50" cy="50" r="30" fill="none" stroke="#a5d8ff" stroke-width="3"/><path d="M38 60 Q50 30 64 44" stroke="#5c7cfa" stroke-width="3" fill="none"/>`);
+const DO_VAT = [
+  [DONG_HO, 'cái đồng hồ', 'tron'], [DIA, 'cái đĩa', 'tron'], ['⚽', 'quả bóng', 'tron'], ['🍪', 'chiếc bánh quy', 'tron'], ['🪙', 'đồng xu', 'tron'],
+  [KHAN, 'chiếc khăn', 'vuong'], [BANH_CHUNG, 'chiếc bánh chưng', 'vuong'], [HOP_QUA, 'hộp quà', 'vuong'],
+  [CO, 'lá cờ', 'tamgiac'], ['⚠️', 'biển báo', 'tamgiac'], ['🍕', 'miếng bánh', 'tamgiac'],
+  [KHUNG_TRANH, 'khung tranh', 'chunhat'], [TAM_GO, 'tấm gỗ', 'chunhat'], ['✉️', 'phong bì thư', 'chunhat'], ['🚪', 'cánh cửa', 'chunhat']
+];
+const SO_C1 = 6, SO_C2 = 4;
+// Chặng 3: tranh ghép từ các hình. Mỗi hình: [loại, phần tử SVG]. Hỏi 3 loại có trong tranh.
+const TRANH = [
+  { ten: 'Ngôi nhà', hoi: ['vuong', 'tron', 'tamgiac'], ve: [
+    ['tamgiac', '<polygon points="40,150 100,60 160,150"/>', '#f7c600'], ['tamgiac', '<polygon points="100,60 220,60 160,150"/>', '#e8590c'],
+    ['tamgiac', '<polygon points="160,150 220,60 280,150"/>', '#f7c600'], ['tamgiac', '<polygon points="220,60 340,60 280,150"/>', '#e8590c'],
+    ['tamgiac', '<polygon points="280,150 340,60 400,150"/>', '#f7c600'],
+    ['vuong', '<rect x="60" y="150" width="110" height="110"/>', '#4dabf7'], ['chunhat', '<rect x="170" y="150" width="100" height="110"/>', '#82c91e'],
+    ['vuong', '<rect x="270" y="150" width="110" height="110"/>', '#4dabf7'],
+    ['tron', '<circle cx="115" cy="205" r="28"/>', '#ffd43b'], ['tron', '<circle cx="325" cy="205" r="28"/>', '#ffd43b'],
+    ['tron', '<circle cx="410" cy="40" r="26"/>', '#ff922b']
+  ]},
+  { ten: 'Chú rô bốt', hoi: ['chunhat', 'tron', 'vuong'], ve: [
+    ['tamgiac', '<polygon points="190,8 250,8 220,48"/>', '#e03131'],
+    ['vuong', '<rect x="170" y="48" width="100" height="100"/>', '#74c0fc'],
+    ['tron', '<circle cx="200" cy="88" r="15"/>', '#fff'], ['tron', '<circle cx="240" cy="88" r="15"/>', '#fff'],
+    ['chunhat', '<rect x="150" y="150" width="140" height="80"/>', '#f08c00'],
+    ['tron', '<circle cx="200" cy="190" r="12"/>', '#e03131'], ['tron', '<circle cx="240" cy="190" r="12"/>', '#ffd43b'],
+    ['chunhat', '<rect x="80" y="160" width="68" height="26"/>', '#94d82d'], ['chunhat', '<rect x="292" y="160" width="68" height="26"/>', '#94d82d'],
+    ['chunhat', '<rect x="170" y="232" width="26" height="46"/>', '#845ef7'], ['chunhat', '<rect x="244" y="232" width="26" height="46"/>', '#845ef7'],
+    ['vuong', '<rect x="56" y="153" width="40" height="40"/>', '#ffd43b'], ['vuong', '<rect x="344" y="153" width="40" height="40"/>', '#ffd43b']
+  ]}
+];
+// ======================
+
+let ten = '', chang = 1, xongChang = {}, sao = 0;
+let kq1 = [], kq2 = [], kq3 = [];   // true = đúng ngay lần đầu
+let c1 = [], i1 = 0, c2 = [], i2 = 0, i3 = 0, daSai = false, khoa = false;
+let cauDoc = '';
+
+function datDe(html, noi) { $('de').innerHTML = html; cauDoc = noi; const md = $('mo-dau'); if (noi && (!md || md.hidden)) doc(noi); }
+function bao(chu, kieu) { $('bao').textContent = chu; $('bao').className = kieu || ''; }
+function themSao() { sao++; $('sao').textContent = sao; }
+function nutTiep(nhan, lam) {
+  const b = document.createElement('button'); b.className = 'nut xanh'; b.textContent = nhan; b.onclick = lam;
+  $('hang').appendChild(b);
+}
+function denChang(n) {
+  chang = n; daSai = false; khoa = false;
+  document.querySelectorAll('#chang button').forEach(b => b.classList.toggle('dang', +b.dataset.c === n));
+  if (n === 1) { i1 = 0; kq1 = []; c1 = taoC1(); veC1(); }
+  if (n === 2) { i2 = 0; kq2 = []; c2 = tron(['tron', 'tamgiac', 'vuong', 'chunhat']).slice(0, SO_C2); veC2(); }
+  if (n === 3) { i3 = 0; kq3 = []; veC3(); }
+}
+function xongMotChang() {
+  xongChang[chang] = true;
+  document.querySelector(`#chang button[data-c="${chang}"]`).classList.add('xong');
+  if (chang < 3) {
+    moThe(`<div class="lon">${['', '🔍', '🧩'][chang]}</div><h2>Xong chặng ${chang}!</h2><div>Sang chặng ${chang + 1}: ${['', '', 'Tìm hình', 'Đếm hình'][chang + 1]}</div>
+      <button class="nut xanh" id="di-tiep">Đi tiếp</button>`);
+    $('di-tiep').onclick = () => { dongThe(); denChang(chang + 1); };
+    keu([523, 659, 784]);
+  } else hetBai();
+}
+
+// ---------- Chặng 1: đồ vật có dạng hình gì ----------
+function taoC1() {
+  const loai = tron(['tron', 'vuong', 'tamgiac', 'chunhat', lay(['tron', 'vuong', 'tamgiac', 'chunhat']), lay(['tron', 'vuong', 'tamgiac', 'chunhat'])]).slice(0, SO_C1);
+  const daDung = new Set();
+  return loai.map(k => { const ds = DO_VAT.filter((d, i) => d[2] === k && !daDung.has(i)); const v = lay(ds); daDung.add(DO_VAT.indexOf(v)); return v; });
+}
+function veC1() {
+  const [ve, goi, k] = c1[i1]; daSai = false; khoa = false;
+  datDe(`Câu ${i1 + 1}/${SO_C1}: ${goi[0].toUpperCase() + goi.slice(1)} có dạng hình gì?`, `${goi} có dạng hình gì?`);
+  $('san').innerHTML = `<div class="do-vat">${ve}</div><div class="ten-vat">${goi}</div>`;
+  bao(''); $('hang').textContent = '';
+  ['vuong', 'tron', 'chunhat', 'tamgiac'].forEach(h => {
+    const b = document.createElement('button'); b.className = 'nut-hinh';
+    b.innerHTML = svg(hinh(h, MAU_MAU[h], 0, h === 'chunhat' ? 1 : 0.9)) + `<span>${TEN[h]}</span>`;
+    b.onclick = () => {
+      if (khoa) return;
+      if (h === k) {
+        khoa = true; b.classList.add('dung'); if (!daSai) themSao(); kq1[i1] = !daSai;
+        bao(`${lay(KHEN)} ${goi[0].toUpperCase() + goi.slice(1)} có dạng ${NHO[k]}.`, 'dung'); keu([523, 659, 784, 1047]);
+        nutTiep(i1 < SO_C1 - 1 ? 'Câu tiếp' : 'Xong chặng 1', () => { i1++; if (i1 < SO_C1) veC1(); else xongMotChang(); });
+      } else { daSai = true; b.classList.add('sai'); b.disabled = true; bao(`Chưa đúng, ${BAN.toLowerCase()} nhìn kĩ lại nhé!`, 'sai'); keu([220, 196]); }
+    };
+    $('hang').appendChild(b);
+  });
+}
+
+// ---------- Chặng 2: những hình nào là hình ...? (chọn tất cả) ----------
+let bo2 = [];
+function taoBo(dich) {
+  const khac = ['tron', 'vuong', 'tamgiac', 'chunhat'].filter(k => k !== dich);
+  if (dich === 'chunhat' || dich === 'vuong') khac.push('thang');
+  const soDung = lay([2, 2, 3]);
+  const mau = tron([...MAU]);
+  const bo = [];
+  for (let i = 0; i < 5; i++) {
+    const k = i < soDung ? dich : lay(khac);
+    bo.push({ k, mau: mau[i], bien: ngau(0, 3), sc: lay([0.6, 0.75, 0.9, 1]) });
+  }
+  // hình vuông và hình chữ nhật cùng xuất hiện để bé phân biệt
+  if (dich === 'vuong' && !bo.some(h => h.k === 'chunhat')) bo[4].k = 'chunhat';
+  if (dich === 'chunhat' && !bo.some(h => h.k === 'vuong')) bo[4].k = 'vuong';
+  return tron(bo);
+}
+function veC2() {
+  const dich = c2[i2]; daSai = false; khoa = false; bo2 = taoBo(dich);
+  datDe(`Câu ${i2 + 1}/${SO_C2}: Những hình nào là <b>${NHO[dich]}</b>?`, `Những hình nào là ${NHO[dich]}? Chọn hết rồi bấm Xong.`);
+  bao(''); $('hang').textContent = '';
+  const day = document.createElement('div'); day.className = 'day-hinh';
+  bo2.forEach((h, i) => {
+    const o = document.createElement('button'); o.className = 'o-hinh';
+    o.innerHTML = svg(hinh(h.k, h.mau, h.bien, h.sc)) + `<span>${'ABCDE'[i]}</span>`;
+    o.onclick = () => { if (khoa) return; o.classList.toggle('chon'); o.classList.remove('thieu', 'nham'); keu([660]); };
+    day.appendChild(o);
+  });
+  $('san').innerHTML = ''; $('san').appendChild(day);
+  const goiY = document.createElement('div'); goiY.className = 'goi-y'; goiY.textContent = 'Chạm vào các hình đúng (có thể nhiều hình), rồi bấm Xong.';
+  $('san').appendChild(goiY);
+  nutTiep('Xong', () => kiemC2(dich));
+}
+function kiemC2(dich) {
+  if (khoa) return;
+  const o = [...document.querySelectorAll('.o-hinh')];
+  let nham = 0, thieu = 0;
+  o.forEach((x, i) => {
+    const la = bo2[i].k === dich, chon = x.classList.contains('chon');
+    if (chon && !la) { nham++; x.classList.add('nham'); x.classList.remove('chon'); }
+    if (!chon && la) thieu++;
+  });
+  if (!nham && !thieu) {
+    khoa = true; if (!daSai) themSao(); kq2[i2] = !daSai;
+    o.forEach((x, i) => { if (bo2[i].k === dich) x.classList.add('dung'); });
+    const chu = o.map((x, i) => bo2[i].k === dich ? 'ABCDE'[i] : '').filter(Boolean).join(', ');
+    bao(`${lay(KHEN)} Hình ${chu} là ${NHO[dich]}.`, 'dung'); keu([523, 659, 784, 1047]);
+    $('hang').textContent = '';
+    nutTiep(i2 < SO_C2 - 1 ? 'Câu tiếp' : 'Xong chặng 2', () => { i2++; if (i2 < SO_C2) veC2(); else xongMotChang(); });
+  } else {
+    daSai = true; keu([220, 196]);
+    bao(nham ? `Có hình không phải ${NHO[dich]}, ${BAN.toLowerCase()} xem lại nhé!` : `Còn ${thieu} ${NHO[dich]} nữa chưa chọn đấy!`, 'sai');
+  }
+}
+
+// ---------- Chặng 3: đếm hình trong tranh ----------
+function veC3() {
+  const t = TRANH[Math.floor(i3 / 3)], k = t.hoi[i3 % 3], n = t.ve.filter(v => v[0] === k).length;
+  daSai = false; khoa = false;
+  datDe(`${t.ten}: có bao nhiêu <b>${NHO[k]}</b>?`, `Trong tranh ${t.ten.toLowerCase()} có bao nhiêu ${NHO[k]}?`);
+  const h = t.ten === 'Ngôi nhà' ? '440 270' : '440 280';
+  $('san').innerHTML = `<svg class="tranh" viewBox="0 0 ${h}">${t.ve.map(([loai, el, mau], i) =>
+    el.replace(/^<(\w+)/, `<$1 data-k="${loai}" data-i="${i}" fill="${mau}" stroke="#12304a" stroke-width="3" stroke-linejoin="round"`)).join('')}<g id="tick"></g></svg>
+    <div class="goi-y">Chạm vào từng ${NHO[k]} để đánh dấu cho dễ đếm.</div>`;
+  $('san').querySelectorAll('[data-k]').forEach(el => el.addEventListener('click', () => {
+    el.classList.toggle('dd'); keu([el.classList.contains('dd') ? 700 : 440]);
+    veDau();
+  }));
+  bao(''); $('hang').textContent = '';
+  const ds = new Set([n]); for (const d of tron([-2, -1, 1, 2])) if (n + d >= 1 && ds.size < 4) ds.add(n + d);
+  [...ds].sort((a, b) => a - b).forEach(v => {
+    const b = document.createElement('button'); b.className = 'nut'; b.textContent = v;
+    b.onclick = () => {
+      if (khoa) return;
+      if (v === n) {
+        khoa = true; b.classList.add('dung'); if (!daSai) themSao(); kq3[i3] = !daSai;
+        $('san').querySelectorAll('[data-k]').forEach(el => el.classList.toggle('dd', el.dataset.k === k)); veDau();
+        bao(`${lay(KHEN)} Có ${n} ${NHO[k]}.`, 'dung'); keu([523, 659, 784, 1047]);
+        [...$('hang').children].forEach(x => { if (x !== b) x.remove(); });
+        nutTiep(i3 < 5 ? 'Câu tiếp' : 'Xem kết quả', () => { i3++; if (i3 < 6) veC3(); else xongMotChang(); });
+      } else { daSai = true; b.classList.add('sai'); b.disabled = true; bao(`Chưa đúng, ${BAN.toLowerCase()} đếm lại nhé!`, 'sai'); keu([220, 196]); }
+    };
+    $('hang').appendChild(b);
+  });
+}
+// dấu ✓ trên các hình đã chạm
+function veDau() {
+  const g = $('tick'); if (!g) return; g.innerHTML = '';
+  $('san').querySelectorAll('.dd').forEach(el => {
+    const b = el.getBBox();
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    const nho = Math.min(b.width, b.height) < 40; t.setAttribute('x', nho ? b.x + b.width / 2 : b.x + 16); t.setAttribute('y', nho ? b.y + b.height / 2 + 8 : b.y + 26); t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', nho ? 20 : 24); t.setAttribute('class', 'dau-tick'); t.textContent = '✔️';
+    g.appendChild(t);
+  });
+}
+
+// ---------- thẻ thông báo, kết quả ----------
+function moThe(html) { $('the').innerHTML = html; $('phu').hidden = false; }
+function dongThe() { $('phu').hidden = true; }
+function phaoGiay() {
+  const p = $('phao'); p.textContent = '';
+  for (let i = 0; i < 70; i++) {
+    const g = document.createElement('i');
+    g.style.left = Math.random() * 100 + 'vw'; g.style.background = lay([...MAU, '#ffe066']);
+    g.style.animationDuration = (2.5 + Math.random() * 2.5) + 's'; g.style.animationDelay = Math.random() * 1.2 + 's';
+    p.appendChild(g);
+  }
+  setTimeout(() => { p.textContent = ''; }, 7000);
+}
+const dem = m => m.filter(Boolean).length;
+const tong = () => SO_C1 + SO_C2 + 6;
+function chiTiet() {
+  const on = [];
+  c1.forEach((v, i) => { if (!kq1[i]) on.push(`${v[1]} (${NHO[v[2]]})`); });
+  c2.forEach((k, i) => { if (!kq2[i]) on.push(`tìm ${NHO[k]}`); });
+  for (let i = 0; i < 6; i++) if (!kq3[i]) { const t = TRANH[Math.floor(i / 3)]; on.push(`đếm ${NHO[t.hoi[i % 3]]} trong tranh ${t.ten.toLowerCase()}`); }
+  return `Đồ vật ${dem(kq1)}/${SO_C1}, Tìm hình ${dem(kq2)}/${SO_C2}, Đếm hình ${dem(kq3)}/6` + (on.length ? `. Cần ôn: ${on.join('; ')}` : '');
+}
+function hetBai() {
+  const diem = dem(kq1) + dem(kq2) + dem(kq3), saoKq = diem >= tong() - 1 ? '⭐⭐⭐' : diem >= tong() * 0.6 ? '⭐⭐' : '⭐';
+  if (!O_NHA) {
+    moThe(`<div class="lon">🕵️⭐</div><h2>Hoan hô cả lớp!</h2><div>Các thám tử đã tìm ra hết các hình!</div><button class="nut xanh" id="lai">Chơi lại từ đầu</button>`);
+  } else {
+    const d = new Date(), hai = n => String(n).padStart(2, '0'), dong = [];
+    if (ten) dong.push(['Tên', ten]);
+    dong.push(['Bài', TEN_BAI]);
+    dong.push(['Đúng ngay lần đầu', `${diem}/${tong()} câu`]);
+    dong.push(['Đồ vật có dạng hình gì', `${dem(kq1)}/${SO_C1}`]);
+    dong.push(['Tìm hình', `${dem(kq2)}/${SO_C2}`]);
+    dong.push(['Đếm hình', `${dem(kq3)}/6`]);
+    dong.push(['Cần ôn thêm', chiTiet().split('. Cần ôn: ')[1] || 'Không, con làm đúng hết']);
+    dong.push(['Lúc', `${hai(d.getHours())}:${hai(d.getMinutes())} ngày ${hai(d.getDate())}/${hai(d.getMonth() + 1)}/${d.getFullYear()}`]);
+    moThe(`<div class="thuong-hieu">Cô Điệp AI</div><div class="lon">${saoKq}</div><h2>Con giỏi quá!</h2>
+      <div class="phieu" id="phieu"></div><div class="nho" id="loi-nhan"></div><button class="nut xanh" id="lai">Chơi lại</button>`);
+    dong.forEach(([nhan, gt]) => { const p = document.createElement('div'), b = document.createElement('b'); b.textContent = gt; p.append(nhan + ': ', b); $('phieu').appendChild(p); });
+    guiKetQua(diem);
+  }
+  $('lai').onclick = () => { dongThe(); choiLai(); };
+  phaoGiay(); keu([392, 523, 659, 784, 1047, 1319]);
+}
+const LINK_SHEET = 'https://script.google.com/macros/s/AKfycbzE5tlog_osSNJ7Tsr4SnJPQCiv5LpyfQaDj8jNHNYzT9YEMGnQHTJrrpNXV_45lq1t/exec';
+// Chỉ ghi kết quả khi link có ?lop=... (link lớp mình); link chia sẻ thì không ghi
+function guiKetQua(diem) {
+  const CHUP = 'Ba mẹ chụp màn hình này gửi cô nhé.';
+  const lop = window.LOP || new URLSearchParams(location.search).get('lop') || '';
+  if (!lop) { $('loi-nhan').textContent = CHUP; return; }
+  $('loi-nhan').textContent = 'Đang gửi kết quả cho cô...';
+  const d = { lop, ten, bai: TEN_BAI, dungLanDau: diem, soCau: tong(), chiTiet: chiTiet() };
+  const xong = () => { $('loi-nhan').textContent = 'Đã gửi kết quả cho cô.'; };
+  const loi = () => { $('loi-nhan').textContent = 'Chưa gửi được. ' + CHUP; };
+  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(xong).withFailureHandler(loi).ghiKetQua(d);
+  else fetch(LINK_SHEET, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }).then(xong, loi);
+}
+
+function choiLai() {
+  sao = 0; $('sao').textContent = 0; xongChang = {};
+  document.querySelectorAll('#chang button').forEach(b => b.classList.remove('xong'));
+  denChang(1);
+}
+$('nut-loa').onclick = () => {
+  if (!giongViet) timGiong();
+  if (!giongViet) { alert('Máy này chưa có giọng đọc tiếng Việt. Thầy cô và ba mẹ thử mở bằng Microsoft Edge hoặc điện thoại nhé.'); return; }
+  doc(cauDoc);
+};
+// ở lớp cô bấm chọn chặng; ở nhà con đi lần lượt
+document.querySelectorAll('#chang button').forEach(b => b.onclick = () => { if (!O_NHA) denChang(+b.dataset.c); });
+if (O_NHA) {
+  document.querySelectorAll('#chang button').forEach(b => b.disabled = true);
+  $('mo-dau').hidden = false;
+  try { $('ten-hs').value = localStorage.getItem('ten-hs') || ''; } catch (e) {}
+  const batDau = e => {
+    if (e) e.preventDefault();
+    if ($('mo-dau').hidden) return;
+    ten = $('ten-hs').value.trim();
+    try { localStorage.setItem('ten-hs', ten); $('ten-hs').blur(); } catch (e) {}
+    $('mo-dau').hidden = true; keu([523, 659]); if (cauDoc) doc(cauDoc);
+  };
+  $('nut-bat-dau').onclick = batDau;
+  $('nut-bat-dau').addEventListener('touchend', batDau);
+  $('ten-hs').addEventListener('keydown', e => { if (e.key === 'Enter') batDau(); });
+}
+choiLai();
+</script>
+</body>
+</html>

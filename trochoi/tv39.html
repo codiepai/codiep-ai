@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hội đom đóm - Bài 39: oi ôi ơi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* KHUÔN "ĐOM ĐÓM THẮP ĐÈN" (Tiếng Việt 1) - cảnh đêm ở xóm.
+     Chặng 1: lật thẻ tìm đôi (tranh và chữ).
+     Chặng 2: chạm đúng chú đom đóm mang vần để thắp sáng đèn lồng, thắp hết thì cả xóm sáng đèn.
+     Chặng 3: đọc đoạn văn rồi chọn câu trả lời.
+     Mở file trên máy ở lớp = cả lớp chơi trên tivi; mở bằng link web = con tự chơi ở nhà, gửi kết quả.
+     Đổi bài: chỉ sửa khối D ở đầu phần script. */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --chu: #12304a; --dem: #14213d; --xanh: #0b5cab; --do: #e03131; --la: #2f9e44; --la-dam: #1e6b2e;
+    --cam: #f08c00; --cam-dam: #b86200; --vang: #ffd43b; --tim: #7048e8;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  @media (max-aspect-ratio: 1/1) { :root { --u: min(0.62vh, 0.95vw); } }
+  /* màn hình rộng: ô và thẻ rộng ra cho đỡ trống hai bên */
+  :root { --kx: 1; --ky: 1; }
+  @media (min-aspect-ratio: 16/9) { :root { --kx: 1.5; --ky: .68; } }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu);
+    background:
+      radial-gradient(circle at 88% 10%, #fff9db 0 3.5%, rgba(255,249,219,.25) 4%, transparent 7%),
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 30% 8%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 47% 22%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 64% 12%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 76% 28%, #fff 50%, transparent 51%),
+      radial-gradient(2px 2px at 6% 40%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 94% 44%, #fff 50%, transparent 51%),
+      linear-gradient(#0b1a3a 0%, #1b2f5e 62%, #24461f 62.2%, #183015 100%);
+    display: flex; flex-direction: column; overflow: hidden;
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 5px solid var(--vang); outline-offset: 4px; }
+
+  header { display: flex; align-items: center; gap: calc(var(--u) * 2); padding: calc(var(--u) * 1.2) 16px; flex-wrap: wrap; justify-content: center; }
+  h1 { font-size: max(24px, calc(var(--u) * 5.5)); line-height: 1; color: var(--vang); text-shadow: 0 0 18px rgba(255,212,59,.6); white-space: nowrap; }
+  .chang { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chang button { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 16px; border-radius: 30px; border: 3px solid var(--vang); background: transparent; color: var(--vang); }
+  .chang button.dang { background: var(--vang); color: var(--dem); }
+  .chang button.xong::after { content: " ✓"; }
+  .chang button:disabled { cursor: default; }
+
+  main { flex: 1; min-height: 0; position: relative; }
+  .man-chang { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 0 16px calc(var(--u) * 2); gap: calc(var(--u) * 1.8); overflow-y: auto; overflow-x: hidden; }
+  .huong-dan { font-size: max(17px, calc(var(--u) * 3.4)); color: var(--chu); text-align: center; background: rgba(255,255,255,.9); border-radius: 20px; padding: 2px 20px; text-wrap: balance; }
+  .hang-nut { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .nut-lon { font-size: max(22px, calc(var(--u) * 4.6)); padding: calc(var(--u) * .3) calc(var(--u) * 5); color: #fff; background: var(--la); border: none; border-radius: calc(var(--u) * 3); box-shadow: 0 7px 0 var(--la-dam); }
+  .nut-lon:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--la-dam); }
+  .nut-lon.cam { background: var(--cam); box-shadow: 0 7px 0 var(--cam-dam); }
+  .nut-nho { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 18px; border-radius: 30px; border: 3px solid var(--vang); background: rgba(255,255,255,.95); color: var(--xanh); }
+  .dem { font-size: max(16px, calc(var(--u) * 3)); background: #fff; border: 4px solid var(--vang); border-radius: 30px; padding: 0 16px; }
+  .loi { min-height: 1.3em; font-size: max(20px, calc(var(--u) * 4.4)); text-align: center; text-shadow: 0 2px 6px rgba(0,0,0,.6); }
+  .loi.sai { color: #ffa94d; } .loi.dung { color: #8ce99a; }
+  .lac { animation: lac .45s !important; }
+  @keyframes lac { 20% { transform: translateX(-14px) rotate(-5deg); } 60% { transform: translateX(14px) rotate(5deg); } }
+
+  /* ===== Chặng 1: lật thẻ ===== */
+  .luoi { display: grid; grid-template-columns: repeat(var(--cot, 4), calc(var(--u) * 21)); gap: calc(var(--u) * 1.8); justify-content: center; perspective: 1200px; }
+  .the-lat { height: calc(var(--u) * 17); background: none; border: none; padding: 0; position: relative; transform-style: preserve-3d; transition: transform .45s; }
+  .the-lat.mo, .the-lat.xong { transform: rotateY(180deg); }
+  .the-lat .mat { position: absolute; inset: 0; border-radius: calc(var(--u) * 2.5); display: flex; align-items: center; justify-content: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 7px 0 rgba(0,0,0,.35); }
+  .the-lat .lung { background: radial-gradient(circle at 30% 30%, #ffe066 0 8%, transparent 9%), linear-gradient(135deg, #5f3dc4, #7048e8); border: 5px solid #b197fc; font-family: var(--emoji); font-size: calc(var(--u) * 7); }
+  .the-lat .truoc { transform: rotateY(180deg); background: #fff9db; border: 5px solid var(--vang); }
+  .the-lat .truoc.hinh { font-family: var(--emoji); font-size: max(40px, calc(var(--u) * 10)); }
+  .the-lat .truoc.chu { font-size: max(26px, calc(var(--u) * 6.4)); color: var(--do); line-height: 1.05; text-align: center; padding: 0 6px; }
+  .the-lat.xong .truoc { background: #d3f9d8; border-color: var(--la); box-shadow: 0 0 24px rgba(140,233,154,.8); }
+
+  /* ===== Chặng 2: đèn lồng + đom đóm ===== */
+  .day-den { display: flex; gap: calc(var(--u) * 1.6); justify-content: center; }
+  .den-nho { width: calc(var(--u) * 5); height: calc(var(--u) * 6.5); border-radius: 40% 40% 30% 30%; background: #3b4a6b; border: 3px solid #5c6b8a; transition: background .4s, box-shadow .4s; }
+  .den-nho.sang { background: #ffd43b; border-color: #f08c00; box-shadow: 0 0 18px #ffd43b; }
+  .san-den { display: flex; align-items: center; justify-content: center; gap: calc(var(--u) * 4); flex-wrap: wrap; }
+  .den-long { position: relative; min-width: calc(var(--u) * 44); max-width: 100%; padding: calc(var(--u) * 2) calc(var(--u) * 6) calc(var(--u) * 2.5); border-radius: 45% 45% 35% 35% / 30% 30% 25% 25%; background: #34405e; border: 7px solid #8d6e3f; display: flex; flex-direction: column; align-items: center; transition: background .5s, box-shadow .5s; }
+  .den-long::before { content: ""; position: absolute; top: calc(var(--u) * -4); left: 50%; width: 6px; height: calc(var(--u) * 4); background: #8d6e3f; transform: translateX(-50%); }
+  .den-long.sang { background: radial-gradient(#fff3bf, #ffd43b 70%); box-shadow: 0 0 60px 10px rgba(255,212,59,.7); }
+  .den-long .hinh { font-family: var(--emoji); font-size: max(48px, calc(var(--u) * 13)); line-height: 1.1; }
+  .den-long .tu { font-size: max(40px, calc(var(--u) * 10.5)); line-height: 1.1; color: #fff; white-space: pre; }
+  .den-long.sang .tu { color: var(--chu); }
+  .den-long .o { display: inline-block; min-width: 1.4em; border: 5px dashed var(--vang); border-radius: 16px; color: var(--vang); text-align: center; }
+  .den-long.sang .o { border-style: solid; border-color: var(--la); color: var(--do); background: #fff; }
+  .bay-dom { display: flex; gap: calc(var(--u) * 5); justify-content: center; flex-wrap: wrap; min-height: calc(var(--u) * 20); align-items: center; }
+  .dom { position: relative; width: calc(var(--u) * 18); height: calc(var(--u) * 15); background: none; border: none; padding: 0; animation: lo-lung 2.6s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -.9s); transition: transform .7s ease-in, opacity .4s; }
+  @keyframes lo-lung { 0% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(calc(var(--u) * 1.5), calc(var(--u) * -2)) rotate(3deg); } 100% { transform: translate(calc(var(--u) * -1), calc(var(--u) * 1)) rotate(-2deg); } }
+  .dom .canh { position: absolute; top: 4%; width: 34%; height: 46%; background: rgba(208,235,255,.75); border-radius: 50%; animation: dap .18s linear infinite alternate; }
+  .dom .canh.trai { left: 14%; transform-origin: right bottom; } .dom .canh.phai { right: 14%; transform-origin: left bottom; }
+  @keyframes dap { to { transform: scaleY(.55); } }
+  .dom .than { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); min-width: 72%; height: 66%; padding: 0 8px; border-radius: 50%; background: radial-gradient(#fff9db 0 30%, #ffd43b 70%); box-shadow: 0 0 26px 8px rgba(255,212,59,.75); display: flex; align-items: center; justify-content: center; font-size: max(30px, calc(var(--u) * 7.6)); color: var(--chu); line-height: 1; }
+  .dom.sai { opacity: .35; animation: none; filter: grayscale(1); cursor: default; }
+  .dom.sai .canh { animation: none; }
+  .dom.bay { animation: none; z-index: 20; }
+
+  /* ===== Chặng 3: đọc đoạn ===== */
+  .doan { width: min(100%, 1150px); background: #fff9db; border: 6px solid var(--vang); border-radius: calc(var(--u) * 3); padding: calc(var(--u) * 1.6) calc(var(--u) * 3); font-size: max(22px, calc(var(--u) * 5)); line-height: 1.4; color: var(--chu); box-shadow: 0 0 40px rgba(255,212,59,.35); }
+  .doan b { color: var(--do); }
+  .hoi { font-size: max(22px, calc(var(--u) * 5)); color: #fff; text-align: center; text-shadow: 0 2px 6px rgba(0,0,0,.5); }
+  .chon-tl { display: flex; gap: calc(var(--u) * 2.5); flex-wrap: wrap; justify-content: center; }
+  .chon-tl button { font-size: max(24px, calc(var(--u) * 5.6)); padding: calc(var(--u) * .6) calc(var(--u) * 3.5); color: var(--chu); background: var(--vang); border: none; border-radius: calc(var(--u) * 2.5); box-shadow: 0 7px 0 var(--cam-dam); }
+  .chon-tl button.sai { background: #868e96; color: #dee2e6; box-shadow: 0 7px 0 #495057; animation: lac .4s; }
+  .chon-tl button.dung { background: #8ce99a; box-shadow: 0 7px 0 var(--la-dam); }
+
+  /* thẻ to giữa màn hình */
+  .phu { position: fixed; inset: 0; background: rgba(8,14,32,.78); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 80; }
+  .the { width: min(100%, 1000px); min-width: min(94vw, calc(var(--u) * 80)); max-height: 100%; overflow-y: auto; background: #fff; border-radius: calc(var(--u) * 4); border: 8px solid var(--mau, var(--cam)); padding: calc(var(--u) * 3) calc(var(--u) * 4); display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2.5); text-align: center; animation: bung .45s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes bung { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .the .nhan { font-size: max(20px, calc(var(--u) * 4.4)); color: var(--xanh); }
+  .the .ket { font-size: max(34px, calc(var(--u) * 8.5)); color: var(--do); line-height: 1.1; }
+  .the .sao { font-family: var(--emoji); font-size: max(50px, calc(var(--u) * 13)); }
+  .thuong-hieu { font-size: max(15px, calc(var(--u) * 2.6)); color: #fff; background: var(--tim); border-radius: 30px; padding: 2px 16px; }
+  #ten-hs { font-family: inherit; font-weight: 800; font-size: max(22px, calc(var(--u) * 5)); text-align: center; width: min(100%, 520px); padding: 6px 14px; border: 4px solid #74c0fc; border-radius: 20px; color: var(--chu); user-select: text; -webkit-user-select: text; }
+  .phieu { text-align: left; font-size: max(17px, calc(var(--u) * 3.4)); line-height: 1.45; background: #f8f9fa; border-radius: 16px; padding: 10px 20px; width: min(100%, 700px); }
+  .phieu b { color: var(--xanh); }
+  .nho { font-size: max(15px, calc(var(--u) * 3)); color: #6b7280; }
+  .xom-sang { font-family: var(--emoji); font-size: max(40px, calc(var(--u) * 10)); filter: drop-shadow(0 0 14px #ffd43b); }
+  #loi-may { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 99; background: #c92a2a; color: #fff; font: 16px/1.3 Arial, sans-serif; padding: 8px 12px; border-radius: 10px; }
+
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 90; }
+  #phao i { position: absolute; top: -20px; width: 14px; height: 20px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  @media (max-aspect-ratio: 1/1) {
+    .luoi { --cot: 3 !important; grid-template-columns: repeat(3, calc(var(--u) * 27)); }
+    .the-lat { height: calc(var(--u) * 21); }
+    .den-long { min-width: calc(var(--u) * 60); }
+    .dom { width: calc(var(--u) * 24); height: calc(var(--u) * 20); }
+  }
+  @media (prefers-reduced-motion: reduce) { .the, .dom, .dom .canh { animation: none !important; } .the-lat, .dom { transition: none; } #phao { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="ten-tro"></h1>
+  <div class="chang" id="chang">
+    <button data-c="1">1. Lật thẻ</button>
+    <button data-c="2">2. Thắp đèn</button>
+    <button data-c="3">3. Đọc và trả lời</button>
+  </div>
+</header>
+
+<main>
+  <section class="man-chang" id="c1">
+    <div class="huong-dan">Lật 2 thẻ: tìm tranh và chữ đi cùng một đôi nhé!</div>
+    <div class="luoi" id="luoi"></div>
+    <div class="loi" id="loi1"></div>
+    <div class="hang-nut"><span class="dem" id="dem1"></span></div>
+  </section>
+
+  <section class="man-chang" id="c2" hidden>
+    <div class="huong-dan">Chạm chú đom đóm mang vần đúng để thắp sáng đèn lồng!</div>
+    <div class="day-den" id="day-den"></div>
+    <div class="san-den"><div class="den-long" id="den-long"><span class="hinh" id="hinh2"></span><span class="tu" id="tu2"></span></div></div>
+    <div class="bay-dom" id="bay-dom"></div>
+    <div class="loi" id="loi2"></div>
+    <div class="hang-nut"><button class="nut-nho nut-nghe">🔊 Nghe</button><span class="dem" id="dem2"></span></div>
+  </section>
+
+  <section class="man-chang" id="c3" hidden>
+    <div class="doan" id="doan"></div>
+    <div class="hoi" id="hoi3"></div>
+    <div class="chon-tl" id="chon3"></div>
+    <div class="loi" id="loi3"></div>
+    <div class="hang-nut"><button class="nut-nho nut-nghe">🔊 Nghe</button><span class="dem" id="dem3"></span></div>
+  </section>
+</main>
+
+<div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
+
+<div class="phu" id="mo-dau" hidden>
+  <div class="the" style="--mau:#7048e8">
+    <div class="thuong-hieu">Cô Điệp AI</div>
+    <div class="sao">🌙✨🏮</div>
+    <div class="ket" id="md-ten"></div>
+    <div class="nhan" id="md-bai"></div>
+    <label class="nhan" for="ten-hs">Con tên là gì?</label>
+    <input id="ten-hs" type="text" maxlength="40" autocomplete="off" placeholder="Họ và tên">
+    <button class="nut-lon" id="nut-bat-dau">Bắt đầu!</button>
+  </div>
+</div>
+<div id="phao"></div>
+
+<script>
+window.onerror = (m, f, d) => {
+  const goc = s => String(s || "").split(/[?#]/)[0];
+  if (/zalo|FBNav|instagram/i.test(m) || !f || goc(f) !== goc(location.href)) return; // lỗi của app Zalo/Facebook chèn vào, không phải của trò chơi
+  const o = document.getElementById('loi-may') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'loi-may' }));
+  o.textContent = 'Lỗi: ' + m + ' (dòng ' + d + ')';
+};
+// ====== NỘI DUNG BÀI (đổi bài thì chỉ sửa khối này) ======
+const D = {
+  ten: 'Hội đom đóm', bai: 'Bài 39: oi ôi ơi', tenBai: 'Hội đom đóm: Bài 39 oi ôi ơi',
+  // Chặng 1: các đôi [tranh, chữ] (6 đôi = 12 thẻ)
+  doi: [['🐘', 'voi'], ['🍚', 'xôi'], ['🧸', 'đồ chơi'], ['🐦', 'chim bói cá'], ['🎪', 'lễ hội'], ['🍲', 'nồi']],
+  // Chặng 2: mỗi đèn lồng là một từ thiếu vần. truoc + dau + [vần] + sau; chon[0] là vần đúng
+  den: [
+    { hinh: '🐘', truoc: '', dau: 'v', sau: '', chon: ['oi', 'ôi', 'ơi'] },
+    { hinh: '🍚', truoc: '', dau: 'x', sau: '', chon: ['ôi', 'oi', 'ơi'] },
+    { hinh: '🧸', truoc: 'đồ ', dau: 'ch', sau: '', chon: ['ơi', 'oi', 'ôi'] },
+    { hinh: '🐦', truoc: 'chim ', dau: 'b', sau: ' cá', chon: ['ói', 'ới', 'ối'] },
+    { hinh: '🎪', truoc: 'lễ ', dau: 'h', sau: '', chon: ['ội', 'ọi', 'ợi'] },
+    { hinh: '🍲', truoc: '', dau: 'n', sau: '', chon: ['ồi', 'òi', 'ời'] }
+  ],
+  // Chặng 3: đoạn đọc SGK trang 91 và 3 câu hỏi (dap là đáp án đúng, nằm trong chon)
+  doan: 'Hà hỏi mẹ: Mẹ ơi, mạ lớn lên gọi là lúa. Bê lớn lên gọi là bò. Còn con lớn lên thì gọi là gì ạ? Mẹ ôm Hà rồi nói: Lớn lên, con vẫn là con gái nhỏ của mẹ.',
+  tuDam: ['hỏi', 'ơi', 'ôm'],
+  hoi: [
+    { hoi: 'Ai hỏi mẹ?', dap: 'Hà', chon: ['Hà', 'bà', 'cô Mơ'] },
+    { hoi: 'Mạ lớn lên gọi là gì?', dap: 'lúa', chon: ['lúa', 'bò', 'gà'] },
+    { hoi: 'Lớn lên, Hà vẫn là gì của mẹ?', dap: 'con gái nhỏ', chon: ['con gái nhỏ', 'cô bé to', 'bạn của mẹ'] }
+  ]
+};
+// =========================================================
+
+const O_NHA = location.protocol !== 'file:' || new URLSearchParams(location.search).has('nha');
+const BAN = O_NHA ? 'con' : 'bạn';
+const L = O_NHA
+  ? { khen: ['Giỏi quá!', 'Đúng rồi!', 'Con giỏi lắm!', 'Tuyệt vời!'], thuLai: 'Chưa đúng, con thử lại nhé!', hoanHo: 'Con giỏi quá!' }
+  : { khen: ['Giỏi quá!', 'Đúng rồi!', 'Hoan hô!', 'Tuyệt vời!'], thuLai: 'Chưa đúng, bạn thử lại nhé!', hoanHo: 'Hoan hô cả lớp!' };
+const MAU = ['#ffd43b', '#f08c00', '#8ce99a', '#74c0fc', '#b197fc', '#f783ac'];
+const $ = id => document.getElementById(id);
+let ten = '', chang = 1, xongChang = {}, amThanh = null;
+
+// ---------- âm thanh + giọng đọc ----------
+function keu(ds, kieu = 'triangle', cach = 0.12) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    if (amThanh.state === 'suspended') amThanh.resume();
+    ds.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + i * cach;
+      o.frequency.value = f; o.type = kieu;
+      g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      o.connect(g); g.connect(amThanh.destination); o.start(t); o.stop(t + 0.24);
+    });
+  } catch (e) {}
+}
+const vui = () => keu([523, 659, 784]);
+const tiec = () => keu([220, 196]);
+let giongViet = null;
+function timGiong() {
+  if (!window.speechSynthesis) return;
+  const ds = speechSynthesis.getVoices().filter(v => /^vi/i.test(v.lang));
+  giongViet = ds.find(v => /natural|online|hoaimy/i.test(v.name)) || ds[0] || null;
+}
+if (window.speechSynthesis) { timGiong(); speechSynthesis.onvoiceschanged = timGiong; }
+// Tự đọc câu mới, nút loa để nghe lại (cô Điệp dặn 16/10/2026)
+function doc(chu) {
+  if (!window.speechSynthesis || !giongViet) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(chu);
+  u.voice = giongViet; u.lang = giongViet.lang; u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+const khen = () => L.khen[Math.floor(Math.random() * L.khen.length)];
+function phaoGiay(n) {
+  const p = $('phao'); p.textContent = '';
+  for (let i = 0; i < n; i++) {
+    const g = document.createElement('i');
+    g.style.left = Math.random() * 100 + 'vw'; g.style.background = MAU[i % MAU.length];
+    g.style.animationDuration = (2.2 + Math.random() * 2.5) + 's'; g.style.animationDelay = Math.random() + 's';
+    p.appendChild(g);
+  }
+  setTimeout(() => { p.textContent = ''; }, 6500);
+}
+const tron = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function moThe(html, mau) { $('the').style.setProperty('--mau', mau || '#f08c00'); $('the').innerHTML = html; $('phu').hidden = false; }
+function dongThe() { $('phu').hidden = true; }
+function lac(el) { el.classList.remove('lac'); void el.offsetWidth; el.classList.add('lac'); setTimeout(() => el.classList.remove('lac'), 500); }
+function baoLoi(id, chu, dung) { $(id).textContent = chu; $(id).className = 'loi ' + (dung ? 'dung' : 'sai'); }
+
+// ---------- chuyển chặng ----------
+function denChang(n) {
+  chang = n;
+  [1, 2, 3].forEach(i => { $('c' + i).hidden = i !== n; });
+  document.querySelectorAll('#chang button').forEach(b => {
+    b.classList.toggle('dang', +b.dataset.c === chang);
+    b.classList.toggle('xong', !!xongChang[b.dataset.c]);
+  });
+  if (n === 1) ve1();
+  if (n === 2) { i2 = 0; ve2(); }
+  if (n === 3) { i3 = 0; ve3(); }
+}
+document.querySelectorAll('#chang button').forEach(b => b.onclick = () => denChang(+b.dataset.c));
+function xongMotChang(n, sau) {
+  xongChang[n] = true; phaoGiay(60); keu([523, 659, 784, 1047]);
+  const tiep = n < 3;
+  const them = n === 2 ? `<div class="xom-sang">🏡🏮🏠🏮🏡</div><div class="nhan">Cả xóm đã sáng đèn rồi!</div>` : '';
+  moThe(`<div class="sao">${'⭐'.repeat(n)}</div><div class="ket">Xong chặng ${n} rồi!</div>${them}
+    <button class="nut-lon" id="tiep">${tiep ? `Sang chặng ${n + 1} ➜` : 'Xem kết quả'}</button>`, '#f2b705');
+  $('tiep').onclick = () => { dongThe(); sau(); };
+}
+
+// ===================== Chặng 1: lật thẻ tìm đôi =====================
+let mo1 = [], nham1 = 0, timDuoc1 = 0, ban1 = false;
+function ve1() {
+  const l = $('luoi'); l.textContent = '';
+  mo1 = []; nham1 = 0; timDuoc1 = 0; ban1 = false;
+  const the = [];
+  D.doi.forEach(([h, c], i) => { the.push({ doi: i, loai: 'hinh', noi: h }); the.push({ doi: i, loai: 'chu', noi: c }); });
+  l.style.setProperty('--cot', the.length > 12 ? 5 : 4);
+  tron(the).forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'the-lat'; b.dataset.doi = t.doi;
+    b.setAttribute('aria-label', 'Thẻ úp');
+    b.innerHTML = `<span class="mat lung">🌙</span><span class="mat truoc ${t.loai}">${t.noi}</span>`;
+    b.onclick = () => lat(b, t);
+    l.appendChild(b);
+  });
+  baoLoi('loi1', '', true);
+  $('dem1').textContent = `Tìm được 0/${D.doi.length} đôi`;
+}
+function lat(b, t) {
+  if (ban1 || b.classList.contains('mo') || b.classList.contains('xong')) return;
+  b.classList.add('mo'); b.setAttribute('aria-label', t.noi); keu([440], 'sine');
+  mo1.push(b);
+  if (mo1.length < 2) return;
+  const [a, c] = mo1; mo1 = [];
+  if (a.dataset.doi === c.dataset.doi) {
+    a.classList.replace('mo', 'xong'); c.classList.replace('mo', 'xong');
+    timDuoc1++; vui();
+    baoLoi('loi1', `${khen()} Đúng một đôi: "${D.doi[+a.dataset.doi][1]}"`, true);
+    $('dem1').textContent = `Tìm được ${timDuoc1}/${D.doi.length} đôi`;
+    if (timDuoc1 === D.doi.length) setTimeout(() => xongMotChang(1, () => denChang(2)), 1100);
+  } else {
+    nham1++; ban1 = true; tiec();
+    baoLoi('loi1', 'Chưa phải một đôi, nhớ chỗ thẻ rồi lật lại nhé!', false);
+    setTimeout(() => { a.classList.remove('mo'); c.classList.remove('mo'); a.setAttribute('aria-label', 'Thẻ úp'); c.setAttribute('aria-label', 'Thẻ úp'); ban1 = false; }, 1100);
+  }
+}
+
+// ===================== Chặng 2: thắp đèn lồng =====================
+let i2 = 0, sai2 = [], ban2 = false;
+const tuDu = d => d.truoc + d.dau + d.chon[0] + d.sau;
+function ve2() {
+  const d = D.den[i2];
+  ban2 = false;
+  $('den-long').className = 'den-long';
+  $('hinh2').textContent = d.hinh;
+  $('tu2').innerHTML = '';
+  $('tu2').append(d.truoc + d.dau, Object.assign(document.createElement('span'), { className: 'o', id: 'o2', textContent: '?' }), d.sau);
+  $('day-den').innerHTML = D.den.map((_, j) => `<div class="den-nho ${j < i2 ? 'sang' : ''}"></div>`).join('');
+  const bd = $('bay-dom'); bd.textContent = '';
+  tron(d.chon).forEach((v, j) => {
+    const b = document.createElement('button');
+    b.className = 'dom'; b.style.setProperty('--i', j);
+    b.setAttribute('aria-label', 'Đom đóm mang vần ' + v);
+    b.innerHTML = `<span class="canh trai"></span><span class="canh phai"></span><span class="than">${v}</span>`;
+    b.onclick = () => chamDom(b, v);
+    bd.appendChild(b);
+  });
+  baoLoi('loi2', '', true);
+  $('dem2').textContent = `Đèn ${i2 + 1}/${D.den.length}`;
+}
+function chamDom(b, v) {
+  if (ban2 || b.classList.contains('sai')) return;
+  const d = D.den[i2];
+  if (v !== d.chon[0]) {
+    tiec(); lac(b); b.classList.add('sai'); sai2[i2] = (sai2[i2] || 0) + 1;
+    baoLoi('loi2', `${L.thuLai}`, false); return;
+  }
+  ban2 = true; vui();
+  // đom đóm bay vào đèn
+  const o = $('o2').getBoundingClientRect(), r = b.getBoundingClientRect();
+  b.classList.add('bay');
+  b.style.transform = `translate(${o.left + o.width / 2 - (r.left + r.width / 2)}px, ${o.top + o.height / 2 - (r.top + r.height / 2)}px) scale(.5)`;
+  b.style.opacity = '0';
+  setTimeout(() => {
+    $('o2').textContent = v; $('den-long').classList.add('sang');
+    document.querySelectorAll('.den-nho')[i2].classList.add('sang');
+    keu([659, 784, 1047, 1319], 'sine', 0.1);
+    baoLoi('loi2', `${khen()} Đèn sáng rồi: "${tuDu(d)}"`, true);
+    setTimeout(() => { i2++; if (i2 < D.den.length) ve2(); else xongMotChang(2, () => denChang(3)); }, 1700);
+  }, 700);
+}
+
+// ===================== Chặng 3: đọc và trả lời =====================
+let i3 = 0, sai3 = [];
+function ve3() {
+  let html = D.doan.replace(/</g, '&lt;');
+  D.tuDam.forEach(t => { html = html.split(t).join(`<b>${t}</b>`); });
+  $('doan').innerHTML = html;
+  const h = D.hoi[i3];
+  $('hoi3').textContent = `Câu ${i3 + 1}: ${h.hoi}`;
+  const c = $('chon3'); c.textContent = '';
+  tron(h.chon).forEach(v => {
+    const b = document.createElement('button');
+    b.textContent = v;
+    b.onclick = () => traLoi(b, v);
+    c.appendChild(b);
+  });
+  baoLoi('loi3', i3 === 0 ? (O_NHA ? 'Con đọc to đoạn văn trước rồi trả lời nhé!' : 'Cả lớp đọc to đoạn văn rồi trả lời nhé!') : '', true);
+  $('dem3').textContent = `Câu ${i3 + 1}/${D.hoi.length}`;
+}
+function traLoi(b, v) {
+  const h = D.hoi[i3], c = $('chon3');
+  if (b.disabled || c.dataset.xong) return;
+  if (v !== h.dap) {
+    tiec(); b.classList.add('sai'); b.disabled = true; sai3[i3] = (sai3[i3] || 0) + 1;
+    baoLoi('loi3', `Chưa đúng, ${BAN} đọc lại đoạn văn rồi chọn nhé!`, false); return;
+  }
+  c.dataset.xong = '1'; b.classList.add('dung'); vui();
+  baoLoi('loi3', khen(), true);
+  setTimeout(() => { delete c.dataset.xong; i3++; if (i3 < D.hoi.length) ve3(); else xongMotChang(3, hetBai); }, 1300);
+}
+document.querySelectorAll('.nut-nghe').forEach(b => b.onclick = () => {
+  if (!giongViet) timGiong();
+  if (!giongViet) { alert('Máy này chưa có giọng đọc tiếng Việt. Thầy cô và ba mẹ thử mở bằng Microsoft Edge hoặc điện thoại nhé.'); return; }
+  if (chang === 2) doc(tuDu(D.den[i2]));
+  else doc(D.doan + ' ' + D.hoi[i3].hoi);
+});
+
+// ===================== Kết thúc, điểm, gửi kết quả =====================
+const dung2 = () => D.den.filter((_, i) => !sai2[i]).length;
+const dung3 = () => D.hoi.filter((_, i) => !sai3[i]).length;
+const tong = () => D.den.length + D.hoi.length;
+function chiTiet() {
+  const on = [];
+  D.den.forEach((d, i) => { if (sai2[i]) on.push(`"${tuDu(d)}" chọn nhầm ${sai2[i]} lần`); });
+  D.hoi.forEach((h, i) => { if (sai3[i]) on.push(`câu "${h.hoi}" chọn nhầm ${sai3[i]} lần`); });
+  return `Lật thẻ ${D.doi.length} đôi, lật nhầm ${nham1} lần, Thắp đèn ${dung2()}/${D.den.length}, Đọc hiểu ${dung3()}/${D.hoi.length}` + (on.length ? `. Cần ôn: ${on.join('; ')}` : '');
+}
+function hetBai() {
+  const diem = dung2() + dung3(), sao = diem >= tong() - 1 ? '⭐⭐⭐' : diem >= tong() * 0.6 ? '⭐⭐' : '⭐';
+  if (!O_NHA) {
+    moThe(`<div class="sao">⭐⭐⭐</div><div class="ket">${L.hoanHo}</div><div class="nhan">Các con đã luyện xong ${D.bai}!</div>
+      <button class="nut-lon cam" id="lai">Chơi lại từ đầu</button>`, '#f2b705');
+  } else {
+    const d = new Date(), hai = n => String(n).padStart(2, '0'), dong = [];
+    if (ten) dong.push(['Tên', ten]);
+    dong.push(['Bài', D.tenBai]);
+    dong.push(['Đúng ngay lần đầu', `${diem}/${tong()} câu`]);
+    dong.push(['Lật thẻ', `tìm đủ ${D.doi.length} đôi, lật nhầm ${nham1} lần`]);
+    dong.push(['Thắp đèn', `${dung2()}/${D.den.length}`]);
+    dong.push(['Đọc hiểu', `${dung3()}/${D.hoi.length}`]);
+    dong.push(['Cần ôn thêm', chiTiet().split('. Cần ôn: ')[1] || 'Không, con làm đúng hết']);
+    dong.push(['Lúc', `${hai(d.getHours())}:${hai(d.getMinutes())} ngày ${hai(d.getDate())}/${hai(d.getMonth() + 1)}/${d.getFullYear()}`]);
+    moThe(`<div class="thuong-hieu">Cô Điệp AI</div><div class="sao">${sao}</div><div class="ket">${L.hoanHo}</div>
+      <div class="phieu" id="phieu"></div><div class="nho" id="loi-nhan"></div><button class="nut-lon cam" id="lai">Chơi lại</button>`, '#f2b705');
+    dong.forEach(([nhan, gt]) => { const p = document.createElement('div'), b = document.createElement('b'); b.textContent = gt; p.append(nhan + ': ', b); $('phieu').appendChild(p); });
+    guiKetQua(diem);
+  }
+  $('lai').onclick = () => { dongThe(); choiLai(); };
+  phaoGiay(100); keu([392, 523, 659, 784, 1047, 1319, 1568]);
+}
+const LINK_SHEET = 'https://script.google.com/macros/s/AKfycbzE5tlog_osSNJ7Tsr4SnJPQCiv5LpyfQaDj8jNHNYzT9YEMGnQHTJrrpNXV_45lq1t/exec';
+// Chỉ ghi kết quả khi link có ?lop=... (link lớp mình); link chia sẻ thì không ghi
+function guiKetQua(diem) {
+  const CHUP = 'Ba mẹ chụp màn hình này gửi cô nhé.';
+  const lop = window.LOP || new URLSearchParams(location.search).get('lop') || '';
+  if (!lop) { $('loi-nhan').textContent = CHUP; return; }
+  $('loi-nhan').textContent = 'Đang gửi kết quả cho cô...';
+  const d = { lop, ten, bai: D.tenBai, dungLanDau: diem, soCau: tong(), chiTiet: chiTiet() };
+  const xong = () => { $('loi-nhan').textContent = 'Đã gửi kết quả cho cô.'; };
+  const loi = () => { $('loi-nhan').textContent = 'Chưa gửi được. ' + CHUP; };
+  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(xong).withFailureHandler(loi).ghiKetQua(d);
+  else fetch(LINK_SHEET, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) }).then(xong, loi);
+}
+
+function choiLai() { xongChang = {}; sai2 = []; sai3 = []; denChang(1); }
+
+// ===== dựng giao diện =====
+document.title = `${D.ten} - ${D.bai}`;
+$('ten-tro').textContent = D.ten;
+$('md-ten').textContent = D.ten; $('md-bai').textContent = D.bai + ' - Tiếng Việt 1';
+if (O_NHA) {
+  document.querySelectorAll('#chang button').forEach(b => b.disabled = true);
+  $('mo-dau').hidden = false;
+  const batDau = e => {
+    if (e) e.preventDefault();
+    if ($('mo-dau').hidden) return;
+    ten = $('ten-hs').value.trim(); $('mo-dau').hidden = true; keu([523, 659]);
+  };
+  $('nut-bat-dau').onclick = batDau;
+  $('nut-bat-dau').addEventListener('touchend', batDau);
+  $('ten-hs').addEventListener('keydown', e => { if (e.key === 'Enter') batDau(); });
+}
+choiLai();
+</script>
+</body>
+</html>

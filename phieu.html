@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tạo phiếu Toán - CÔ ĐIỆP AI</title>
+<script src="hinh/index.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@700;800&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"OpSym";src:local("Arial");unicode-range:U+2B,U+2D,U+3C,U+3E,U+3D,U+D7,U+F7}
+
+:root{--xanh:#0b5cab;--chu:#12304a;--phu:#4a6378}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;background:#eaf5ff;color:var(--chu)}
+.bang{max-width:760px;margin:0 auto;padding:16px}
+.bang a.ve{color:var(--xanh);font-weight:700;text-decoration:none}
+h1{font-family:"Baloo 2",sans-serif;color:var(--xanh);margin:6px 0 4px}
+.ch{background:#fff;border:2px solid #cfe6fb;border-radius:16px;padding:14px 16px;margin:12px 0}
+.ch label{display:block;font-weight:600;margin:8px 0 4px}
+.ch select,.ch input[type=text],.ch input[type=number]{font:inherit;padding:8px 10px;border:2px solid #cfe6fb;border-radius:10px;width:100%}
+.hang{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nut{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:13px 20px;cursor:pointer;color:#fff;background:#f77f00;box-shadow:0 4px 0 #b86200}
+button.in{background:#0b5cab;box-shadow:0 4px 0 #073d73}
+button:active{transform:translateY(2px)}
+.to{background:#fff;margin:14px auto;padding:22px 26px;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.12);font-family:"Andika",Arial,sans-serif}
+.to .dau{display:flex;justify-content:space-between;gap:12px;font-size:15px;border-bottom:2px solid #1d3557;padding-bottom:8px;margin-bottom:12px}
+.to h2{font-family:"Baloo 2",sans-serif;text-align:center;margin:4px 0 12px;font-size:24px;color:#1d3557}
+.luoi{display:grid;grid-template-columns:repeat(6,1fr);gap:34px 16px}.bai{grid-column:span 2}
+.bai{font-size:23px;line-height:1.7}.bai:not(.rong){white-space:nowrap}
+.bai i{display:inline-block;min-width:54px;border-bottom:2px solid #1d3557;height:34px;vertical-align:bottom}
+.bai.rong{grid-column:span 3}.bai small{color:#5b6b80;font-size:14px;margin-right:4px}
+.chan{margin-top:16px;text-align:right;font-size:12px;color:#5b7aa0}
+.dapan{page-break-before:always}
+@media (max-width:560px){.luoi{grid-template-columns:repeat(4,1fr)}.bai.rong{grid-column:span 4}.bai{font-size:20px}.hang{grid-template-columns:1fr}}
+@media print{
+  body{background:#fff}.bang>*:not(.in-ra){display:none!important}
+  .bang{padding:0;max-width:none}.to{box-shadow:none;margin:0;padding:6mm 4mm}
+  .xem-dap{display:none}
+}
+.ch-bai label{display:block;font-weight:700;margin:0 0 4px;color:#0b5cab}
+.ch-bai{margin-bottom:6px;padding-bottom:10px;border-bottom:2px dashed #cfe6fb}
+.bai svg{vertical-align:middle}.bai small.cd{font-size:13px;color:#5b6b80}
+
+/* khổ giấy: A4 mặc định, A5 chữ nhỏ hơn và 2 cột */
+.to{max-width:210mm}
+.to.a5{max-width:148mm;padding:16px 16px}
+.to.a5 h2{font-size:19px}
+.to.a5 .dau{font-size:12px}
+.to.a5 .luoi{grid-template-columns:repeat(4,1fr);gap:22px 12px}
+.to.a5 .bai{grid-column:span 2;font-size:20px;line-height:1.7}
+.to.a5 .bai.rong,.to.a5 .bai.full{grid-column:span 4}
+.to.a5 .bai .nw{font-size:25px}
+.to.a5 .bai small.cd{font-size:12px}
+.to.a5 .bai i{min-width:44px;height:28px}
+.to.a5 .bai i.dai{min-width:110px}
+.to.a5 .nhom{grid-column:span 4;font-size:16px}
+.to.a5 .bai .the{padding:0 8px;margin:0 6px 5px 0}
+@media print{.to,.to.a5{max-width:none}}
+
+/* ===== Toán: mẫu A5 (phiếu ôn cuối tuần) và A4 (đề khảo sát) ===== */
+.to h2,.to .mt4{font-family:inherit}
+.to.mau5t,.to.mau4t{padding:0;border-radius:0;max-width:none;color:#000}
+.to.mau5t{width:132mm}.to.mau4t{width:186mm}
+.mf5t,.mf4t{font-size:calc(var(--pt,14)*1.3333px*var(--f,1));line-height:1.35}
+.mf5t{border:2px solid #000;padding:2.5mm 2.5mm 3mm;--ob:8.5mm}
+.mf4t{--ob:11mm}
+.mdau{display:flex;justify-content:space-between;font-weight:700;margin-bottom:.4em}
+.mdau4{margin:0 0 .15em;font-size:.9em}
+.to .mt4{text-align:center;font-size:1.25em;margin:.1em 0 .35em;font-weight:700;color:#000}
+.mht{display:block;font-weight:700;margin:.35em 0 .2em}
+.mau4t .mht{color:#c2185b;margin-top:0}
+.mt{border-collapse:collapse;width:100%;border:2px solid #000}
+.mt td{border:1.5px solid #000;padding:.25em .5em .35em;vertical-align:top}
+.mt td.c2{width:50%}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:0 4mm}
+b.o{display:inline-block;box-sizing:border-box;width:var(--ob);height:var(--ob);border:1.6px solid #333;border-radius:2.2mm;vertical-align:middle;text-align:center;line-height:calc(var(--ob) - 3.5px);font-weight:700;margin:0 .7mm}
+b.o.r{border-color:#e53935}b.o.b{border-color:#1e88e5}b.o.g{border-color:#43a047}b.o.p{border-color:#8e24aa}b.o.y{border-color:#fb8c00}
+.khung{border:1.6px dashed #555;border-radius:3mm;padding:1mm 2mm;margin:1mm 0 1.5mm;line-height:1.7}
+.hang{display:flex;gap:5mm;flex-wrap:wrap;margin-top:1mm}.ep{white-space:nowrap}
+.tau{display:flex;align-items:center;gap:.5mm;margin:1mm 0;white-space:nowrap}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.6mm 4mm}.g1{display:grid;gap:1.6mm}.g2b{display:grid;grid-template-columns:1fr 1fr;gap:3mm 6mm}
+.it,.it2{white-space:nowrap}
+.mui{display:flex;align-items:center;margin-top:1mm;white-space:nowrap}
+.num{font-size:1.15em;letter-spacing:.05em}
+.xp{margin:1mm 0 2mm}
+.bonds{display:flex;justify-content:space-around;gap:4mm}.bond{display:flex;flex-direction:column;align-items:center}.bt{display:flex;gap:6mm}
+.np{display:flex;align-items:center;gap:3mm;margin:1mm 0;flex-wrap:wrap}.np small{min-width:5em}
+.kh{border:1.6px solid #555;border-radius:3mm;padding:0 2mm;line-height:1.5}
+.noi2{display:flex;justify-content:space-between;gap:4mm}.nd{margin:1.2mm 0;white-space:nowrap}.the5{border:1.5px solid #555;border-radius:2mm;padding:0 2mm}
+.hk{display:flex;align-items:center;gap:2mm;border:1.6px solid #555;border-radius:3mm;padding:1mm 2mm;margin:1mm 0;flex-wrap:wrap}
+.vt{margin:1.2mm 0}.tv .kh2{display:block;margin:0 0 1mm}
+.ln3 small,.vt small,.bs small{font-size:.85em;color:#333}
+.dapso{font-size:15px;line-height:1.7}
+@media print{.to.mau4t,.to.mau5t{margin:0;box-shadow:none}}
+.hh{height:1.5em;width:auto;vertical-align:middle;margin:0 .06em}.khung .hh{height:1.7em}.kh .hh{height:1.35em}.kh2 .hh{height:1.5em}
+</style>
+<style id="pg">@page{size:A4;margin:12mm}</style>
+</head>
+<body>
+<div class="bang">
+  <a class="ve" href="./">&larr; Về trang chủ CÔ ĐIỆP AI</a> &nbsp;|&nbsp; <a class="ve" href="phieu-tieng-viet.html">Tạo phiếu Tiếng Việt &rarr;</a>
+  <h1>Tạo phiếu Toán</h1>
+  <div>Chọn xong bấm "Tạo phiếu". Muốn phiếu khác thì bấm lại.</div>
+  <div class="ch">
+    <div class="ch-bai"><label for="bai">Chọn theo bài trong sách Toán 1 (Kết nối tri thức)</label>
+      <select id="bai">
+        <option value="tu">Tự chọn dạng bài (bên dưới)</option>
+        <optgroup label="Chủ đề 1. Các số từ 0 đến 10">
+          <option value="1">Bài 1. Các số 0, 1, 2, 3, 4, 5</option>
+          <option value="2">Bài 2. Các số 6, 7, 8, 9, 10</option>
+          <option value="3">Bài 3. Nhiều hơn, ít hơn, bằng nhau</option>
+          <option value="4">Bài 4. So sánh số</option>
+          <option value="5">Bài 5. Mấy và mấy</option>
+          <option value="6">Bài 6. Luyện tập chung (các số đến 10)</option>
+        </optgroup>
+        <optgroup label="Chủ đề 2. Một số hình phẳng">
+          <option value="7">Bài 7. Hình vuông, tròn, tam giác, chữ nhật</option>
+          <option value="8">Bài 8. Thực hành lắp ghép, xếp hình</option>
+          <option value="9">Bài 9. Luyện tập chung (hình phẳng)</option>
+        </optgroup>
+        <optgroup label="Chủ đề 3. Phép cộng, phép trừ trong phạm vi 10">
+          <option value="10">Bài 10. Phép cộng trong phạm vi 10</option>
+          <option value="11">Bài 11. Phép trừ trong phạm vi 10</option>
+          <option value="12">Bài 12. Bảng cộng, bảng trừ trong phạm vi 10</option>
+          <option value="13">Bài 13. Luyện tập chung (cộng, trừ)</option>
+        </optgroup>
+        <optgroup label="Chủ đề 4. Một số hình khối">
+          <option value="14">Bài 14. Khối lập phương, khối hộp chữ nhật</option>
+          <option value="15">Bài 15. Vị trí, định hướng trong không gian</option>
+          <option value="16">Bài 16. Luyện tập chung (hình khối, vị trí)</option>
+        </optgroup>
+        <optgroup label="Chủ đề 5. Ôn tập học kì 1">
+          <option value="17">Bài 17. Ôn tập các số trong phạm vi 10</option>
+          <option value="18">Bài 18. Ôn tập phép cộng, phép trừ trong phạm vi 10</option>
+          <option value="19">Bài 19. Ôn tập hình học</option>
+          <option value="20">Bài 20. Ôn tập chung</option>
+        </optgroup>
+      </select></div>
+    <div class="hang">
+      <div id="o-dang"><label for="dang">Dạng bài</label>
+        <select id="dang">
+          <optgroup label="Số và so sánh">
+            <option value="dem">Đếm hình, viết số</option>
+            <option value="chonso">Đếm hình, khoanh số đúng</option>
+            <option value="doc">Viết số bằng chữ, đọc số</option>
+            <option value="lienke">Số liền trước, số liền sau</option>
+            <option value="dayso">Điền số vào dãy số</option>
+            <option value="nhieuit">Nhiều hơn, ít hơn, bằng nhau</option>
+            <option value="sosanhso">So sánh hai số (điền &gt; &lt; =)</option>
+            <option value="lonnhat">Số lớn nhất, số bé nhất</option>
+            <option value="xep">Xếp các số theo thứ tự</option>
+            <option value="tachgom">Mấy và mấy (5 gồm 3 và …)</option>
+          </optgroup>
+          <optgroup label="Cộng, trừ">
+            <option value="cong">Phép cộng</option>
+            <option value="tru">Phép trừ</option>
+            <option value="tron" selected>Cộng và trừ trộn</option>
+            <option value="bacong">Cộng ba số (3 + 2 + 4)</option>
+            <option value="baba">Tính với 3 số (cộng, trừ liên tiếp)</option>
+            <option value="thieu">Điền số còn thiếu (… + 3 = 8)</option>
+            <option value="dau">Điền dấu + hoặc - (5 … 3 = 8)</option>
+            <option value="sosanh">So sánh có phép tính (9 … 3 + 4)</option>
+            <option value="tach">Tách số (7 = 3 + …)</option>
+            <option value="batso">Từ ba số viết phép tính (3, 5, 8)</option>
+            <option value="toanvan">Bài toán có lời văn ngắn</option>
+          </optgroup>
+          <optgroup label="Hình học">
+            <option value="tenhinh">Gọi tên hình (tròn, vuông, tam giác, chữ nhật)</option>
+            <option value="hinh">Đếm hình tròn, vuông, tam giác, chữ nhật</option>
+            <option value="tomau">Tô màu theo hình</option>
+            <option value="tenkhoi">Gọi tên khối (lập phương, hộp chữ nhật)</option>
+            <option value="khoi">Đếm khối lập phương, khối hộp chữ nhật</option>
+            <option value="vitri">Vị trí (bên trái, bên phải, ở giữa)</option>
+          </optgroup>
+          <optgroup label="Tổng hợp">
+            <option value="hon">Trộn nhiều dạng (phiếu tổng hợp)</option>
+          </optgroup>
+        </select></div>
+      <div><label for="pv">Phạm vi</label>
+        <select id="pv">
+          <option value="5">Trong phạm vi 5</option>
+          <option value="6">Trong phạm vi 6</option>
+          <option value="7">Trong phạm vi 7</option>
+          <option value="8">Trong phạm vi 8</option>
+          <option value="9">Trong phạm vi 9</option>
+          <option value="10" selected>Trong phạm vi 10</option>
+          <option value="20">Trong phạm vi 20</option>
+          <option value="100">Trong phạm vi 100</option>
+        </select></div>
+      <div id="o-sl"><label for="sl">Số bài</label>
+        <select id="sl"><option>4</option><option>6</option><option>8</option><option selected>10</option><option>12</option><option>18</option><option>24</option><option>30</option></select></div>
+      <div><label for="kho">Khổ giấy</label>
+        <select id="kho"><option value="a5" selected>A5 - mẫu phiếu ôn cuối tuần</option><option value="a4">A4 - mẫu đề khảo sát</option><option value="tudo">Phiếu tự do (chọn dạng bài)</option></select></div>
+      <div><label for="phong">Phông chữ khi in</label>
+        <select id="phong"><option value="vni">VNI-Avo</option><option value="times">Times New Roman</option><option value="hp">Chữ tiểu học (HP)</option></select></div>
+      <div id="o-hp" style="display:none"><label for="hp">Kiểu chữ tiểu học</label>
+        <select id="hp"><option>HP001 4 hàng</option><option>HP001 5 hàng</option><option>HP001 4H</option><option>HP001 5H</option><option>HP001 4 hàng 1 ô ly</option><option>HP001 4 hàng 2 ô ly</option><option>HP001 Tap Do</option></select></div>
+      <div><label for="co">Cỡ chữ (pt)</label>
+        <select id="co"><option>11</option><option>12</option><option>13</option><option selected>14</option><option>15</option><option>16</option></select></div>
+      <div><label for="ten">Tên phiếu</label><input id="ten" type="text" value="Phiếu luyện tính"></div>
+    </div>
+    <div class="nut"><button id="tao">Tạo phiếu</button><button class="in" id="in">In phiếu</button></div>
+    <p class="ghi" id="phong-ghi"></p>
+    <p class="ghi">Miễn phí cho thầy cô. Bấm <b>In phiếu</b>, trong hộp in chọn <b>Lưu thành PDF</b> để tải phiếu về máy.</p>
+  </div>
+</div>
+<div class="bang in-ra">
+  <div class="to" id="to"></div>
+  <div class="to dapan" id="dapan" hidden></div>
+  <div class="nut xem-dap" style="padding:0 16px"><button class="in" id="dap">Xem đáp án</button></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const r = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[r(0, a.length - 1)];
+const O = '<i></i>', Os = '<i style="min-width:46px"></i>', Ow = '<i style="min-width:150px"></i>';
+const hinh = ['🍎', '⭐', '🐟', '🌸', '🚗', '🐥', '🍓'];
+const CHU = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín', 'mười'];
+const MAU = ['#e63946', '#1d7bd8', '#f77f00', '#2a9d4a', '#7b2ff7'];
+const VAT = ['quả cam', 'cái kẹo', 'bông hoa', 'con gà', 'quyển vở', 'quả bóng'];
+
+/* Dạng bài theo từng bài của sách Toán 1 Kết nối tri thức (tập 1) */
+const BAI = {
+  1:  {ten: 'Các số 0, 1, 2, 3, 4, 5', pv: 5,  d: ['dem', 'chonso', 'doc', 'lienke', 'dayso']},
+  2:  {ten: 'Các số 6, 7, 8, 9, 10', pv: 10, d: ['dem', 'chonso', 'doc', 'lienke', 'dayso']},
+  3:  {ten: 'Nhiều hơn, ít hơn, bằng nhau', pv: 8, d: ['nhieuit']},
+  4:  {ten: 'So sánh số', pv: 10, d: ['sosanhso', 'lonnhat', 'xep']},
+  5:  {ten: 'Mấy và mấy', pv: 7, d: ['tachgom', 'tach']},
+  6:  {ten: 'Luyện tập chung', pv: 10, d: ['dem', 'doc', 'sosanhso', 'lonnhat', 'xep', 'tachgom', 'dayso']},
+  7:  {ten: 'Hình vuông, hình tròn, hình tam giác, hình chữ nhật', pv: 10, d: ['tenhinh', 'hinh', 'tomau']},
+  8:  {ten: 'Thực hành lắp ghép, xếp hình', pv: 10, d: ['tomau', 'hinh', 'tenhinh']},
+  9:  {ten: 'Luyện tập chung (hình phẳng)', pv: 10, d: ['tenhinh', 'hinh', 'tomau', 'dem']},
+  10: {ten: 'Phép cộng trong phạm vi 10', pv: 10, d: ['cong', 'thieucong', 'tach', 'bacong', 'toanvan']},
+  11: {ten: 'Phép trừ trong phạm vi 10', pv: 10, d: ['tru', 'thieutru', 'batru', 'toanvan']},
+  12: {ten: 'Bảng cộng, bảng trừ trong phạm vi 10', pv: 10, d: ['batso', 'cong', 'tru']},
+  13: {ten: 'Luyện tập chung (cộng, trừ)', pv: 10, d: ['thieu', 'sosanh', 'dau', 'baba', 'tron']},
+  14: {ten: 'Khối lập phương, khối hộp chữ nhật', pv: 10, d: ['tenkhoi', 'khoi']},
+  15: {ten: 'Vị trí, định hướng trong không gian', pv: 10, d: ['vitri']},
+  16: {ten: 'Luyện tập chung (hình khối, vị trí)', pv: 10, d: ['tenkhoi', 'khoi', 'vitri', 'tenhinh', 'hinh']},
+  17: {ten: 'Ôn tập các số trong phạm vi 10', pv: 10, d: ['dem', 'doc', 'sosanhso', 'lonnhat', 'xep', 'lienke', 'tachgom']},
+  18: {ten: 'Ôn tập phép cộng, phép trừ trong phạm vi 10', pv: 10, d: ['cong', 'tru', 'baba', 'thieu', 'dau', 'toanvan']},
+  19: {ten: 'Ôn tập hình học', pv: 10, d: ['tenhinh', 'tenkhoi', 'hinh', 'khoi', 'tomau', 'vitri']},
+  20: {ten: 'Ôn tập chung', pv: 10, d: ['dem', 'sosanhso', 'xep', 'cong', 'tru', 'thieu', 'dau', 'tenhinh', 'tenkhoi', 'hinh', 'vitri', 'toanvan']}
+};
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+/* ===== Phông chữ khi in: VNI-Avo, Times New Roman, chữ tiểu học HP ===== */
+const VNI_T1 = {'́': 'ù', '̀': 'ø', '̉': 'û', '̃': 'õ', '̣': 'ï'};
+const VNI_T2 = {'́': 'á', '̀': 'à', '̉': 'å', '̃': 'ã', '̣': 'ä'};
+const VNI_T3 = {'́': 'é', '̀': 'è', '̉': 'ú', '̃': 'ü', '̣': 'ë'};
+const VNI_I = {'́': 'í', '̀': 'ì', '̉': 'æ', '̃': 'ó', '̣': 'ò'};
+function vniChar(c){
+  if (c === 'đ') return 'ñ'; if (c === 'Đ') return 'Ñ';
+  const d = c.normalize('NFD'); if (d.length === 1) return c;
+  const up = d[0] !== d[0].toLowerCase(), b = d[0].toLowerCase();
+  let mod = '', tone = '';
+  for (const m of d.slice(1)){ if ('̛̂̆'.includes(m)) mod = m; else tone = m; }
+  let out;
+  if (b === 'i') out = tone ? VNI_I[tone] : 'i';
+  else if (b === 'y') out = tone ? (tone === '̣' ? 'î' : 'y' + VNI_T1[tone]) : 'y';
+  else if (!mod) out = b + (tone ? VNI_T1[tone] : '');
+  else if (mod === '̂') out = b + (tone ? VNI_T2[tone] : 'â');
+  else if (mod === '̆') out = 'a' + (tone ? VNI_T3[tone] : 'ê');
+  else if (mod === '̛') out = (b === 'o' ? 'ô' : 'ö') + (tone ? VNI_T1[tone] : '');
+  else out = c;
+  return up ? out.toUpperCase() : out;
+}
+function vni(s){ return s.normalize('NFC').replace(/[À-ỹ]/g, vniChar); }
+function vniCay(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), ds = [];
+  while (w.nextNode()) ds.push(w.currentNode);
+  ds.forEach(n => { if (/[À-ỹ]/.test(n.nodeValue)) n.nodeValue = vni(n.nodeValue); });
+}
+function coFont(ten){
+  try {
+    const c = document.createElement('canvas').getContext('2d'), t = 'mmmmmmmmmmlliWWW';
+    return ['monospace', 'serif'].some(f => { c.font = '40px ' + f; const a = c.measureText(t).width; c.font = '40px "' + ten + '", ' + f; return c.measureText(t).width !== a; });
+  } catch (e) { return false; }
+}
+const PHONG_TIMES = '"Times New Roman", Times, "Noto Serif", serif';
+function phongDangDung(){
+  const p = $('phong').value, hp = $('hp').value;
+  if (p === 'vni'){
+    if (coFont('VNI-Avo')) return {ff: '"VNI-Avo", sans-serif', vni: true, ghi: ''};
+    return {ff: PHONG_TIMES, vni: false, ghi: 'Máy này chưa cài phông VNI-Avo nên phiếu đang dùng Times New Roman. Chị cài phông VNI-Avo rồi tải lại trang.'};
+  }
+  if (p === 'hp'){
+    if (coFont(hp)) return {ff: '"OpSym", "' + hp + '", "Andika", sans-serif', vni: false, ghi: ''};
+    return {ff: PHONG_TIMES, vni: false, ghi: 'Máy này chưa cài phông ' + hp + ' nên phiếu đang dùng Times New Roman.'};
+  }
+  return {ff: PHONG_TIMES, vni: false, ghi: ''};
+}
+/* áp phông, cỡ chữ cho một tờ phiếu (gọi sau khi đã vẽ nội dung) */
+function apPhong(el){
+  const f = phongDangDung();
+  el.style.fontFamily = f.ff; el.style.setProperty('--pt', $('co').value);
+  if (f.vni) vniCay(el);
+  $('phong-ghi').textContent = f.ghi;
+  $('o-hp').style.display = $('phong').value === 'hp' ? '' : 'none';
+}
+const HTML_PHONG = `<div><label for="phong">Phông chữ khi in</label>
+        <select id="phong"><option value="vni">VNI-Avo</option><option value="times">Times New Roman</option><option value="hp">Chữ tiểu học (HP)</option></select></div>
+      <div id="o-hp" style="display:none"><label for="hp">Kiểu chữ tiểu học</label>
+        <select id="hp"><option>HP001 4 hàng</option><option>HP001 5 hàng</option><option>HP001 4H</option><option>HP001 5H</option><option>HP001 4 hàng 1 ô ly</option><option>HP001 4 hàng 2 ô ly</option><option>HP001 Tap Do</option></select></div>
+      <div><label for="co">Cỡ chữ (pt)</label>
+        <select id="co"><option>11</option><option>12</option><option>13</option><option selected>14</option><option>15</option><option>16</option></select></div>`;
+
+/* ===== Phiếu Toán theo hai mẫu: A5 (phiếu ôn cuối tuần) và A4 (đề khảo sát) ===== */
+const tronT = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--){ const j = r(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const OB = (v, c) => '<b class="o' + (c ? ' ' + c : '') + '">' + (v === undefined ? '' : v) + '</b>';
+const MAUO = ['r', 'b', 'g', 'p', 'y'];
+const TENH = ['hình tròn', 'hình vuông', 'hình tam giác', 'hình chữ nhật'];
+const TENK = ['khối lập phương', 'khối hộp chữ nhật'];
+const SOCHU = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín', 'mười'];
+const hinhE = ['🍎', '⭐', '🐟', '🌸', '🚗', '🐥', '🍓', '🎈', '🦆'];
+
+/* hình thật trong kho hình của cô để đếm: trái cây, rau củ, con vật, đồ chơi... */
+const HINHP = (() => {
+  if (typeof HINH === 'undefined') return [];
+  const T = ['Trái cây', 'Rau củ', 'Động vật', 'Chim và con vật bay', 'Hoa', 'Bánh', 'Đồ dùng học tập', 'Đồ chơi xếp hình', 'Phương tiện giao thông', 'Đồ thể thao', 'Sticker lớp học', 'Cây ăn quả'];
+  const xau = /(ăn|ngủ|đang|cầm|cưỡi|và|trên|dưới|nhiều|gia đình|bộ|cặp|đôi|chùm|rổ|giỏ|hộp|túi)/i;
+  return HINH.filter(h => T.includes(h[2]) && !xau.test(h[0]) && h[0].split(' ').length <= 3).map(h => '<img class="hh" src="hinh/' + h[1] + '.webp" alt="">');
+})();
+const HE = () => HINHP.length > 30 ? HINHP : hinhE;
+const SEC = {
+  dem(c){
+    const k = r(2, 3), es = tronT(HE()).slice(0, k), ns = es.map(() => r(1, Math.min(c.p, 6)));
+    let bag = []; es.forEach((e, i) => { for (let j = 0; j < ns[i]; j++) bag.push(e); });
+    bag = tronT(bag);
+    const khung = '<div class="khung">' + bag.map(e => '<span style="margin:0 ' + r(1, 5) + 'px">' + e + '</span>').join(' ') + '</div>';
+    return {t: 'Đếm, viết số thích hợp:', h: khung + '<div class="hang">' + es.map(e => '<span class="ep">' + e + OB() + '</span>').join('') + '</div>', a: es.map((e, i) => e + ' = ' + ns[i]).join(' ; '), w: 'f'};
+  },
+  dayso(c){
+    const hang = [], an = [];
+    for (let k = 0; k < 3; k++){
+      const s0 = r(0, Math.max(0, c.p - 4)); let d = [0, 1, 2, 3, 4].map(i => s0 + i); if (Math.random() < .35) d.reverse();
+      const mask = k % 2 ? [0, 2, 4] : [1, 3];
+      hang.push('<div class="tau">🚂 ' + d.map((x, i) => OB(mask.includes(i) ? '' : x, MAUO[i])).join('') + '</div>');
+      an.push(d.join(' '));
+    }
+    return {t: 'Điền số thích hợp:', h: hang.join(''), a: an.join(' | '), w: 'n'};
+  },
+  sosanh(c){
+    const it = [], an = [];
+    for (let i = 0; i < 6; i++){ const a = r(0, c.p), b = r(0, c.p); it.push('<span class="it">' + a + ' ' + OB() + ' ' + b + '</span>'); an.push(a + ' ' + (a > b ? '>' : a < b ? '<' : '=') + ' ' + b); }
+    return {t: 'Điền <, >, =:', h: '<div class="g2">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  xep(c){
+    const mk = tang => { const s = new Set(); while (s.size < 4) s.add(r(0, c.p)); const ds = [...s], sx = [...ds].sort((x, y) => tang ? x - y : y - x);
+      return {h: '<div class="xp"><b>' + (tang ? 'a)' : 'b)') + '</b> Xếp <b class="num">' + ds.join(', ') + '</b> từ ' + (tang ? 'bé đến lớn' : 'lớn đến bé') + ':<div class="mui">' + OB() + '→' + OB() + '→' + OB() + '→' + OB() + '</div></div>', a: sx.join(', ')}; };
+    const a = mk(true), b = mk(false);
+    return {t: 'Xếp thứ tự các số:', h: a.h + b.h, a: 'a) ' + a.a + ' ; b) ' + b.a, w: 'n'};
+  },
+  tach(c){
+    const bo = [], an = [];
+    for (let i = 0; i < 3; i++){
+      const t = r(2, Math.min(c.p, 10)), a = r(1, t - 1), b = t - a, trai = Math.random() < .5;
+      bo.push('<div class="bond">' + OB(t) + '<svg width="64" height="14" viewBox="0 0 64 14"><path d="M32 0 L12 14 M32 0 L52 14" stroke="#c9a227" stroke-width="1.5" fill="none"/></svg><div class="bt">' + (trai ? OB(a) + OB() : OB() + OB(b)) + '</div></div>');
+      an.push(t + ' = ' + a + ' + ' + b);
+    }
+    return {t: 'Điền số thích hợp vào ô trống (tách số):', h: '<div class="bonds">' + bo.join('') + '</div>', a: an.join(' ; '), w: 'f'};
+  },
+  gom(c){
+    const it = [], an = [];
+    for (let i = 0; i < 4; i++){
+      const t = r(3, Math.min(c.p, 10)), a = r(1, t - 1), b = t - a;
+      if (Math.random() < .5){ it.push('<span class="it">' + t + ' gồm ' + a + ' và ' + OB() + '</span>'); an.push(b); }
+      else { it.push('<span class="it">' + a + ' và ' + b + ' được ' + OB() + '</span>'); an.push(t); }
+    }
+    return {t: 'Số?', h: '<div class="g2">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  lonnhat(c){
+    const g = [], an = [];
+    for (let i = 0; i < 4; i++){
+      const s = new Set(); while (s.size < 3) s.add(r(0, c.p)); const ds = [...s], lon = i % 2 === 0;
+      g.push('<span class="ln3"><small>' + (lon ? 'Số lớn nhất:' : 'Số bé nhất:') + '</small><br><b class="num">' + ds.join('&nbsp;&nbsp;') + '</b></span>'); an.push(lon ? Math.max(...ds) : Math.min(...ds));
+    }
+    return {t: 'Khoanh vào số lớn nhất, số bé nhất:', h: '<div class="g2">' + g.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  nhieuit(c){
+    const hs = [], an = [];
+    for (let i = 0; i < 3; i++){
+      const lon = i < 2, e1 = pick(HE()); let e2 = pick(HE()); if (e2 === e1) e2 = HE()[(HE().indexOf(e1) + 1) % HE().length];
+      let a = r(1, Math.min(c.p, 7)), b = r(1, Math.min(c.p, 7)); if (a === b) b = a < 7 ? a + 1 : a - 1;
+      hs.push('<div class="np"><small>' + (lon ? 'Nhiều hơn' : 'Ít hơn') + ':</small><span class="kh">' + Array(a).fill(e1).join('') + '</span><span class="kh">' + Array(b).fill(e2).join('') + '</span></div>');
+      an.push(((lon ? a > b : a < b) ? 'bên trái' : 'bên phải'));
+    }
+    return {t: 'Khoanh vào nhóm có nhiều hơn, ít hơn:', h: hs.join(''), a: an.join(' ; '), w: 'f'};
+  },
+  tinh(c){
+    const it = [], an = [];
+    for (let i = 0; i < 8; i++){
+      let cong = c.ops === '+' ? true : c.ops === '-' ? false : Math.random() < .5;
+      if (cong){ const t = r(2, c.p), a = r(0, t); it.push('<span class="it">' + a + ' + ' + (t - a) + ' = ' + OB() + '</span>'); an.push(t); }
+      else { const a = r(2, c.p), b = r(0, a); it.push('<span class="it">' + a + ' - ' + b + ' = ' + OB() + '</span>'); an.push(a - b); }
+    }
+    return {t: 'Tính:', h: '<div class="g2">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  thieu(c){
+    const it = [], an = [];
+    for (let i = 0; i < 6; i++){
+      const t = r(2, c.p), a = r(1, t - 1), b = t - a;
+      const cong = c.ops === '+' ? true : c.ops === '-' ? false : Math.random() < .5;
+      if (cong){ if (Math.random() < .5){ it.push('<span class="it">' + a + ' + ' + OB() + ' = ' + t + '</span>'); an.push(b); } else { it.push('<span class="it">' + OB() + ' + ' + b + ' = ' + t + '</span>'); an.push(a); } }
+      else { if (Math.random() < .5){ it.push('<span class="it">' + t + ' - ' + OB() + ' = ' + a + '</span>'); an.push(b); } else { it.push('<span class="it">' + OB() + ' - ' + b + ' = ' + a + '</span>'); an.push(t); } }
+    }
+    return {t: 'Số?', h: '<div class="g2">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  dau(c){
+    const it = [], an = [];
+    for (let i = 0; i < 4; i++){
+      const a = r(1, c.p), b = r(1, c.p);
+      if (Math.random() < .5 && a + b <= c.p){ it.push('<span class="it">' + a + ' ' + OB() + ' ' + b + ' = ' + (a + b) + '</span>'); an.push('+'); }
+      else if (a !== b){ const m = Math.max(a, b), n = Math.min(a, b); it.push('<span class="it">' + m + ' ' + OB() + ' ' + n + ' = ' + (m - n) + '</span>'); an.push('-'); }
+      else { it.push('<span class="it">' + a + ' ' + OB() + ' 1 = ' + (a + 1) + '</span>'); an.push('+'); }
+    }
+    return {t: 'Điền dấu + hoặc -:', h: '<div class="g2">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  sosanhpt(c){
+    const it = [], an = [];
+    for (let i = 0; i < 6; i++){
+      const x = r(1, c.p), y = r(0, x), z = r(0, c.p);
+      if (c.ops === '-'){ const v = x - y; it.push('<span class="it">' + x + ' - ' + y + ' ' + OB() + ' ' + z + '</span>'); an.push(v > z ? '>' : v < z ? '<' : '='); continue; }
+      const ok = x + y <= c.p, v = ok ? x + y : x;
+      it.push('<span class="it">' + (ok ? x + ' + ' + y : x) + ' ' + OB() + ' ' + z + '</span>'); an.push(v > z ? '>' : v < z ? '<' : '=');
+    }
+    return {t: 'Điền <, >, =:', h: '<div class="g2">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  batso(c){
+    const bl = [], an = [];
+    for (let i = 0; i < 2; i++){
+      const a = r(1, c.p - 1), b = r(1, c.p - a), t = a + b;
+      bl.push('<div class="bs"><small>Ba số ' + a + ', ' + b + ', ' + t + '</small><div class="g2"><span class="it">' + a + ' + ' + b + ' = ' + OB() + '</span><span class="it">' + b + ' + ' + a + ' = ' + OB() + '</span><span class="it">' + t + ' - ' + a + ' = ' + OB() + '</span><span class="it">' + t + ' - ' + b + ' = ' + OB() + '</span></div></div>');
+      an.push(a + '+' + b + '=' + t + ' ; ' + b + '+' + a + '=' + t + ' ; ' + t + '-' + a + '=' + b + ' ; ' + t + '-' + b + '=' + a);
+    }
+    return {t: 'Từ ba số, viết các phép tính:', h: '<div class="g2b">' + bl.join('') + '</div>', a: an.join(' | '), w: 'f'};
+  },
+  toanvan(c){
+    const bl = [], an = [];
+    for (let i = 0; i < 2; i++){
+      const e = pick(HE()), cong = c.ops === '+' ? true : c.ops === '-' ? false : Math.random() < .5;
+      if (cong){ const a = r(1, c.p - 1), b = r(1, c.p - a); bl.push('<div class="tv"><span class="kh2">' + Array(a).fill(e).join('') + ' + ' + Array(b).fill(e).join('') + '</span><div class="mui">' + OB() + OB() + OB() + '=' + OB() + '</div></div>'); an.push(a + ' + ' + b + ' = ' + (a + b)); }
+      else { const a = r(2, c.p), b = r(1, a - 1); bl.push('<div class="tv"><span class="kh2">' + Array(a).fill(e).join('') + ' bớt ' + b + '</span><div class="mui">' + OB() + OB() + OB() + '=' + OB() + '</div></div>'); an.push(a + ' - ' + b + ' = ' + (a - b)); }
+    }
+    return {t: 'Viết phép tính thích hợp:', h: '<div class="g2b">' + bl.join('') + '</div>', a: an.join(' ; '), w: 'f'};
+  },
+  chuoi(c){
+    const it = [], an = [];
+    for (let i = 0; i < 4; i++){
+      for (;;){
+        const a = r(0, c.p), b = r(0, c.p), d = r(0, c.p), ch = () => c.ops === '+' || c.ops === '-' ? c.ops : (Math.random() < .5 ? '+' : '-'), o1 = ch(), o2 = ch();
+        const m = o1 === '+' ? a + b : a - b; if (m < 0 || m > c.p) continue; const k = o2 === '+' ? m + d : m - d; if (k < 0 || k > c.p) continue;
+        it.push('<span class="it">' + a + ' ' + o1 + ' ' + b + ' ' + o2 + ' ' + d + ' = ' + OB() + '</span>'); an.push(k); break;
+      }
+    }
+    return {t: 'Tính:', h: '<div class="g1">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  noiso(c){
+    const q = Math.min(c.p, 10), ns = tronT([...Array(q + 1).keys()]).slice(0, 4).sort((a, b) => a - b), ws = tronT(ns);
+    return {t: 'Nối số với chữ:', h: '<div class="noi2"><div>' + ns.map(n => '<div class="nd"><b class="num">' + n + '</b> ●</div>').join('') + '</div><div>' + ws.map(n => '<div class="nd">● ' + SOCHU[n] + '</div>').join('') + '</div></div>', a: ns.map(n => n + ' - ' + SOCHU[n]).join(' ; '), w: 'n'};
+  },
+  vietso(c){
+    const q = Math.min(c.p, 10), it = [], an = [];
+    for (let i = 0; i < 4; i++){ const n = r(0, q); if (i % 2) { it.push('<span class="it2">Số ' + n + ' đọc là: ........</span>'); an.push(SOCHU[n]); } else { it.push('<span class="it2">Số "' + SOCHU[n] + '" viết là: ' + OB() + '</span>'); an.push(n); } }
+    return {t: 'Viết số, viết chữ:', h: '<div class="g1">' + it.join('') + '</div>', a: an.join(' ; '), w: 'n'};
+  },
+  hinhdem(){
+    const n = r(6, 9), ds = []; for (let i = 0; i < n; i++) ds.push(r(0, 3));
+    const dem = [0, 1, 2, 3].map(l => ds.filter(x => x === l).length);
+    return {t: 'Đếm hình rồi viết số:', h: '<div class="khung">' + ds.map(x => svgHinh(x, pick(MAU))).join(' ') + '</div><div class="g2">' + [2, 1, 0, 3].map(l => '<span class="it">Có ' + OB() + ' ' + TENH[l] + '</span>').join('') + '</div>', a: [2, 1, 0, 3].map(l => dem[l] + ' ' + TENH[l]).join(' ; '), w: 'f'};
+  },
+  khacloai(){
+    const hs = [], an = [];
+    for (let i = 0; i < 3; i++){
+      const a = r(0, 3); let b = r(0, 3); if (b === a) b = (a + 1) % 4; const vt = r(0, 3);
+      const arr = [0, 1, 2, 3].map(j => j === vt ? b : a);
+      hs.push('<div class="hk">' + arr.map(x => svgHinh(x, pick(MAU))).join(' ') + '</div>'); an.push('hình thứ ' + (vt + 1));
+    }
+    return {t: 'Khoanh vào hình khác loại:', h: hs.join(''), a: an.join(' ; '), w: 'n'};
+  },
+  noihinh(){
+    const ls = tronT([0, 1, 2, 3]), rs = tronT([0, 1, 2, 3]);
+    return {t: 'Nối hình với tên:', h: '<div class="noi2"><div>' + ls.map(l => '<div class="nd">' + svgHinh(l, pick(MAU)) + ' ●</div>').join('') + '</div><div>' + rs.map(l => '<div class="nd">● <span class="the5">' + TENH[l] + '</span></div>').join('') + '</div></div>', a: ls.map(l => TENH[l]).join(' ; '), w: 'n'};
+  },
+  tieptheo(){
+    const hs = [], an = [];
+    for (let i = 0; i < 2; i++){
+      const a = r(0, 3); let b = r(0, 3); if (b === a) b = (a + 1) % 4; const c3 = i ? r(0, 3) : -1;
+      const mau = i && c3 !== a && c3 !== b ? [a, b, c3] : [a, b], seq = []; for (let j = 0; j < 7; j++) seq.push(mau[j % mau.length]);
+      hs.push('<div class="hk">' + seq.slice(0, 5).map(x => svgHinh(x, pick(MAU))).join(' ') + ' ' + OB() + ' ' + OB() + '</div>'); an.push(TENH[seq[5]] + ', ' + TENH[seq[6]]);
+    }
+    return {t: 'Vẽ hình tiếp theo:', h: hs.join(''), a: an.join(' | '), w: 'f'};
+  },
+  khoi(){
+    const n = r(5, 8), ds = []; for (let i = 0; i < n; i++) ds.push(r(0, 1)); if (!ds.includes(0)) ds[0] = 0; if (!ds.includes(1)) ds[1] = 1;
+    return {t: 'Đếm khối, viết số:', h: '<div class="khung">' + ds.map(svgKhoi).join(' ') + '</div><div class="g2"><span class="it">Có ' + OB() + ' ' + TENK[0] + '</span><span class="it">Có ' + OB() + ' ' + TENK[1] + '</span></div>', a: ds.filter(x => x === 0).length + ' ' + TENK[0] + ' ; ' + ds.filter(x => x === 1).length + ' ' + TENK[1], w: 'f'};
+  },
+  vitri(){
+    const hs = [], an = [], nhan = ['bên trái', 'ở giữa', 'bên phải'];
+    for (let i = 0; i < 3; i++){ const s = tronT(HE()).slice(0, 3), vt = r(0, 2); hs.push('<div class="vt">' + s.join(' ') + ' <small>Khoanh hình ' + nhan[vt] + '</small></div>'); an.push(s[vt]); }
+    return {t: 'Vị trí:', h: hs.join(''), a: an.join(' ; '), w: 'n'};
+  }
+};
+
+/* danh sách phần bài của từng bài sách giáo khoa / vở bài tập, theo thứ tự ưu tiên */
+const PHAN = {
+  1: ['dem', 'noiso', 'dayso', 'vietso', 'sosanh', 'xep'],
+  2: ['dem', 'noiso', 'dayso', 'vietso', 'sosanh', 'lonnhat', 'xep'],
+  3: ['nhieuit', 'dem', 'sosanh', 'dayso'],
+  4: ['sosanh', 'lonnhat', 'xep', 'dayso', 'dem', 'nhieuit'],
+  5: ['tach', 'gom', 'dem', 'sosanh', 'dayso'],
+  6: ['dem', 'sosanh', 'xep', 'lonnhat', 'tach', 'gom', 'dayso'],
+  7: ['hinhdem', 'noihinh', 'khacloai', 'tieptheo'],
+  8: ['hinhdem', 'khacloai', 'tieptheo', 'noihinh'],
+  9: ['hinhdem', 'noihinh', 'khacloai', 'tieptheo', 'dem', 'sosanh'],
+  10: ['tinh', 'thieu', 'tach', 'toanvan', 'chuoi', 'sosanhpt', 'dem'],
+  11: ['tinh', 'thieu', 'tach', 'toanvan', 'chuoi', 'sosanhpt', 'dem'],
+  12: ['batso', 'tinh', 'thieu', 'sosanhpt', 'dau', 'toanvan'],
+  13: ['thieu', 'sosanhpt', 'dau', 'chuoi', 'toanvan', 'tinh', 'batso'],
+  14: ['khoi', 'vitri', 'dem', 'khacloai'],
+  15: ['vitri', 'khoi', 'hinhdem', 'dem'],
+  16: ['khoi', 'vitri', 'hinhdem', 'tieptheo', 'dem'],
+  17: ['dem', 'sosanh', 'xep', 'lonnhat', 'tach', 'gom', 'dayso', 'vietso'],
+  18: ['tinh', 'thieu', 'dau', 'chuoi', 'sosanhpt', 'toanvan', 'batso'],
+  19: ['hinhdem', 'khoi', 'noihinh', 'khacloai', 'tieptheo', 'vitri'],
+  20: ['dem', 'sosanh', 'xep', 'tinh', 'thieu', 'hinhdem', 'toanvan', 'dau', 'tieptheo']
+};
+const OPS_BAI = {10: '+', 11: '-'};
+
+function dungPhan(ds, a5){
+  /* ds: các phần đã dựng; trả về HTML theo mẫu */
+  let stt = 1, h = '';
+  const tieu = (s, i) => '<b class="mht">' + (i + 1) + '. ' + s.t + '</b>';
+  if (a5){
+    let i = 0;
+    while (i < ds.length){
+      const s = ds[i];
+      if (s.w === 'n' && ds[i + 1] && ds[i + 1].w === 'n'){
+        h += '<div class="r2"><div class="c">' + tieu(s, i) + s.h + '</div><div class="c">' + tieu(ds[i + 1], i + 1) + ds[i + 1].h + '</div></div>'; i += 2;
+      } else { h += '<div class="r1">' + tieu(s, i) + s.h + '</div>'; i++; }
+    }
+  } else {
+    h += '<table class="mt"><tbody>';
+    let i = 0;
+    while (i < ds.length){
+      const s = ds[i];
+      if (s.w === 'n' && ds[i + 1] && ds[i + 1].w === 'n'){
+        h += '<tr><td class="c2">' + tieu(s, i) + s.h + '</td><td class="c2">' + tieu(ds[i + 1], i + 1) + ds[i + 1].h + '</td></tr>'; i += 2;
+      } else { h += '<tr><td colspan="2">' + tieu(s, i) + s.h + '</td></tr>'; i++; }
+    }
+    h += '</tbody></table>';
+  }
+  return h;
+}
+
+function taoMauToan(){
+  const k = $('kho').value, a5 = k === 'a5', bai = $('bai').value, p = +$('pv').value;
+  const so = bai === 'tu' ? 20 : +bai;
+  const ctx = {p, ops: OPS_BAI[so] || 'both'};
+  let loai = (PHAN[so] || PHAN[20]).slice();
+  /* xếp đủ phần: dựng thêm phần nếu cần để lấp đầy trang */
+  const PHANG_ = ['hinhdem', 'khacloai', 'noihinh', 'tieptheo'], KHOI_ = ['khoi', 'vitri'];
+  const nhomHinh = so >= 7 && so <= 9 ? PHANG_ : so === 14 || so === 15 ? KHOI_ : so === 16 || so === 19 ? PHANG_.concat(KHOI_) : null;
+  const them = tronT(Object.keys(SEC).filter(x => !loai.includes(x) && (nhomHinh ? nhomHinh.includes(x) : !PHANG_.includes(x) && !KHOI_.includes(x) && x !== 'noiso' && x !== 'vietso')));
+  const day = loai.concat(them);
+  const tatca = day.map(x => SEC[x](ctx));
+  const ten = $('ten').value.replace(/[<>&]/g, '') || 'Phiếu luyện Toán';
+  const to = $('to'), dap = $('dapan'), cao = (a5 ? 190 : 273) * 96 / 25.4;
+  const dauA5 = '<div class="mdau"><span>Họ và tên: ........................... Lớp: 1.....</span><b>TOÁN</b></div>';
+  const dauA4 = '<div class="mdau4"><span>Họ tên: ..................................................................... - Lớp: 1/..............</span></div><h2 class="mt4">' + esc(ten).toUpperCase() + '</h2>';
+  to.className = 'to ' + (a5 ? 'mau5t' : 'mau4t'); dap.className = 'to dapan ' + (a5 ? 'mau5t' : 'mau4t');
+  let dung = 1;
+  const ve = n => { to.innerHTML = '<div class="mf' + (a5 ? '5' : '4') + 't">' + (a5 ? dauA5 : dauA4) + dungPhan(tatca.slice(0, n), a5) + '</div>'; apPhong(to); to.firstElementChild.style.setProperty('--f', 1); return to.firstElementChild; };
+  for (let n = tatca.length; n >= 1; n--){ const b = ve(n); if (b.scrollHeight <= cao){ dung = n; break; } dung = n; }
+  const box = ve(dung);
+  if (box.scrollHeight > cao){ let f = 1; for (let i = 0; i < 24 && box.scrollHeight > cao; i++){ f -= .03; box.style.setProperty('--f', f.toFixed(2)); }
+    $('phong-ghi').textContent += ' Chữ đã thu nhỏ còn ' + (Math.round(+$('co').value * f * 10) / 10) + ' pt cho vừa một trang.'; }
+  dap.innerHTML = '<h2 style="text-align:center;font-family:Arial">Đáp án: ' + esc(ten) + '</h2><ol class="dapso">' + tatca.slice(0, dung).map(s => '<li><b>' + esc(s.t) + '</b> ' + s.a + '</li>').join('') + '</ol>';
+}
+
+const TAT = ['dem','chonso','doc','lienke','dayso','nhieuit','sosanhso','lonnhat','xep','tachgom','cong','tru','bacong','baba','thieu','dau','sosanh','tach','batso','toanvan','hinh','khoi','vitri'];
+
+function svgHinh(loai, c){
+  const f = 'fill="' + c + '"';
+  if (loai === 0) return '<svg width="34" height="34"><circle cx="17" cy="17" r="14" ' + f + '/></svg>';
+  if (loai === 1) return '<svg width="34" height="34"><rect x="3" y="3" width="28" height="28" ' + f + '/></svg>';
+  if (loai === 2) return '<svg width="34" height="34"><polygon points="17,3 32,31 2,31" ' + f + '/></svg>';
+  return '<svg width="44" height="34"><rect x="2" y="7" width="40" height="22" ' + f + '/></svg>';
+}
+const TENHINH = ['hình tròn', 'hình vuông', 'hình tam giác', 'hình chữ nhật'];
+function svgKhoi(loai){
+  if (loai === 0) return '<svg width="42" height="42"><polygon points="4,14 24,14 24,36 4,36" fill="#4aa3f0"/><polygon points="4,14 12,6 32,6 24,14" fill="#9bd0ff"/><polygon points="24,14 32,6 32,28 24,36" fill="#2b79c2"/></svg>';
+  return '<svg width="58" height="42"><polygon points="3,16 41,16 41,36 3,36" fill="#f5a04a"/><polygon points="3,16 11,8 49,8 41,16" fill="#ffd199"/><polygon points="41,16 49,8 49,28 41,36" fill="#c9742a"/></svg>';
+}
+const TENKHOI = ['khối lập phương', 'khối hộp chữ nhật'];
+
+function mot(dang, p, bai){
+  if (dang === 'hon') dang = pick(['cong','tru','thieu','sosanh','dau','tach','lienke','baba','dem','sosanhso','hinh','toanvan']);
+  if (dang === 'tron') dang = Math.random() < .5 ? 'cong' : 'tru';
+  const q = Math.min(p, 10);
+  switch (dang){
+    case 'dem': { const n = r(1, q), e = pick(hinh); return {h: Array(n).fill(e).join('') + ' có ' + O + ' hình', d: n, rong: 1, id: e + n + Math.random()}; }
+    case 'chonso': {
+      const n = r(1, q), e = pick(hinh), op = new Set([n]); while (op.size < 3) op.add(r(Math.max(0, n - 2), Math.min(q + 1, n + 2)));
+      return {h: Array(n).fill(e).join('') + '<br><small class="cd">Khoanh vào số đúng:</small> ' + [...op].sort((a, b) => a - b).join(' &nbsp; ') , d: n, rong: 1, id: e + n + Math.random()};
+    }
+    case 'doc': {
+      const n = r(0, q);
+      return Math.random() < .5 ? {h: 'Số ' + n + ' đọc là: ' + Ow, d: CHU[n], rong: 1} : {h: 'Số "' + CHU[n] + '" viết là: ' + Os, d: n, rong: 1};
+    }
+    case 'lienke': { const n = r(1, Math.max(2, p - 1)); return Math.random() < .5 ? {h: Os + ' , ' + n, d: n - 1} : {h: n + ' , ' + Os, d: n + 1}; }
+    case 'dayso': {
+      const buoc = p >= 100 && Math.random() < .5 ? 10 : (p >= 20 && Math.random() < .5 ? 2 : (p >= 10 && Math.random() < .25 ? 2 : 1));
+      const s0 = r(0, Math.max(0, p - buoc * 5)), day = [0,1,2,3,4,5].map(i => s0 + i * buoc);
+      if (Math.random() < .35) day.reverse();
+      const an = new Set(); while (an.size < 2) an.add(r(1, 4));
+      return {h: day.map((x, i) => an.has(i) ? Os : x).join(' , '), d: day.filter((x, i) => an.has(i)).join(' ; '), rong: 1};
+    }
+    case 'nhieuit': {
+      const a = r(1, Math.min(p, 8)), b = r(1, Math.min(p, 8)), e1 = pick(hinh); let e2 = pick(hinh); if (e2 === e1) e2 = hinh[(hinh.indexOf(e1) + 1) % hinh.length];
+      return {h: Array(a).fill(e1).join('') + '<br>' + Array(b).fill(e2).join('') + '<br><small class="cd">Hàng trên</small> ' + Ow + ' <small class="cd">hàng dưới</small><br><small class="cd">(nhiều hơn / ít hơn / bằng nhau)</small>',
+        d: a > b ? 'nhiều hơn' : a < b ? 'ít hơn' : 'bằng nhau', rong: 1, id: a + e1 + b + e2 + Math.random()};
+    }
+    case 'sosanhso': { const a = r(0, q), b = r(0, q); return {h: a + ' ' + Os + ' ' + b, d: a > b ? '>' : a < b ? '<' : '='}; }
+    case 'lonnhat': {
+      const tap = new Set(); while (tap.size < (q >= 6 ? 4 : 3)) tap.add(r(0, q));
+      const ds = [...tap], lon = Math.random() < .5;
+      return {h: ds.join(' , ') + '<br><small class="cd">' + (lon ? 'Số lớn nhất là:' : 'Số bé nhất là:') + '</small> ' + Os, d: lon ? Math.max(...ds) : Math.min(...ds), rong: 1};
+    }
+    case 'xep': {
+      const tap = new Set(); while (tap.size < 4) tap.add(r(0, p));
+      const ds = [...tap], tang = Math.random() < .5, sx = [...ds].sort((x, y) => tang ? x - y : y - x);
+      return {h: ds.join(' , ') + '<br><small class="cd">' + (tang ? 'Xếp từ bé đến lớn' : 'Xếp từ lớn đến bé') + ':</small> ' + Array(4).fill('<i style="min-width:52px"></i>').join(' '), d: sx.join(' , '), rong: 1};
+    }
+    case 'tachgom': {
+      const t = r(2, q), a = r(1, t - 1);
+      return Math.random() < .6 ? {h: t + ' gồm ' + a + ' và ' + Os, d: t - a} : {h: a + ' và ' + (t - a) + ' được ' + Os, d: t};
+    }
+    case 'cong': { const t = r(2, p), a = r(0, t), b = t - a; return {h: a + ' + ' + b + ' = ' + O, d: t}; }
+    case 'tru': { const a = r(2, p), b = r(0, a); return {h: a + ' - ' + b + ' = ' + O, d: a - b}; }
+    case 'thieucong': { const t = r(2, p), a = r(0, t), b = t - a; return Math.random() < .5 ? {h: Os + ' + ' + b + ' = ' + t, d: a} : {h: a + ' + ' + Os + ' = ' + t, d: b}; }
+    case 'thieutru': { const t = r(1, p), a = r(0, t); return Math.random() < .5 ? {h: t + ' - ' + Os + ' = ' + a, d: t - a} : {h: Os + ' - ' + (t - a) + ' = ' + a, d: t}; }
+    case 'thieu': {
+      const t = r(2, p), a = r(1, t - 1), b = t - a;
+      return Math.random() < .5 ? {h: Os + ' + ' + b + ' = ' + t, d: a} : {h: t + ' - ' + Os + ' = ' + a, d: b};
+    }
+    case 'sosanh': {
+      if (Math.random() < .35){ const a = r(0, p), b = r(0, p); return {h: a + ' ' + Os + ' ' + b, d: a > b ? '>' : a < b ? '<' : '='}; }
+      const x = r(1, p), y = r(0, x), z = r(0, p), ok = x + y <= p, v = ok ? x + y : x;
+      return Math.random() < .5 ? {h: (ok ? x + ' + ' + y : String(x)) + ' ' + Os + ' ' + z, d: v > z ? '>' : v < z ? '<' : '='}
+        : {h: z + ' ' + Os + ' ' + (ok ? x + ' + ' + y : String(x)), d: z > v ? '>' : z < v ? '<' : '='};
+    }
+    case 'dau': {
+      const a = r(1, p), b = r(1, p);
+      if (Math.random() < .5 && a + b <= p) return {h: a + ' ' + Os + ' ' + b + ' = ' + (a + b), d: '+'};
+      const m = Math.max(a, b), n = Math.min(a, b);
+      if (m === n) return mot(dang, p, bai);
+      return {h: m + ' ' + Os + ' ' + n + ' = ' + (m - n), d: '-'};
+    }
+    case 'bacong': for (;;){ const a = r(0, p), b = r(0, p), c = r(0, p); if (a + b + c <= p) return {h: a + ' + ' + b + ' + ' + c + ' = ' + O, d: a + b + c, rong: 1}; }
+    case 'batru': for (;;){ const a = r(2, p), b = r(0, a), c = r(0, a - b); return {h: a + ' - ' + b + ' - ' + c + ' = ' + O, d: a - b - c, rong: 1}; }
+    case 'baba': for (;;){
+      const a = r(0, p), b = r(0, p), c = r(0, p), o1 = Math.random() < .5 ? '+' : '-', o2 = Math.random() < .5 ? '+' : '-';
+      const m = o1 === '+' ? a + b : a - b; if (m < 0 || m > p) continue;
+      const k = o2 === '+' ? m + c : m - c; if (k < 0 || k > p) continue;
+      return {h: a + ' ' + o1 + ' ' + b + ' ' + o2 + ' ' + c + ' = ' + O, d: k, rong: 1};
+    }
+    case 'tach': { const t = r(3, p), a = r(1, t - 1); return {h: t + ' = ' + a + ' + ' + Os, d: t - a}; }
+    case 'batso': {
+      const a = r(1, p - 1), b = r(1, p - a), t = a + b;
+      return {h: '<small class="cd">Ba số ' + a + ', ' + b + ', ' + t + '</small><br>' + a + ' + ' + b + ' = ' + O + ' &nbsp; ' + t + ' - ' + a + ' = ' + O, d: t + ' ; ' + b, rong: 1};
+    }
+    case 'toanvan': {
+      const v = pick(VAT), ten = pick(['Mai', 'Nam', 'Lan', 'Bình', 'An', 'Hà']);
+      if (Math.random() < .5){ const a = r(1, p - 1), b = r(1, p - a); return {h: ten + ' có ' + a + ' ' + v + ', được cho thêm ' + b + '. Có tất cả ' + Os + ' ' + v + '?', d: a + b, rong: 1}; }
+      const a = r(2, p), b = r(1, a - 1); return {h: ten + ' có ' + a + ' ' + v + ', cho bạn ' + b + '. Còn lại ' + Os + ' ' + v + '?', d: a - b, rong: 1};
+    }
+    case 'hinh': {
+      const n = r(5, 9), ds = []; for (let i = 0; i < n; i++) ds.push(r(0, 3));
+      const loai = pick([...new Set(ds)]), dem = ds.filter(x => x === loai).length;
+      return {h: ds.map(x => svgHinh(x, pick(MAU))).join(' ') + '<br><small class="cd">Có</small> ' + Os + ' <small class="cd">' + TENHINH[loai] + '</small>', d: dem, rong: 1, id: ds.join('') + Math.random()};
+    }
+    case 'khoi': {
+      const n = r(4, 8), ds = []; for (let i = 0; i < n; i++) ds.push(r(0, 1));
+      if (!ds.includes(0)) ds[0] = 0; if (!ds.includes(1)) ds[1] = 1;
+      const loai = r(0, 1), dem = ds.filter(x => x === loai).length;
+      return {h: ds.map(svgKhoi).join(' ') + '<br><small class="cd">Có</small> ' + Os + ' <small class="cd">' + TENKHOI[loai] + '</small>', d: dem, rong: 1, id: ds.join('') + Math.random()};
+    }
+    case 'tenhinh': {
+      const l = r(0, 3), c = pick(MAU);
+      return {h: svgHinh(l, c) + ' &nbsp; <small class="cd">Đây là</small> ' + Ow + '<br><small class="cd">(hình tròn / vuông / tam giác / chữ nhật)</small>', d: TENHINH[l], rong: 1, id: 'th' + l + Math.random()};
+    }
+    case 'tenkhoi': {
+      const l = r(0, 1);
+      return {h: svgKhoi(l) + ' &nbsp; <small class="cd">Đây là</small> ' + Ow + '<br><small class="cd">(khối lập phương / khối hộp chữ nhật)</small>', d: TENKHOI[l], rong: 1, id: 'tk' + l + Math.random()};
+    }
+    case 'tomau': {
+      const n = r(6, 9), ds = []; for (let i = 0; i < n; i++) ds.push(r(0, 3));
+      const loai = pick([...new Set(ds)]), dem = ds.filter(x => x === loai).length, mau = pick(['đỏ', 'xanh', 'vàng']);
+      const vien = x => svgHinh(x, '#fff').replace(/fill="#fff"/, 'fill="#fff" stroke="#1d3557" stroke-width="2"');
+      return {h: ds.map(vien).join(' ') + '<br><small class="cd">Tô màu ' + mau + ' vào các ' + TENHINH[loai] + '. Tô được</small> ' + Os + ' <small class="cd">hình</small>', d: dem, rong: 1, id: 'tm' + ds.join('') + Math.random()};
+    }
+    case 'vitri': {
+      const tap = new Set(); while (tap.size < 3) tap.add(pick(hinh));
+      const [x, y, z] = [...tap], vt = r(0, 2), ten = ['bên trái', 'ở giữa', 'bên phải'][vt];
+      return {h: x + ' ' + y + ' ' + z + '<br><small class="cd">Hình ' + ten + ' là:</small> ' + Os, d: [x, y, z][vt], rong: 1, id: x + y + z + vt};
+    }
+  }
+  return mot('cong', p, bai);
+}
+
+function tao(){
+  if ($('kho').value !== 'tudo'){ taoMauToan(); return; }
+  $('to').className = 'to'; $('dapan').className = 'to dapan';
+  $('to').style.fontFamily = '';
+  const bai = $('bai').value, p = +$('pv').value, n = +$('sl').value;
+  const ds = bai === 'tu' ? [$('dang').value] : BAI[+bai].d;
+  kq = []; const thay = new Set(); let thu = 0, i = 0;
+  while (kq.length < n && thu++ < 4000){
+    const dang = ds[i++ % ds.length];
+    const o = mot(dang, p, bai), k = o.id || o.h;
+    if (thay.has(k) && thu < 2500) continue;
+    o.loai = (i - 1) % ds.length; thay.add(k); kq.push(o);
+  }
+  if (ds.length > 1) kq.sort((x, y) => (x.loai || 0) - (y.loai || 0));
+  const khung = (nd, td) => '<div class="dau"><span>Họ và tên: ................................</span><span>Lớp: ........</span></div><h2>' + td + '</h2>' + nd + '<div class="chan">Điệp Trần tặng thầy cô</div>';
+  const ten = $('ten').value.replace(/[<>&]/g, '') || 'Phiếu luyện tính';
+  const the = (o, i, nd) => '<div class="bai' + (o.rong ? ' rong' : '') + '"><small>' + (i + 1) + '.</small>' + nd + '</div>';
+  $('to').innerHTML = khung('<div class="luoi">' + kq.map((o, i) => the(o, i, o.h)).join('') + '</div>', ten);
+  $('dapan').innerHTML = khung('<div class="luoi">' + kq.map((o, i) => the({rong: o.rong}, i, o.d)).join('') + '</div>', 'Đáp án: ' + ten);
+  apPhong($('to'));
+}
+let kq = [];
+function doiBai(){
+  const b = $('bai').value;
+  $('o-dang').style.display = b === 'tu' ? '' : 'none';
+  if (b !== 'tu'){
+    $('pv').value = String(BAI[+b].pv);
+    $('ten').value = 'Phiếu luyện Toán 1 - Bài ' + b + ': ' + BAI[+b].ten;
+  } else $('ten').value = 'Phiếu luyện tính';
+  tao();
+}
+function apKho(doi){
+  const k = $('kho').value, tudo = k === 'tudo';
+  $('o-dang').style.display = tudo ? '' : 'none'; $('o-sl').style.display = tudo ? '' : 'none';
+  $('pg').textContent = k === 'a5' ? '@page{size:A5;margin:8mm}' : '@page{size:A4;margin:12mm}';
+  if (doi && tudo) $('sl').value = '10';
+}
+$('kho').onchange = () => { apKho(true); tao(); };
+$('tao').onclick = tao;
+$('phong').onchange = $('hp').onchange = $('co').onchange = tao;
+$('bai').onchange = doiBai;
+$('dang').onchange = $('pv').onchange = $('sl').onchange = tao;
+$('in').onclick = () => { $('dapan').hidden = true; $('dap').textContent = 'Xem đáp án'; window.print(); };
+$('dap').onclick = () => { const h = $('dapan').hidden; $('dapan').hidden = !h; $('dap').textContent = h ? 'Ẩn đáp án' : 'Xem đáp án'; };
+{ const co = ['HP001 4 hàng', 'HP001 5 hàng', 'HP001 4H', 'HP001 5H', 'HP001 4 hàng 2 ô ly', 'HP001 4 hang 1 ô ly', 'HP001 Tap Do'].filter(coFont);
+  if (co.length) $('hp').innerHTML = co.map(x => '<option>' + x + '</option>').join(''); }
+$('phong').value = coFont('VNI-Avo') ? 'vni' : 'times';
+apKho(false); $('bai').value = '10'; doiBai();
+</script>
+</body>
+</html>

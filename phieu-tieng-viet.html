@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tạo phiếu Tiếng Việt - CÔ ĐIỆP AI</title>
+<script src="hinh/index.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@700;800&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"OpSym";src:local("Arial");unicode-range:U+2B,U+2D,U+3C,U+3E,U+3D,U+D7,U+F7}
+
+:root{--xanh:#0b5cab;--chu:#12304a;--phu:#4a6378}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;background:#eaf5ff;color:var(--chu)}
+.bang{max-width:760px;margin:0 auto;padding:16px}
+.bang a.ve{color:var(--xanh);font-weight:700;text-decoration:none}
+h1{font-family:"Baloo 2",sans-serif;color:var(--xanh);margin:6px 0 4px}
+.ch{background:#fff;border:2px solid #cfe6fb;border-radius:16px;padding:14px 16px;margin:12px 0}
+.ch label{display:block;font-weight:600;margin:8px 0 4px}
+.ch select,.ch input[type=text]{font:inherit;padding:8px 10px;border:2px solid #cfe6fb;border-radius:10px;width:100%}
+.hang{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nut{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:13px 20px;cursor:pointer;color:#fff;background:#f77f00;box-shadow:0 4px 0 #b86200}
+button.in{background:#0b5cab;box-shadow:0 4px 0 #073d73}
+button:active{transform:translateY(2px)}
+.to{background:#fff;margin:14px auto;padding:22px 26px;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.12);font-family:"Andika",Arial,sans-serif}
+.to .dau{display:flex;justify-content:space-between;gap:12px;font-size:15px;border-bottom:2px solid #1d3557;padding-bottom:8px;margin-bottom:12px}
+.to h2{font-family:"Baloo 2",sans-serif;text-align:center;margin:4px 0 12px;font-size:24px;color:#1d3557}
+.luoi{display:grid;grid-template-columns:repeat(6,1fr);gap:34px 16px}
+.bai{grid-column:span 3;font-size:calc(var(--pt,14)*1.857px);line-height:1.8}
+.bai.full{grid-column:span 6}
+.bai i{display:inline-block;min-width:70px;border-bottom:2px solid #1d3557;height:36px;vertical-align:bottom}
+.bai i.dai{min-width:150px}
+.bai i.cham{min-width:70px;height:0;vertical-align:baseline;border-bottom:4px dotted #1d3557;margin:0 3px}
+/* ô li vở: mỗi tiếng 4 ô (20 mm), cao 2 ô: 1 dòng ô để viết + 1 dòng phía trên cho chữ cao */
+.bai i.oli{display:inline-block;width:20mm;min-width:0;height:10mm;margin:6px 8px 0 0;border:1.5px solid #6fa8e0;vertical-align:top;
+  background-color:#fff;background-image:linear-gradient(#9cc6f7 1px,transparent 1px),linear-gradient(90deg,#9cc6f7 1px,transparent 1px);
+  background-size:5mm 5mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bai i.oli.rong6{width:30mm}
+/* dòng kẻ ô li như vở: ô vuông 5 mm, cao 2 ô */
+.bai i.dong{display:block;width:100%;margin-top:8px;height:10mm;min-width:0;border:1.5px solid #6fa8e0;
+  background-color:#fff;background-image:linear-gradient(#9cc6f7 1px,transparent 1px),linear-gradient(90deg,#9cc6f7 1px,transparent 1px);
+  background-size:5mm 5mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bai small{color:#5b6b80;font-size:14px;margin-right:4px}
+.bai small.cd{font-size:15px;color:#5b6b80}.bai .nw{white-space:nowrap;font-size:32px;line-height:1.9}
+.nhom{grid-column:span 6;font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:800;color:#0b5cab;border-bottom:2px solid #cfe6fb;padding-bottom:2px;margin-top:6px}
+.bai .mau{color:#9aa7b5;letter-spacing:1px}
+.bai .tu{display:inline-block;margin:0 14px 0 0}
+.bai .the{display:inline-block;border:2px solid #1d3557;border-radius:10px;padding:0 12px;margin:0 8px 6px 0}
+.chan{margin-top:16px;text-align:right;font-size:12px;color:#5b7aa0}
+.dapan{page-break-before:always}
+.ch-bai label{display:block;font-weight:700;margin:0 0 4px;color:#0b5cab}
+.ch-bai{margin-bottom:6px;padding-bottom:10px;border-bottom:2px dashed #cfe6fb}
+.ghi{font-size:14px;color:var(--phu);margin:6px 0 0}
+@media (max-width:560px){.luoi{grid-template-columns:repeat(4,1fr)}.bai,.bai.full{grid-column:span 4}.bai{font-size:21px}.hang{grid-template-columns:1fr}}
+@media print{
+  body{background:#fff}.bang>*:not(.in-ra){display:none!important}
+  .bang{padding:0;max-width:none}.to{box-shadow:none;margin:0;padding:6mm 4mm}
+  .xem-dap{display:none}
+}
+
+/* khổ giấy: A4 mặc định, A5 chữ nhỏ hơn và 2 cột */
+.to{max-width:210mm}
+.to.a5{max-width:148mm;padding:16px 16px}
+.to.a5 h2{font-size:19px}
+.to.a5 .dau{font-size:12px}
+.to.a5 .luoi{grid-template-columns:repeat(4,1fr);gap:22px 12px}
+.to.a5 .bai{grid-column:span 2;font-size:20px;line-height:1.7}
+.to.a5 .bai.rong,.to.a5 .bai.full{grid-column:span 4}
+.to.a5 .bai .nw{font-size:25px}
+.to.a5 .bai small.cd{font-size:12px}
+.to.a5 .bai i{min-width:44px;height:28px}
+.to.a5 .bai i.dai{min-width:110px}
+.to.a5 .nhom{grid-column:span 4;font-size:16px}
+.to.a5 .bai .the{padding:0 8px;margin:0 6px 5px 0}
+@media print{.to,.to.a5{max-width:none}}
+
+/* ===== mẫu A5 (phiếu ôn cuối tuần) và A4 (đề khảo sát) ===== */
+.to.mau5,.to.mau4{padding:0;border-radius:0;max-width:none;color:#000}
+.to.mau5{width:132mm;font-family:Arial,Helvetica,sans-serif}
+.to.mau4{width:186mm;font-family:"Times New Roman",Times,"Noto Serif",serif}
+mark{background:#ffff00;color:inherit;padding:0 .12em}
+.olib{--s:2.2mm;--c:#b4b4b4;--k:#000;width:100%;margin:.3em 0 0;box-sizing:border-box;
+  height:calc(var(--s)*(1 + 4*var(--rows)));
+  border-bottom:1.4px solid var(--k);border-left:1.4px solid var(--k);border-right:1.4px solid var(--k);
+  background-image:linear-gradient(var(--k) 1.4px,transparent 1.4px),linear-gradient(90deg,var(--k) 1.4px,transparent 1.4px),linear-gradient(var(--c) 1px,transparent 1px),linear-gradient(90deg,var(--c) 1px,transparent 1px);
+  background-size:100% calc(var(--s)*4),calc(var(--s)*4) 100%,100% var(--s),var(--s) 100%;
+  background-position:0 var(--s),0 0,0 0,0 0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.olib.xanh{--s:2.6mm;--c:#c6e6f5;--k:#7cc0e0;border-color:#7cc0e0}
+/* A5 */
+.mf5{font-size:calc(var(--pt,11)*1.3333px*var(--f,1));line-height:1.35;border:2px solid #000;padding:2.5mm 2.5mm 3mm}
+.mdau{display:flex;justify-content:space-between;font-weight:700}
+.mh{margin:.55em 0 .25em;font-size:1.04em;font-weight:700}
+.bd{border-collapse:collapse;width:100%}
+.bd td{border:1px solid #000;text-align:center;padding:.1em .25em}
+.bd td.u{font-weight:700;font-size:1.1em}.bd td.t{font-size:.85em}
+.bd .gt{font-size:1.1em;padding:.3em}.bd .gt span{display:inline-block;margin:0 1.2em}
+.bd .cd2{text-align:left;padding:.3em .4em}.bd .cd2 span{display:inline-block;width:48%;vertical-align:top}
+.caps{display:grid;grid-template-columns:1fr 1fr;gap:.5em .8em}
+.cap{border:2px solid #2d4a70;border-radius:1.2em;padding:.25em .7em;font-weight:700;text-align:center}
+.noi{display:flex;justify-content:space-around;gap:1em}.nl{text-align:right}.nr{text-align:left}.noi div div{margin:.2em 0}
+.gr{display:flex;flex-wrap:wrap;gap:.2em 1.4em;align-items:baseline;margin:.35em 0}.gr b{min-width:5.2em}.gr .nw{white-space:nowrap}
+/* A4 */
+.mf4{font-size:calc(var(--pt,12)*1.3333px*var(--f,1));line-height:1.35}
+.mdau4{font-size:.95em;margin:0 0 .15em}
+.to.mau4 h2.mt4{font-family:inherit;color:#000;text-align:center;font-size:1.28em;margin:.1em 0 .35em;font-weight:700}
+.mt{border-collapse:collapse;width:100%;border:2px solid #000}
+.mt td{border:1.5px solid #000;padding:.2em .5em .3em;vertical-align:top}
+.c2a,.c5a{width:50%}
+.mh4{font-size:1.1em;display:block;margin-bottom:.1em}
+.g7{display:grid;grid-template-columns:repeat(7,1fr)}
+.g7.dv{font-weight:700;font-size:1.08em}.g7.tv{color:#6a3fa0;font-size:1.04em;margin:.12em 0}
+.doan{text-indent:2em;line-height:1.7;margin:.3em 0 .1em}
+.noi4{display:flex;justify-content:space-around;gap:.6em}.noi4 .nl{text-align:right}.noi4 .nr{text-align:left}.noi4 div div{margin:.25em 0}
+.am{margin:.25em 0}.am span{margin-right:.9em;white-space:nowrap}
+.sxa{margin:.3em 0 .1em}.the4{display:inline-block;border:1.5px solid #000;border-radius:.4em;padding:0 .5em;margin:0 .4em .2em 0}
+.cham4{border-bottom:1.5px dotted #000;height:1.7em;margin-bottom:.25em}
+.gv{margin-top:.3em;font-weight:700}.gv2{display:grid;grid-template-columns:1fr 1fr;gap:.25em .8em;margin:.15em 0 .3em}.gv2 span{white-space:nowrap}
+.dapso{font-size:15px;line-height:1.7}
+@media print{.to.mau4,.to.mau5{margin:0;box-shadow:none}}
+.to h2,.to .nhom,.to .mdau b{font-family:inherit}
+.ph4{display:grid;grid-template-columns:repeat(4,1fr);gap:.5em;text-align:center;align-items:end}.ph4>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end}.ph4 img{height:4.6em;max-width:100%;object-fit:contain}.ph4 .hw{margin-top:.2em;white-space:nowrap}.ph4 .cham4{width:100%;margin-top:.3em}
+</style>
+<style id="pg">@page{size:A4;margin:12mm}</style>
+</head>
+<body>
+<div class="bang">
+  <a class="ve" href="./">&larr; Về trang chủ CÔ ĐIỆP AI</a> &nbsp;|&nbsp; <a class="ve" href="phieu.html">Tạo phiếu Toán &rarr;</a>
+  <h1>Tạo phiếu Tiếng Việt</h1>
+  <div>Chọn bài xong bấm "Tạo phiếu". Muốn phiếu khác thì bấm lại. Phiếu chỉ dùng chữ, vần đã học đến hết bài chọn.</div>
+  <div class="ch">
+    <div class="ch-bai"><label for="bai">Chọn bài trong sách Tiếng Việt 1 tập 1 (Kết nối tri thức)</label>
+      <select id="bai"><optgroup label="Âm và chữ (Bài 1-30)"><option value="1">Bài 1. A a</option><option value="2">Bài 2. B b, dấu huyền</option><option value="3">Bài 3. C c, dấu sắc</option><option value="4">Bài 4. E e, Ê ê</option><option value="5">Bài 5. Ôn tập</option><option value="6">Bài 6. O o, dấu hỏi</option><option value="7">Bài 7. Ô ô, dấu nặng</option><option value="8">Bài 8. D d, Đ đ</option><option value="9">Bài 9. Ơ ơ, dấu ngã</option><option value="10">Bài 10. Ôn tập</option><option value="11">Bài 11. I i, K k</option><option value="12">Bài 12. H h, L l</option><option value="13">Bài 13. U u, Ư ư</option><option value="14">Bài 14. Ch ch, Kh kh</option><option value="15">Bài 15. Ôn tập</option><option value="16">Bài 16. M m, N n</option><option value="17">Bài 17. G g, Gi gi</option><option value="18">Bài 18. Gh gh, Nh nh</option><option value="19">Bài 19. Ng ng, Ngh ngh</option><option value="20">Bài 20. Ôn tập</option><option value="21">Bài 21. R r, S s</option><option value="22">Bài 22. T t, Tr tr</option><option value="23">Bài 23. Th th, ia</option><option value="24">Bài 24. ua, ưa</option><option value="25">Bài 25. Ôn tập</option><option value="26">Bài 26. Ph ph, Qu qu</option><option value="27">Bài 27. V v, X x</option><option value="28">Bài 28. Y y</option><option value="29">Bài 29. Luyện tập chính tả</option><option value="30">Bài 30. Ôn tập</option></optgroup><optgroup label="Vần (Bài 31-60)"><option value="31">Bài 31. an ăn ân</option><option value="32">Bài 32. on ôn ơn</option><option value="33">Bài 33. en ên in un</option><option value="34">Bài 34. am ăm âm</option><option value="35">Bài 35. Ôn tập</option><option value="36">Bài 36. om ôm ơm</option><option value="37">Bài 37. em êm im um</option><option value="38">Bài 38. ai ay ây</option><option value="39">Bài 39. oi ôi ơi</option><option value="40">Bài 40. Ôn tập</option><option value="41">Bài 41. ui ưi</option><option value="42">Bài 42. ao eo</option><option value="43">Bài 43. au âu êu</option><option value="44">Bài 44. iu ưu</option><option value="45">Bài 45. Ôn tập</option><option value="46">Bài 46. ac ăc âc</option><option value="47">Bài 47. oc ôc uc ưc</option><option value="48">Bài 48. at ăt ât</option><option value="49">Bài 49. ot ôt ơt</option><option value="50">Bài 50. Ôn tập</option><option value="51">Bài 51. et êt it</option><option value="52">Bài 52. ut ưt</option><option value="53">Bài 53. ap ăp âp</option><option value="54">Bài 54. op ôp ơp</option><option value="55">Bài 55. Ôn tập</option><option value="56">Bài 56. ep êp ip up</option><option value="57">Bài 57. anh ênh inh</option><option value="58">Bài 58. ach êch ich</option><option value="59">Bài 59. ang ăng âng</option><option value="60">Bài 60. Ôn tập</option></optgroup><optgroup label="Vần khó (Bài 61-80)"><option value="61">Bài 61. ong ông ung ưng</option><option value="62">Bài 62. iêc iên iêp</option><option value="63">Bài 63. iêng iêm yên</option><option value="64">Bài 64. iêt iêu yêu</option><option value="65">Bài 65. Ôn tập</option><option value="66">Bài 66. uôi uôm</option><option value="67">Bài 67. uôc uôt</option><option value="68">Bài 68. uôn uông</option><option value="69">Bài 69. ươi ươu</option><option value="70">Bài 70. Ôn tập</option><option value="71">Bài 71. ươc ươt</option><option value="72">Bài 72. ươm ươp</option><option value="73">Bài 73. ươn ương</option><option value="74">Bài 74. oa oe</option><option value="75">Bài 75. Ôn tập</option><option value="76">Bài 76. oan oăn oat oăt</option><option value="77">Bài 77. oai uê uy</option><option value="78">Bài 78. uân uât</option><option value="79">Bài 79. uyên uyêt</option><option value="80">Bài 80. Ôn tập</option></optgroup></select>
+      <p class="ghi">Số bài ghi theo sách. Lớp chị học chậm hơn sách khoảng một tuần nên chị chọn đúng bài lớp đã học tới.</p>
+    </div>
+    <div class="hang">
+      <div id="o-dang"><label for="dang">Dạng bài</label>
+        <select id="dang">
+          <option value="hon" selected>Trộn nhiều dạng (phiếu tổng hợp)</option>
+          <option value="doc">Luyện đọc từ</option>
+          <option value="doccau">Luyện đọc câu</option>
+          <option value="dienvan">Điền âm, vần vào chỗ trống</option>
+          <option value="chontu">Khoanh tiếng có âm, vần cho trước</option>
+          <option value="timtieng">Tìm tiếng có âm, vần cho trước</option>
+          <option value="ghep">Ghép tiếng thành từ</option>
+          <option value="sapxep">Sắp xếp từ thành câu</option>
+          <option value="demtieng">Đếm số tiếng trong câu</option>
+          <option value="dienteucau">Chọn từ điền vào câu (cô xem lại đáp án)</option>
+          <option value="chinhta">Chính tả: c/k, g/gh, ng/ngh</option>
+          <option value="chep">Tập chép</option>
+        </select></div>
+      <div><label for="pham">Từ ngữ dùng</label>
+        <select id="pham">
+          <option value="lt" selected>Các bài đã học, tập trung bài này</option>
+          <option value="chi">Chỉ trong bài này</option>
+        </select></div>
+      <div id="o-sl"><label for="sl">Số bài</label>
+        <select id="sl"><option>4</option><option>6</option><option>8</option><option selected>10</option><option>12</option><option>18</option></select></div>
+      <div><label for="kho">Khổ giấy</label>
+        <select id="kho"><option value="a5" selected>A5 - mẫu phiếu ôn cuối tuần</option><option value="a4">A4 - mẫu đề khảo sát</option><option value="tudo">Phiếu tự do (chọn dạng bài)</option></select></div>
+      <div><label for="phong">Phông chữ khi in</label>
+        <select id="phong"><option value="vni">VNI-Avo</option><option value="times">Times New Roman</option><option value="hp">Chữ tiểu học (HP)</option></select></div>
+      <div id="o-hp" style="display:none"><label for="hp">Kiểu chữ tiểu học</label>
+        <select id="hp"><option>HP001 4 hàng</option><option>HP001 5 hàng</option><option>HP001 4H</option><option>HP001 5H</option><option>HP001 4 hàng 1 ô ly</option><option>HP001 4 hàng 2 ô ly</option><option>HP001 Tap Do</option></select></div>
+      <div><label for="co">Cỡ chữ (pt)</label>
+        <select id="co"><option>11</option><option>12</option><option>13</option><option selected>14</option><option>15</option><option>16</option></select></div>
+      <div><label for="ten">Tên phiếu</label><input id="ten" type="text" value="Phiếu luyện Tiếng Việt"></div>
+    </div>
+    <div class="nut"><button id="tao">Tạo phiếu</button><button class="in" id="in">In phiếu</button></div>
+    <p class="ghi" id="phong-ghi"></p>
+    <p class="ghi">Miễn phí cho thầy cô. Bấm <b>In phiếu</b>, trong hộp in chọn <b>Lưu thành PDF</b> để tải phiếu về máy.</p>
+  </div>
+</div>
+<div class="bang in-ra">
+  <div class="to" id="to"></div>
+  <div class="to dapan" id="dapan" hidden></div>
+  <div class="nut xem-dap" style="padding:0 16px"><button class="in" id="dap">Xem đáp án</button></div>
+</div>
+<script>
+const DATA = {"1":{"ten":"A a","tieng":["a"],"tu":[],"cau":[],"viet":"","units":["a"]},"2":{"ten":"B b, dấu huyền","tieng":[],"tu":["ba","bà","ba ba","ba","bà"],"cau":["A, bà."],"viet":"","units":["b"]},"3":{"ten":"C c, dấu sắc","tieng":[],"tu":["ca","cà","cá","ca","cá"],"cau":["A, cá."],"viet":"","units":["c"]},"4":{"ten":"E e, Ê ê","tieng":[],"tu":["bè","bé","bế","bé","bế"],"cau":["Bà bế bé."],"viet":"","units":["e","ê"]},"5":{"ten":"Ôn tập","tieng":[],"tu":["ba bà","be bé","cá bé","bè cá","bế bé"],"cau":["Bà bế bé."],"viet":"bế bé","units":[]},"6":{"ten":"O o, dấu hỏi","tieng":["bò","bó","bỏ","cò","có","cỏ"],"tu":["bò","cò","cỏ","bò","cỏ"],"cau":["Bê có cỏ."],"viet":"","units":["o"]},"7":{"ten":"Ô ô, dấu nặng","tieng":["bố","bổ","bộ","cô","cổ","cộ"],"tu":["bố","cô bé","cổ cò","bố","bộ"],"cau":["Bố bê bể cá."],"viet":"","units":["ô"]},"8":{"ten":"D d, Đ đ","tieng":["da","dẻ","dế","đá","đò","đổ"],"tu":["đá dế","đa đa","ô đỏ","dẻ","đa"],"cau":["Bé có ô đỏ."],"viet":"","units":["d","đ"]},"9":{"ten":"Ơ ơ, dấu ngã","tieng":["bờ","bở","cờ","cỡ","dỡ","đỡ"],"tu":["bờ đê","cá cờ","đỡ bé","bờ","dỡ"],"cau":["Bố đỡ bé."],"viet":"","units":["ơ"]},"10":{"ten":"Ôn tập","tieng":[],"tu":["bó cỏ","cá cờ","đỡ bà","bờ đê","cờ đỏ","đỗ đỏ","dỗ bé"],"cau":["Bờ đê có dế.","Bà có đỗ đỏ."],"viet":"đỗ đỏ","units":[]},"11":{"ten":"I i, K k","tieng":["kè","kẻ","kệ","kí","kỉ","kĩ"],"tu":["bí đỏ","kẻ ô","đi đò","kì đà","kí","kì"],"cau":["Kì đà bò ở kẽ đá."],"viet":"","units":["i","k"]},"12":{"ten":"H h, L l","tieng":["hé","ho","hổ","li","lọ","lỡ"],"tu":["lá đỏ","bờ hồ","cá hố","le le","hồ","le"],"cau":["Bé bị ho.","Bà đã có lá hẹ."],"viet":"","units":["h","l"]},"13":{"ten":"U u, Ư ư","tieng":["dù","đủ","hũ","cử","dự","lữ"],"tu":["dù","đu đủ","hổ dữ","đủ","lừ"],"cau":["Cá hổ là cá dữ."],"viet":"","units":["u","ư"]},"14":{"ten":"Ch ch, Kh kh","tieng":["chè","chỉ","chợ","khế","kho","khô"],"tu":["lá khô","chú khỉ","chợ cá","chú","khỉ"],"cau":["Chị có cá kho khế."],"viet":"","units":["ch","kh"]},"15":{"ten":"Ôn tập","tieng":[],"tu":["chú hề","chợ cá","che ô","bờ hồ","lá khô","cá dữ","lá hẹ"],"cau":["Chị cho bé cá cờ.","Dì Kha cho Hà đi chợ."],"viet":"cá kho khế","units":[]},"16":{"ten":"M m, N n","tieng":["má","mẹ","mỡ","na","nề","nở"],"tu":["cá mè","lá me","nơ đỏ","ca nô","mẹ","nơ"],"cau":["Bố mẹ cho Hà đi ca nô."],"viet":"","units":["m","n"]},"17":{"ten":"G g, Gi gi","tieng":["ga","gỗ","gụ","giá","giò","giỗ"],"tu":["gà gô","đồ gỗ","giá đỗ","cụ già","gà","giỏ"],"cau":["Bà che gió cho ba chú gà."],"viet":"","units":["g","gi"]},"18":{"ten":"Gh gh, Nh nh","tieng":["ghẹ","ghế","ghi","nhà","nhẹ","nhỏ"],"tu":["ghế đá","ghẹ đỏ","nhà gỗ","lá nho","ghé","nhà"],"cau":["Mẹ nhờ Hà bê ghế nhỏ."],"viet":"","units":["gh","nh"]},"19":{"ten":"Ng ng, Ngh ngh","tieng":["ngã","ngủ","ngự","nghe","nghé","nghĩ"],"tu":["ngã ba","ngõ nhỏ","củ nghệ","nghỉ hè","ngõ","nghé"],"cau":["Nghé đã no cỏ.","Nghé ngủ ở bờ đê."],"viet":"","units":["ng","ngh"]},"20":{"ten":"Ôn tập","tieng":[],"tu":["nụ cà","nhà ga","nghỉ hè","ngủ mơ","bỡ ngỡ","giá đỗ","nho nhỏ","ghế gỗ"],"cau":["Mẹ ghé nhà bà.","Nhà bà ở ngõ nhỏ."],"viet":"ngõ nhỏ nhà bà","units":[]},"21":{"ten":"R r, S s","tieng":["rạ","rễ","rổ","sả","sẽ","sò"],"tu":["rổ rá","cá rô","su su","chữ số","ra","sẻ"],"cau":["Chợ có gà ri, cá rô, su su.","Chợ có cả rổ rá."],"viet":"","units":["r","s"]},"22":{"ten":"T t, Tr tr","tieng":["tá","tạ","tẻ","trê","trò","trổ"],"tu":["ô tô","sư tử","cá trê","tre ngà","tô","tre"],"cau":["Hà tả hồ cá.","Hồ to, có cá mè, cá trê, cá rô."],"viet":"","units":["t","tr"]},"23":{"ten":"Th th, ia","tieng":["thẻ","thọ","thơ","đĩa","mía","thìa"],"tu":["thủ đô","lá thư","thìa dĩa","lá tía tô","thu","chia"],"cau":["Bé chia thìa, chia dĩa cho cả nhà.","Thìa dĩa to cho bố mẹ.","Thìa dĩa nhỏ cho bé."],"viet":"","units":["th","ia"]},"24":{"ten":"ua, ưa","tieng":["cua","đũa","rùa","cửa","dứa","nhựa"],"tu":["cà chua","múa ô","dưa lê","cửa sổ","múa","đưa"],"cau":["Mẹ đi chợ mua cá, mua cua.","Mẹ mua cả sữa chua, dưa lê."],"viet":"","units":["ua","ưa"]},"25":{"ten":"Ôn tập","tieng":[],"tu":["củ sả","lưa thưa","lá mía","rễ tre","cửa sổ","mùa thu","khế chua","tổ cò"],"cau":["Mùa hè, nhà bà có dừa, có dưa lê.","Mùa thu, nhà bà có na, có thị."],"viet":"giữa mùa mưa lũ","units":[]},"26":{"ten":"Ph ph, Qu qu","tieng":["phà","phí","phở","quạ","quê","quế"],"tu":["pha trà","phố cổ","quê nhà","quả khế","phố","quê"],"cau":["Bà ra Thủ đô.","Bà cho bé quà quê.","Bố đưa bà đi Bờ Hồ, đi phố cổ."],"viet":"","units":["ph","qu"]},"27":{"ten":"V v, X x","tieng":["võ","vở","vua","xỉa","xứ","xưa"],"tu":["vở vẽ","vỉa hè","xe lu","thị xã","vẽ","xe"],"cau":["Nghỉ hè, bố mẹ cho Hà về quê.","Quê Hà là xứ sở của dừa."],"viet":"","units":["v","x"]},"28":{"ten":"Y y","tieng":["quý","quy","quỳ","quý","quỹ","quỵ","ý"],"tu":["y tá","dã quỳ","đá quý"],"cau":["Mẹ và Hà ghé nhà dì Kha.","Dì kể cho Hà nghe về bà.","Hà chú ý nghe dì kể."],"viet":"","units":["y"]},"29":{"ten":"Luyện tập chính tả","tieng":["cô","cư","cò","cá","cổ","cỡ","cọ","ki","kề","kế","kẻ","kỉ","kẽ","kệ","ga","gà","gõ","gỗ","gù","gừ","ghe","ghi","ghì","ghé","ghế","ghẹ","ngô","ngà","ngừ","ngủ","ngõ","ngự","nghe","nghề","nghé","nghỉ","nghĩ","nghệ"],"tu":["cá cờ","chữ kí","gà gô","ghế gỗ","cá ngừ","củ nghệ"],"cau":[],"viet":"","units":[]},"30":{"ten":"Ôn tập","tieng":[],"tu":["phố cổ","qua phà","vỉa hè","đá quý","cổ vũ","xa xa","xứ sở"],"cau":["Nhà bé ở Thủ đô.","Thủ đô có Bờ Hồ.","Quê bé ở Phú Thọ.","Phú Thọ có chè, có cọ.","Xa nhà, bé nhớ mẹ.","Xa quê, bé nhớ bà."],"viet":"chia quà cho bé","units":[]},"31":{"ten":"an ăn ân","tieng":["bạn","bản","nhãn","gắn","lặn","bận","gần"],"tu":["bạn thân","khăn rằn","quả mận"],"cau":["Đàn gà cứ tha thẩn gần chân mẹ.","Đã có mẹ che chắn, cả đàn chả sợ gì lũ quạ dữ."],"viet":"","units":["an","ăn","ân"]},"32":{"ten":"on ôn ơn","tieng":["con","giòn","ngon","bốn","nhộn","gọn","lớn"],"tu":["nón lá","con chồn","sơn ca"],"cau":[],"viet":"","units":["on","ôn","ơn"]},"33":{"ten":"en ên in un","tieng":["mèn","khèn","sen","nến","nghển","chín","mịn","cún","vun"],"tu":["ngọn nến","đèn pin","cún con"],"cau":[],"viet":"","units":["en","ên","in","un"]},"34":{"ten":"am ăm âm","tieng":["làm","cam","khám","ẵm","cằm","đậm","nhẩm"],"tu":["quả cam","tăm tre","củ sâm"],"cau":["Mùa hè, ve râm ran, sen nở thắm.","Lũ trẻ nô đùa trên thảm cỏ ven hồ."],"viet":"","units":["am","ăm","âm"]},"35":{"ten":"Ôn tập","tieng":[],"tu":["củ sắn","bàn chân","tấm gỗ","khôn lớn","mưa phùn","bến đò","đèn pin","ngọn cỏ","trạm y tế","chăm chỉ"],"cau":[],"viet":"Sen nở thắm hồ","units":[]},"36":{"ten":"om ôm ơm","tieng":["xóm","khóm","vòm","nộm","tôm","bờm","rơm"],"tu":["đom đóm","chó đốm","mâm cơm"],"cau":["Hôm qua, cô Mơ ở xóm Hạ đến thăm nhà Hà.","Cô cho Hà giỏ cam.","Hà chọn quả cam to phần bố.","Mẹ khen và thơm lên má Hà."],"viet":"","units":["om","ôm","ơm"]},"37":{"ten":"em êm im um","tieng":["đếm","hẻm","kem","mềm","nếm","mỉm","tím","chụm","mũm"],"tu":["tem thư","thềm nhà","tủm tỉm"],"cau":[],"viet":"","units":["em","êm","im","um"]},"38":{"ten":"ai ay ây","tieng":["hai","bài","lái","nảy","tay","đậy","lấy"],"tu":["chùm vải","máy cày","đám mây"],"cau":[],"viet":"","units":["ai","ay","ây"]},"39":{"ten":"oi ôi ơi","tieng":["voi","chòi","hỏi","mỗi","xôi","đợi","mới"],"tu":["chim bói cá","thổi còi","đồ chơi"],"cau":[],"viet":"","units":["oi","ôi","ơi"]},"40":{"ten":"Ôn tập","tieng":["xóm","nồm","rơm","kẽm","nêm","sim","chùm","tai","hãy","đẩy","hỏi","hội","khơi"],"tu":["chói lọi","cây cấy","chúm chím","sớm tối","ngõ hẻm","gió nồm","lom khom","êm đềm","bãi bồi","bơi lội"],"cau":[],"viet":"Voi con có vòi dài","units":[]},"41":{"ten":"ui ưi","tieng":["túi","bùi","mũi","sủi","cửi","gửi","ngửi"],"tu":["dãy núi","bụi cỏ","gửi thư"],"cau":[],"viet":"","units":["ui","ưi"]},"42":{"ten":"ao eo","tieng":["lẽo","chào","dao","sáo","dẻo","đẽo","kẹo"],"tu":["ngôi sao","quả táo","cái kẹo","ao bèo"],"cau":[],"viet":"","units":["ao","eo"]},"43":{"ten":"au âu êu","tieng":["sau","cau","tàu","bậu","gấu","khều","rêu"],"tu":["rau củ","con trâu","chú tễu"],"cau":[],"viet":"","units":["au","âu","êu"]},"44":{"ten":"iu ưu","tieng":["hưu","dịu","địu","xíu","hưu","mưu","lựu"],"tu":["cái rìu","cái địu","quả lựu","con cừu"],"cau":[],"viet":"","units":["iu","ưu"]},"45":{"ten":"Ôn tập","tieng":["củi","cửi","chào","đẽo","rau","câu","rêu","dịu","sưu"],"tu":["khâu vá","gửi quà","ngôi sao","kéo co","kêu gọi","cây cau","vui vẻ","chịu khó","mưu trí"],"cau":[],"viet":"Tàu neo đậu ven bờ","units":[]},"46":{"ten":"ac ăc âc","tieng":["thác","lạc","nhạc","mặc","nhắc","gấc","giấc"],"tu":["bác sĩ","mắc áo","quả gấc"],"cau":[],"viet":"","units":["ac","ăc","âc"]},"47":{"ten":"oc ôc uc ưc","tieng":["góc","học","sóc","cốc","lộc","chục","cúc","đức","mực"],"tu":["con sóc","cái cốc","máy xúc","con mực"],"cau":[],"viet":"","units":["oc","ôc","uc","ưc"]},"48":{"ten":"at ăt ât","tieng":["hát","bát","lạt","sắt","gặt","đất","gật"],"tu":["bãi cát","mặt trời","bật lửa"],"cau":[],"viet":"","units":["at","ăt","ât"]},"49":{"ten":"ot ôt ơt","tieng":["ngót","ngọt","vót","cột","tốt","thớt","vợt"],"tu":["quả nhót","lá lốt","quả ớt"],"cau":[],"viet":"","units":["ot","ôt","ơt"]},"50":{"ten":"Ôn tập","tieng":[],"tu":["bật lửa","lọ mực","cột mốc","hạt thóc","xúc xắc","gót chân","đôi mắt","lác đác","giấc mơ","quả ớt"],"cau":[],"viet":"Hạt thóc nảy mầm","units":[]},"51":{"ten":"et êt it","tieng":["vẹt","két","sét","vẹt","dệt","nết","tết","lít","mít","vịt"],"tu":["con vẹt","bồ kết","quả mít"],"cau":[],"viet":"","units":["et","êt","it"]},"52":{"ten":"ut ưt","tieng":["sút","bụt","hụt","lụt","sụt","dứt","mứt","nứt","sứt"],"tu":["bút chì","mứt dừa","nứt nẻ"],"cau":[],"viet":"","units":["ut","ưt"]},"53":{"ten":"ap ăp âp","tieng":["đạp","rạp","sạp","tháp","bắp","cặp","gặp","đập","mập","nấp"],"tu":["xe đạp","cặp da","cá mập"],"cau":["Tôi là ai?"],"viet":"","units":["ap","ăp","âp"]},"54":{"ten":"op ôp ơp","tieng":["họp","cọp","góp","họp","hộp","tốp","xốp","hợp","lớp","lợp"],"tu":["con cọp","lốp xe","tia chớp"],"cau":[],"viet":"","units":["op","ôp","ơp"]},"55":{"ten":"Ôn tập","tieng":["nét","tết","thịt","sút","mứt","tháp","sắp","lấp","chóp","lốp","lớp"],"tu":["nét chữ","nết na","gặp gỡ","tấp nập","xe đạp","hồi hộp","gom góp","chút ít","mứt sen","tia chớp"],"cau":["Trời xám xịt, mưa sầm sập như trút..."],"viet":"Gần hồ có ngọn tháp cao vút","units":[]},"56":{"ten":"ep êp ip up","tieng":["nép","kẹp","nẹp","nếp","xếp","kịp","nhịp","búp","giúp"],"tu":["đôi dép","đầu bếp","bìm bịp","búp sen"],"cau":[],"viet":"","units":["ep","êp","ip","up"]},"57":{"ten":"anh ênh inh","tieng":["cánh","chanh","mảnh","cạnh","kênh","ghềnh","lệnh","kính","chỉnh","thịnh"],"tu":["quả chanh","bờ kênh","kính râm"],"cau":[],"viet":"","units":["anh","ênh","inh"]},"58":{"ten":"ach êch ich","tieng":["sách","vách","tách","sạch","chếch","mếch","lệch","bích","xích","kịch"],"tu":["sách vở","chênh lệch","tờ lịch"],"cau":[],"viet":"","units":["ach","êch","ich"]},"59":{"ten":"ang ăng âng","tieng":["sáng","làng","rạng","sáng","bằng","rặng","vẳng","hẫng","tầng","vâng"],"tu":["cá vàng","măng tre","nhà tầng"],"cau":[],"viet":"","units":["ang","ăng","âng"]},"60":{"ten":"Ôn tập","tieng":["đẹp","xếp","kịp","cúp","rãnh","ghềnh","đình","vách","chếch","đích","sáng","thẳng","vâng"],"tu":["xinh đẹp","kịp thời","nhanh nhẹn","sạch sẽ","thếp giấy","thẳng hàng","chênh chếch","thích thú","vâng lời","giúp đỡ"],"cau":[],"viet":"Em vẽ vầng trăng sáng","units":[]},"61":{"ten":"ong ông ung ưng","tieng":["trong","dòng","võng","bổng","cộng","thúng","vũng","đựng","hửng"],"tu":["chong chóng","bông súng","bánh chưng"],"cau":[],"viet":"","units":["ong","ông","ung","ưng"]},"62":{"ten":"iêc iên iêp","tieng":["biếc","thiếc","tiệc","xiếc","điện","kiến","thiện","diệp","thiếp","tiệp"],"tu":["xanh biếc","bờ biển","sò điệp"],"cau":[],"viet":"","units":["iêc","iên","iêp"]},"63":{"ten":"iêng iêm yên","tieng":["biêng","kiễng","liệng","riềng","diềm","kiểm","xiêm","yên","yến"],"tu":["sầu riêng","cá kiếm","tổ yến"],"cau":[],"viet":"","units":["iêng","iêm","yên"]},"64":{"ten":"iêt iêu yêu","tieng":["biết","chiết","viết","việt","chiều","diễu","kiểu","yêu","yếu","yểu"],"tu":["nhiệt kế","con diều","yêu chiều"],"cau":[],"viet":"","units":["iêt","iêu","yêu"]},"65":{"ten":"Ôn tập","tieng":["trong","trông","khung","vùng","việc","chiến","tiếp","tiếng","nhiệm","yến","biết","diều","yếu"],"tu":["xung phong","hiểu biết","xanh biếc","yêu mến","yên tĩnh","tiếng trống","trùng điệp","khu rừng","khiêm tốn","rong biển"],"cau":["Trái đất của chúng ta..."],"viet":"Cánh diều chao liệng trên bầu trời","units":[]},"66":{"ten":"uôi uôm","tieng":["xuôi","muối","muỗi","nguội","tuổi","buồm","muỗm","nhuốm","nhuộm"],"tu":["con suối","buổi sáng","quả muỗm"],"cau":[],"viet":"","units":["uôi","uôm"]},"67":{"ten":"uôc uôt","tieng":["buộc","cuốc","luộc","ruốc","thuộc","buốt","muốt","ruột","tuột"],"tu":["ngọn đuốc","viên thuốc","con chuột"],"cau":[],"viet":"","units":["uôc","uôt"]},"68":{"ten":"uôn uông","tieng":["chuồn","khuôn","muốn","muộn","nguồn","buồng","luống","thuổng","vuông"],"tu":["cuộn chỉ","buồng chuối","quả chuông"],"cau":[],"viet":"","units":["uôn","uông"]},"69":{"ten":"ươi ươu","tieng":["người","bưởi","cười","lưới","mười","bướu","hươu","khướu","rượu"],"tu":["tươi cười","quả bưởi","ốc bươu"],"cau":[],"viet":"","units":["ươi","ươu"]},"70":{"ten":"Ôn tập","tieng":[],"tu":["vuốt ve","cưỡi ngựa","trẻ thơ","nhuộm vải","nướu răng","lem luốc","luống cuống","muôn màu"],"cau":[],"viet":"Đôi chim khướu hót vang","units":[]},"71":{"ten":"ươc ươt","tieng":["được","bước","lược","ngược","nước","lướt","lượt","mướt","mượt"],"tu":["thước kẻ","dược sĩ","lướt ván"],"cau":[],"viet":"","units":["ươc","ươt"]},"72":{"ten":"ươm ươp","tieng":["bướm","chườm","đượm","gươm","ướm","lượm","mướp","nượp","ướp"],"tu":["con bướm","nườm nượp","giàn mướp"],"cau":[],"viet":"","units":["ươm","ươp"]},"73":{"ten":"ươn ương","tieng":["lượn","lươn","rướn","sườn","vượn","hướng","phượng","sương","tưởng"],"tu":["khu vườn","hạt sương","con đường"],"cau":[],"viet":"","units":["ươn","ương"]},"74":{"ten":"oa oe","tieng":["hoa","hoả","loa","toả","xoá","khoẻ","loe","loé","xoè"],"tu":["đoá hoa","váy xoè","chích choè"],"cau":[],"viet":"","units":["oa","oe"]},"75":{"ten":"Ôn tập","tieng":["ước","lướt","gươm","ướp","lượn","hương","hoa","loe"],"tu":["lướt sóng","ước mơ","mèo mướp","hạt cườm","bay lượn","nụ hoa","vàng hoe","toả hương"],"cau":[],"viet":"Khắp vườn, hoa toả hương ngào ngạt","units":[]},"76":{"ten":"oan oăn oat oăt","tieng":["khoan","hoạt","khoát","toán","xoan","choắt","hoắt","ngoằn","thoăn"],"tu":["hoa xoan","tóc xoăn","hoạt hình","nhọn hoắt"],"cau":[],"viet":"","units":["oan","oăn","oat","oăt"]},"77":{"ten":"oai uê uy","tieng":["ngoại","khoai","ngoái","ngoại","huệ","thuế","tuế","huy","luỹ","thuỷ"],"tu":["khoai sọ","vạn tuế","tàu thuỷ"],"cau":[],"viet":"","units":["oai","uê","uy"]},"78":{"ten":"uân uât","tieng":["xuân","chuẩn","huân","khuân","tuần","khuất","luật","thuật","xuất"],"tu":["tuần tra","mùa xuân","võ thuật"],"cau":[],"viet":"","units":["uân","uât"]},"79":{"ten":"uyên uyêt","tieng":["chuyện","chuyến","luyện","thuyền","truyện","duyệt","khuyết","tuyết","tuyệt"],"tu":["con thuyền","trăng khuyết","truyền thuyết"],"cau":[],"viet":"","units":["uyên","uyêt"]},"80":{"ten":"Ôn tập","tieng":["ngoan","loát","thoăn","hoắt","loài","huệ","tuỳ","luận","luật","chuyển","duyệt"],"tu":["ngoan ngoãn","tuyệt vời","thoăn thoắt","lưu loát","ngoái lại","vành khuyên","xum xuê","tuần lễ","xuất phát","thuỷ thủ"],"cau":[],"viet":"Xuân về, đào nở thắm, quất trĩu quả","units":[]}};
+const $ = id => document.getElementById(id);
+const r = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[r(0, a.length - 1)];
+const tron = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--){ const j = r(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const uniq = a => [...new Set(a)];
+const TEN_RIENG = ['Hà', 'Nam', 'Lan', 'Kha', 'Mơ', 'Tư', 'Phú', 'Tam', 'Sa', 'Cát', 'Tây', 'Vịnh', 'Hạ'];
+
+/* bỏ dấu thanh (giữ nguyên chữ ă â ê ô ơ ư) để so khớp vần */
+const bo = s => s.normalize('NFD').replace(/[̣̀́̉̃]/g, '').normalize('NFC');
+const NFC = s => s.normalize('NFC');
+const dang_am = u => !/[aăâeêioôơuưyáàảãạ]/i.test(bo(u));  // âm đầu (không có nguyên âm)
+const tachCau = t => t.split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(x => /[.!?]$/.test(x));
+const tiengCua = w => w.split(/\s+/).map(x => x.replace(/[.,!?;:]/g, '')).filter(Boolean);
+
+const BAI = {}; Object.keys(DATA).forEach(k => BAI[+k] = DATA[k]);
+const SO = Object.keys(BAI).map(Number).sort((a, b) => a - b);
+
+/* các bài "nhóm tập trung": bài ôn tập thì gom các bài vừa học */
+function nhom(n){
+  if (BAI[n].units.length) return [n];
+  const g = [n]; let k = n - 1;
+  while (k >= 1 && BAI[k] && g.length < 5){ if (!BAI[k].units.length && k !== n - 0 && BAI[k].ten.startsWith('Ôn')) break; g.push(k); k--; }
+  return g;
+}
+function kho(n, chi){
+  const ds = chi ? nhom(n) : SO.filter(x => x <= n);
+  const tieng = [], tu = [], cau = [];
+  ds.forEach(k => { const b = BAI[k];
+    b.tieng.forEach(t => tieng.push(NFC(t)));
+    b.tu.forEach(w => { w = NFC(w); if (w.includes(' ')) tu.push(w); else tieng.push(w); tiengCua(w).forEach(t => tieng.push(t)); });
+    b.cau.forEach(c => tachCau(NFC(c)).forEach(s => cau.push(s)));
+    if (b.viet) { const v = NFC(b.viet.split(';')[0].trim()); if (v && !/\d/.test(v)) cau.push(/[.!?]$/.test(v) ? v : v + '.'); }
+  });
+  return {tieng: uniq(tieng), tu: uniq(tu), cau: uniq(cau)};
+}
+function donVi(n){
+  const g = nhom(n); let u = [];
+  g.forEach(k => u = u.concat(BAI[k].units));
+  return uniq(u.map(NFC));
+}
+/* tiếng t có thuộc âm/vần u không */
+function khop(t, u){
+  const b = bo(t.toLowerCase()), x = bo(u);
+  if (dang_am(u)){
+    if (!b.startsWith(x)) return false;
+    const sau = b.slice(x.length);
+    if (u === 'c' && sau.startsWith('h')) return false;
+    if (u === 'g' && sau.startsWith('h')) return false;
+    if (u === 'n' && sau.startsWith('g')) return false;
+    if (u === 'ng' && sau.startsWith('h')) return false;
+    if (u === 't' && sau.startsWith('h')) return false;
+    if (u === 'k' && sau.startsWith('h')) return false;
+    if (u === 'p' && sau.startsWith('h')) return false;
+    if (u === 'g' && sau === '') return true;
+    return true;
+  }
+  if (x.length === 1) return b.includes(x);               // nguyên âm đơn: e, ê, o, ô, ...
+  return b.endsWith(x) && b.length >= x.length && /^[^aăâeêioôơuưy]*$/.test(b.slice(0, b.length - x.length));
+}
+function chiaChoTrong(t, u){
+  /* trả về [phần đầu, phần được bỏ trống (có dấu), phần cuối] */
+  const b = bo(t.toLowerCase()), x = bo(u);
+  if (dang_am(u)) return ['', t.slice(0, x.length), t.slice(x.length)];
+  return [t.slice(0, t.length - x.length), t.slice(t.length - x.length), ''];
+}
+
+const O = '<i></i>', Od = '<i class="dai"></i>', Oc = '<i class="cham"></i>';
+
+function mot(dang, ctx){
+  const {n, K, KT, U} = ctx;           /* K: kho đã chọn, KT: kho tập trung (bài hiện tại) */
+  const lay = (f) => f(KT) || f(K);
+  switch (dang){
+    case 'doc': {
+      const nguon = (KT.tu.length >= 3 ? KT.tu : K.tu.length >= 3 ? K.tu : null) || (KT.tieng.length >= 3 ? KT.tieng : K.tieng);
+      if (nguon.length < 2) return null;
+      const ds = tron(nguon).slice(0, 4);
+      return {h: '<small class="cd">Em đọc to:</small><br>' + ds.map(w => '<span class="the">' + w + '</span>').join(''), d: '(em đọc to)', full: 1, id: 'doc' + ds.join('|')};
+    }
+    case 'doccau': {
+      const nguon = KT.cau.length ? KT.cau : K.cau;
+      if (!nguon.length) return null;
+      const c = pick(nguon);
+      return {h: '<small class="cd">Em đọc câu:</small><br>' + c, d: '(em đọc to)', full: 1, id: 'dc' + c};
+    }
+    case 'dienvan': {
+      const dsU = U.filter(u => u.length >= 1 && (dang_am(u) || bo(u).length >= 2));
+      if (!dsU.length) return null;
+      for (let lan = 0; lan < 30; lan++){
+        const u = pick(dsU);
+        const nguon = lan % 2 ? (K.tu.length ? K.tu.concat(K.tieng) : K.tieng) : (KT.tu.concat(KT.tieng).length ? KT.tu.concat(KT.tieng) : K.tieng);
+        const ung = nguon.filter(w => tiengCua(w).some(t => khop(t, u)));
+        if (!ung.length) continue;
+        const w = pick(ung), ts = tiengCua(w), tg = pick(ts.filter(t => khop(t, u)));
+        const [dau, bo_, cuoi] = chiaChoTrong(tg, u);
+        /* bỏ câu nếu thay vần/âm khác cũng ra một tiếng đã học (dễ điền sai) */
+        const goc = bo(tg.toLowerCase());
+        const hoc = new Set(K.tieng.concat(KT.tieng).map(t => bo(t.toLowerCase())));
+        const phan = dang_am(u) ? goc.slice(bo(u).length) : goc.slice(0, goc.length - bo(u).length);
+        if (dsU.some(u2 => u2 !== u && hoc.has(dang_am(u) ? bo(u2) + phan : phan + bo(u2)))) continue;
+        const vi = ts.map(t => t === tg ? dau + Oc + cuoi : t).join(' ');
+        let op = uniq(dsU.slice());
+        if (op.length < 2){
+          const them = uniq(K.tieng.map(t => { const m = bo(t.toLowerCase()).match(/^(ngh|ng|nh|gh|gi|ch|kh|th|tr|ph|qu|[bcdđghklmnpqrstvx])/); return m ? m[0] : ''; }).filter(x => x && x !== u && dang_am(x)));
+          const vs = uniq(K.tieng.map(t => bo(t.toLowerCase()).replace(/^(ngh|ng|nh|gh|gi|ch|kh|th|tr|ph|qu|[bcdđghklmnpqrstvx])/, '')).filter(x => x.length >= 2 && x !== bo(u)));
+          op = op.concat(tron(dang_am(u) ? them : vs).slice(0, 2 - op.length + 1));
+        }
+        op = tron(op).slice(0, 3);
+        if (!op.includes(u)) op[0] = u;
+        return {h: '<small class="cd">Điền ' + (dang_am(u) ? '' : 'vần ') + tron(op).join(', ') + (dang_am(u) ? '' : ' (nhớ dấu thanh)') + ':</small><br><span class="nw">' + vi + '</span>', d: w, id: 'dv' + w + u};
+      }
+      return null;
+    }
+    case 'chontu': {
+      for (let lan = 0; lan < 25; lan++){
+        const u = pick(U); if (!u) return null;
+        const co = uniq(K.tieng.filter(t => !t.includes(' ') && khop(t, u)));
+        const khong = K.tieng.filter(t => !t.includes(' ') && !khop(t, u));
+        if (co.length < 2 || khong.length < 3) continue;
+        const dung = tron(co).slice(0, Math.min(3, co.length - (co.length > 3 ? 0 : 0)));
+        const sai = tron(khong).slice(0, 6 - dung.length);
+        const loai = dang_am(u) ? 'âm' : (bo(u).length === 1 ? 'chữ' : 'vần');
+        return {h: '<small class="cd">Khoanh vào các tiếng có ' + loai + ' <b>' + u + '</b>:</small><br>' + tron(dung.concat(sai)).map(w => '<span class="the">' + w + '</span>').join(''), d: dung.join(', '), full: 1, id: 'ct' + u + dung.join()};
+      }
+      return null;
+    }
+    case 'timtieng': {
+      for (let lan = 0; lan < 25; lan++){
+        const u = pick(U); if (!u) return null;
+        const co = uniq(K.tieng.filter(t => !t.includes(' ') && khop(t, u)));
+        if (co.length < 2) continue;
+        const loai = dang_am(u) ? 'âm' : (bo(u).length === 1 ? 'chữ' : 'vần');
+        return {h: '<small class="cd">Viết 2 tiếng có ' + loai + ' <b>' + u + '</b>:</small><br><i class="oli"></i><i class="oli"></i>', d: tron(co).slice(0, 3).join(' ; ') + ' ...', id: 'tt' + u + Math.random()};
+      }
+      return null;
+    }
+    case 'ghep': {
+      const nguon = (KT.tu.filter(w => tiengCua(w).length === 2).length >= 2 ? KT.tu : K.tu).filter(w => tiengCua(w).length === 2);
+      if (!nguon.length) return null;
+      const w = pick(nguon), t = tron(tiengCua(w));
+      return {h: '<small class="cd">Ghép thành từ:</small><br><span class="the">' + t[0] + '</span><span class="the">' + t[1] + '</span><br><i class="oli rong6"></i>', d: w, id: 'gh' + w};
+    }
+    case 'sapxep': {
+      const nguon = (KT.cau.filter(c => tiengCua(c).length >= 3).length ? KT.cau : K.cau).filter(c => tiengCua(c).length >= 3 && tiengCua(c).length <= 8);
+      if (!nguon.length) return null;
+      const c = pick(nguon), toks = tiengCua(c);
+      const hienthi = toks.map((t, i) => i === 0 && !TEN_RIENG.includes(t) ? t.charAt(0).toLowerCase() + t.slice(1) : t);
+      let sx = tron(hienthi), thu = 0; while (sx.join(' ') === hienthi.join(' ') && thu++ < 10) sx = tron(hienthi);
+      return {h: '<small class="cd">Sắp xếp thành câu:</small><br>' + sx.map(w => '<span class="the">' + w + '</span>').join('') + '<i class="dong"></i>', d: c, full: 1, id: 'sx' + c};
+    }
+    case 'demtieng': {
+      const nguon = KT.cau.length ? KT.cau : K.cau;
+      if (!nguon.length) return null;
+      const c = pick(nguon);
+      return {h: c + '<br><small class="cd">Câu này có</small> ' + O + ' <small class="cd">tiếng.</small>', d: tiengCua(c).length, id: 'dt' + c};
+    }
+    case 'dienteucau': {
+      const nguon = (KT.cau.length ? KT.cau : K.cau).filter(c => tiengCua(c).length >= 3);
+      if (!nguon.length) return null;
+      const c = pick(nguon), toks = tiengCua(c);
+      const uu = toks.map((t, i) => [t, i]).filter(([t]) => U.some(u => khop(t, u)));
+      const [dung, vt] = uu.length ? pick(uu) : [toks[toks.length - 1], toks.length - 1];
+      const sai = tron(K.tieng.filter(t => !t.includes(' ') && t.toLowerCase() !== dung.toLowerCase())).slice(0, 2);
+      if (sai.length < 2) return null;
+      const op = tron([dung].concat(sai).map(x => x.toLowerCase()));
+      let dem = -1;
+      const cau = c.split(/\s+/).map(w => { const sach = w.replace(/[.,!?;:]/g, ''); if (sach === dung && dem < 0){ dem = 1; return w.replace(sach, Od); } return w; }).join(' ');
+      return {h: cau + '<br><small class="cd">(' + op.join(' / ') + ')</small>', d: dung, full: 1, id: 'dtc' + c + dung};
+    }
+    case 'chinhta': {
+      const ok = {ck: n >= 11, ggh: n >= 18, nggh: n >= 19};
+      const cu = [];
+      if (ok.ck) cu.push(['c', 'k']); if (ok.ggh) cu.push(['g', 'gh']); if (ok.nggh) cu.push(['ng', 'ngh']);
+      if (!cu.length) return null;
+      const nguon = K.tu.concat(K.tieng);
+      for (let lan = 0; lan < 30; lan++){
+        const [a, b2] = pick(cu), w = pick(nguon), ts = tiengCua(w);
+        const tm = ts.filter(t => { const x = bo(t.toLowerCase()); const m = x.match(/^(ngh|ng|gh|g|k|c)/); if (!m) return false; if (m[0] === 'c' && x[1] === 'h') return false; return m[0] === a || m[0] === b2; });
+        if (!tm.length) continue;
+        const tg = pick(tm), x = bo(tg.toLowerCase()), m = x.match(/^(ngh|ng|gh|g|k|c)/)[0];
+        const vi = ts.map(t => t === tg ? Oc + t.slice(m.length) : t).join(' ');
+        return {h: '<small class="cd">Điền ' + a + ' hay ' + b2 + ':</small><br><span class="nw">' + vi + '</span>', d: w, id: 'ct' + w + a};
+      }
+      return null;
+    }
+    case 'chep': {
+      const nguon = KT.tu.concat(KT.cau.filter(c => tiengCua(c).length <= 6));
+      const ds = nguon.length ? nguon : K.tu.concat(K.cau);
+      if (!ds.length) return null;
+      const w = pick(ds);
+      return {h: '<small class="cd">Tập chép:</small> <span class="mau">' + w + '</span><i class="dong"></i>', d: w, full: 1, id: 'cp' + w};
+    }
+  }
+  return null;
+}
+
+/* ===== Hai mẫu trang: A5 (phiếu ôn cuối tuần) và A4 (đề khảo sát) ===== */
+const CH = '.......';
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const hl = s => '<mark>' + esc(s) + '</mark>';
+
+/* các bài (tối đa 3) có âm, vần gần nhất, xếp tăng dần */
+function bai3(n){
+  const L = []; for (let k = n; k >= 1 && L.length < 3; k--) if (BAI[k] && BAI[k].units.length) L.push(k);
+  return L.reverse();
+}
+function donViNhieu(n, max){
+  const out = []; bai3(n).forEach(k => BAI[k].units.forEach(u => { u = NFC(u); if (!out.includes(u)) out.push(u); }));
+  return out.slice(-max);
+}
+/* thay âm/vần u trong tiếng bằng dấu chấm; giữ dấu câu cuối */
+function chamToken(tok, u){
+  const m = tok.match(/^(.*?)([.,!?;:]*)$/), t = m[1], p = m[2];
+  if (!khop(t, u)) return null;
+  const [dau, , cuoi] = chiaChoTrong(t, u);
+  return dau + CH + cuoi + p;
+}
+function chamCau(c, dsU){
+  const toks = c.split(/\s+/);
+  const ung = [];
+  toks.forEach((t, i) => dsU.forEach(u => { if (chamToken(t, u)) ung.push([i, u]); }));
+  if (!ung.length) return null;
+  const [i, u] = pick(ung);
+  return toks.map((t, j) => j === i ? chamToken(t, u) : t).join(' ');
+}
+function chamTu(w, u){
+  const ts = w.split(/\s+/), i = ts.findIndex(t => khop(t, u));
+  if (i < 0) return null;
+  return ts.map((t, j) => j === i ? chamToken(t, u) : t).join(' ');
+}
+function tachNoi(c){
+  const ts = c.split(/\s+/); if (ts.length < 3) return null;
+  const k = Math.min(ts.length - 1, Math.max(1, Math.ceil(ts.length / 2)));
+  return [ts.slice(0, k).join(' '), ts.slice(k).join(' ')];
+}
+
+/* hình trong kho của cô, chỉ lấy hình có tên toàn tiếng đã học */
+function anhChoBai(n, dsU, soLuong){
+  if (typeof HINH === 'undefined') return [];
+  const K = kho(n, false), set = new Set();
+  K.tieng.forEach(x => set.add(x.toLowerCase())); K.tu.forEach(w => tiengCua(w).forEach(x => set.add(x.toLowerCase())));
+  const vet = new Set(); const ok = HINH.map(h => ({w: NFC(h[0]).toLowerCase(), f: h[1]})).filter(a => /^[^\d]+$/.test(a.w) && tiengCua(a.w).length <= 3 && tiengCua(a.w).every(x => set.has(x)));
+  const ung0 = ok.filter(a => { if (vet.has(a.w)) return false; vet.add(a.w); return true; });
+  const ung = tron(ung0.filter(a => tiengCua(a.w).some(x => dsU.some(u => khop(x, u)))));
+  const con = tron(ung0.filter(a => !ung.includes(a)));
+  return ung.concat(con).slice(0, soLuong);
+}
+const imgT = f => '<img src="hinh/' + f + '.webp" alt="">';
+function oli(rows, mau){ return '<div class="olib ' + mau + '" style="--rows:' + rows + '"></div>'; }
+
+function duLieuMau(n, chi){
+  const K = kho(n, chi), KT = kho(n, true), U = donViNhieu(n, 14), U6 = donViNhieu(n, 6), cauNguon = (KT.cau.length ? KT.cau : K.cau);
+  const tuNguon = uniq(KT.tu.concat(K.tu)), tiengNguon = uniq(KT.tieng.concat(K.tieng)).filter(t => !t.includes(' '));
+  const mau = {n, K, KT, U, U6, cauNguon, tuNguon, tiengNguon};
+  /* bảng đọc: mỗi âm/vần một tiếng mẫu */
+  mau.bangDoc = U6.map(u => { const c = tron(tiengNguon.filter(t => khop(t, u))); return [u, c[0] || '']; });
+  mau.tuDoc = tron(tuNguon.length >= 4 ? tuNguon : tuNguon.concat(tiengNguon)).slice(0, 4);
+  mau.cauDoc = tron(cauNguon).slice(0, 2);
+  /* điền theo chỗ trống trong câu */
+  const capNguon = tron(cauNguon.filter(c => tiengCua(c).length >= 3).concat(tuNguon.filter(w => tiengCua(w).length >= 2)));
+  mau.cap = []; const UL = (BAI[n] && BAI[n].units.length ? BAI[n].units.map(NFC) : U6), dsU = UL.length ? UL : [];
+  mau.UL = UL;
+  for (const c of capNguon){ const x = chamCau(c, dsU); if (x && mau.cap.length < 4 && !mau.cap.some(y => y[1] === c)) mau.cap.push([x, c]); }
+  /* nối */
+  mau.noi = []; for (const c of tron(cauNguon.filter(c => tiengCua(c).length >= 3 && tiengCua(c).length <= 8))){ const t = tachNoi(c); if (t && mau.noi.length < 3) mau.noi.push(t.concat([c])); }
+  /* điền theo nhóm bài */
+  mau.nhom = bai3(n).map(k => {
+    const us = BAI[k].units.map(NFC), kk = kho(k, true), pool = uniq(kk.tu.concat(kk.tieng).concat(kho(n, false).tu));
+    const ds = [];
+    tron(us).forEach(u => tron(pool).forEach(w => { if (ds.length < 6 && !ds.some(d => d[1] === w)) { const x = chamTu(w, u); if (x && !ds.some(d => d[0] === u && ds.filter(e => e[0] === u).length >= 2)) ds.push([u, w, x]); } }));
+    return {label: us.join('/'), ds};
+  });
+  /* câu chép: câu ngắn */
+  const ungChep = cauNguon.filter(c => tiengCua(c).length >= 4 && tiengCua(c).length <= 7);
+  mau.chep = ungChep.length ? pick(ungChep) : (cauNguon.length ? pick(cauNguon.filter(c => tiengCua(c).length >= 3).concat(cauNguon).slice(0, 4)) : '');
+  mau.anh = anhChoBai(n, dsU, 4);
+  mau.sx = tron(cauNguon.filter(c => tiengCua(c).length >= 3 && tiengCua(c).length <= 7)).slice(0, 2);
+  return mau;
+}
+
+/* ---------- Mẫu A5: phiếu ôn cuối tuần ---------- */
+function mauA5(d, ten){
+  let h = '', ans = [], stt = 1;
+  const mf = x => '<div class="mf">' + x + '</div>';
+  h += '<div class="mdau"><span>Họ và tên: ........................... Lớp: 1.....</span><b>TIẾNG VIỆT</b></div>';
+  /* 1 */
+  h += '<h3 class="mh">' + stt++ + '. Đọc các vần, tiếng, từ và câu sau:</h3>';
+  if (d.bangDoc.length){
+    h += '<table class="bd"><tr>' + d.bangDoc.map(x => '<td class="u">' + esc(x[0]) + '</td>').join('') + '</tr><tr>' + d.bangDoc.map(x => '<td class="t">' + esc(x[1]) + '</td>').join('') + '</tr>';
+    if (d.tuDoc.length) h += '<tr><td colspan="' + d.bangDoc.length + '" class="gt">' + d.tuDoc.map(w => '<span>' + esc(w) + '</span>').join('') + '</td></tr>';
+    if (d.cauDoc.length) h += '<tr><td colspan="' + d.bangDoc.length + '" class="cd2">' + d.cauDoc.map(c => '<span>' + esc(c) + '</span>').join('') + '</td></tr>';
+    h += '</table>';
+  }
+  ans.push('Em đọc to.');
+  /* 2 */
+  if (d.cap.length){
+    h += '<h3 class="mh">' + stt++ + '. Điền ' + hl(d.UL.join('/')) + ' vào chỗ trống:</h3><div class="caps">' + d.cap.map(c => '<div class="cap">' + esc(c[0]) + '</div>').join('') + '</div>';
+    ans.push(d.cap.map(c => c[1]).join(' | '));
+  }
+  /* hình */
+  if (d.anh.length >= 3){
+    h += '<h3 class="mh">' + stt++ + '. Nhìn hình, điền vào chỗ trống:</h3><div class="ph4">' + d.anh.map(a => { const x = d.UL.map(u => chamTu(a.w, u)).find(Boolean); return '<div>' + imgT(a.f) + '<div class="hw">' + esc(x || '.........') + '</div></div>'; }).join('') + '</div>';
+    ans.push(d.anh.map(a => a.w).join(' | '));
+  }
+  /* 3 */
+  if (d.noi.length >= 2){
+    const r = tron(d.noi.map((x, i) => i));
+    h += '<h3 class="mh">' + stt++ + '. Nối:</h3><div class="noi"><div class="nl">' + d.noi.map(x => '<div>' + esc(x[0]) + ' <b>●</b></div>').join('') + '</div><div class="nr">' + r.map(i => '<div><b>●</b> ' + esc(d.noi[i][1]) + '</div>').join('') + '</div></div>';
+    ans.push(d.noi.map(x => x[2]).join(' | '));
+  }
+  /* 4 */
+  const gr = d.nhom.filter(g => g.ds.length);
+  if (gr.length){
+    h += '<h3 class="mh">' + stt++ + '. Điền:</h3>';
+    gr.forEach((g, i) => { h += '<div class="gr"><b>' + 'abc'[i] + ') ' + hl(g.label) + ':</b>' + g.ds.slice(0, 3).map(x => '<span class="nw">' + esc(x[2]) + '</span>').join('') + '</div>'; });
+    ans.push(gr.map((g, i) => 'abc'[i] + ') ' + g.ds.slice(0, 3).map(x => x[1]).join(', ')).join(' ; '));
+  }
+  /* 5 */
+  if (d.chep){
+    h += '<h3 class="mh">' + stt++ + '. Tập chép câu: ' + hl(d.chep) + '</h3>' + oli(3, 'den');
+    ans.push(d.chep);
+  }
+  return {html: '<div class="mf5">' + h + '</div>', ans};
+}
+
+/* ---------- Mẫu A4: đề khảo sát ---------- */
+function mauA4(d, ten){
+  let h = '', ans = [], stt = 1;
+  h += '<div class="mdau4"><span>Họ tên: ..................................................................... - Lớp: 1/..............</span></div>';
+  h += '<h2 class="mt4">' + esc(ten).toUpperCase() + '</h2><table class="mt"><tbody>';
+  /* hàng 1: đọc trơn */
+  h += '<tr><td colspan="2"><b class="mh4">' + stt++ + '. Đọc trơn:</b>';
+  const dv = d.U.slice(0, 14), tv = tron(d.tuNguon.concat(d.tiengNguon)).slice(0, 14);
+  const hang = (arr, cls) => { let o = ''; for (let i = 0; i < arr.length; i += 7) o += '<div class="g7 ' + cls + '">' + arr.slice(i, i + 7).map(x => '<span>' + esc(x) + '</span>').join('') + '</div>'; return o; };
+  h += hang(dv, 'dv') + hang(tv, 'tv');
+  const cdoan = d.cauNguon.filter(c => tiengCua(c).length >= 3).map(c => c.charAt(0).toUpperCase() + c.slice(1));
+  if (cdoan.length) h += '<p class="doan">' + esc(tron(cdoan).slice(0, 3).join(' ')) + '</p>';
+  h += '</td></tr>';
+  ans.push('Em đọc trơn.');
+  /* hàng 2: nối | điền âm */
+  h += '<tr><td class="c2a">';
+  if (d.noi.length >= 2){
+    const r = tron(d.noi.map((x, i) => i));
+    h += '<b class="mh4">' + stt++ + '. Nối thành câu:</b><div class="noi4"><div class="nl">' + d.noi.map(x => '<div>' + esc(x[0]) + ' <b>●</b></div>').join('') + '</div><div class="nr">' + r.map(i => '<div><b>●</b> ' + esc(d.noi[i][1]) + '</div>').join('') + '</div></div>';
+    ans.push(d.noi.map(x => x[2]).join(' | '));
+  } else h += '<b class="mh4">' + stt++ + '. Điền từ thích hợp:</b>';
+  h += '</td><td class="c2b"><b class="mh4">' + stt++ + '. Điền âm thích hợp:</b>';
+  const cats = []; if (d.n >= 18) cats.push(['ng', 'ngh']); if (d.n >= 17) cats.push(['g', 'gh']); if (d.n >= 11) cats.push(['c', 'k']);
+  const nguon = uniq(d.tuNguon.concat(d.tiengNguon));
+  let dong = 0, ansAm = [];
+  const catAvail = cats.map(c => [c, tron(nguon).filter(w => { const x = bo(tiengCua(w)[0].toLowerCase()); const m = x.match(/^(ngh|ng|gh|g|k|c)/); return m && (m[0] === c[0] || m[0] === c[1]) && !(m[0] === 'c' && x[1] === 'h'); })]).filter(x => x[1].length >= 2);
+  if (catAvail.length){
+    catAvail.slice(0, 3).forEach(([c, ws]) => {
+      const mm = w => { const x = bo(tiengCua(w)[0].toLowerCase()).match(/^(ngh|ng|gh|g|k|c)/)[0]; const ts = tiengCua(w); return CH + ts[0].slice(x.length) + (ts.length > 1 ? ' ' + ts.slice(1).join(' ') : ''); };
+      h += '<div class="am"><b>' + c.join('/') + ':</b> ' + ws.slice(0, 2).map(w => '<span>' + esc(mm(w)) + '</span>').join(' ; ') + '</div>';
+      ansAm.push(c.join('/') + ': ' + ws.slice(0, 2).join(', ')); dong++;
+    });
+  }
+  if (!dong){
+    d.U6.slice(0, 3).forEach(u => {
+      const ws = tron(nguon.filter(w => chamTu(w, u))).slice(0, 2);
+      if (ws.length) { h += '<div class="am"><b>' + esc(u) + ':</b> ' + ws.map(w => '<span>' + esc(chamTu(w, u)) + '</span>').join(' ; ') + '</div>'; ansAm.push(u + ': ' + ws.join(', ')); }
+    });
+  }
+  ans.push(ansAm.join(' | '));
+  h += '</td></tr>';
+  /* hàng: điền từ dựa vào hình */
+  if (d.anh.length >= 3){
+    h += '<tr><td colspan="2"><b class="mh4">' + stt++ + '. Điền từ thích hợp dựa vào hình:</b><div class="ph4">' + d.anh.map(a => '<div>' + imgT(a.f) + '<div class="cham4"></div></div>').join('') + '</div></td></tr>';
+    ans.push(d.anh.map(a => a.w).join(' | '));
+  }
+  /* hàng 3: sắp xếp thành câu */
+  if (d.sx.length){
+    h += '<tr><td colspan="2"><b class="mh4">' + stt++ + '. Sắp xếp các từ thành câu:</b>';
+    d.sx.forEach(c => {
+      const t = tiengCua(c).map((x, i) => i === 0 && !TEN_RIENG.includes(x) ? x.charAt(0).toLowerCase() + x.slice(1) : x);
+      let s = tron(t), k = 0; while (s.join(' ') === t.join(' ') && k++ < 8) s = tron(t);
+      h += '<div class="sxa">' + s.map(x => '<span class="the4">' + esc(x) + '</span>').join('') + '</div><div class="cham4"></div>';
+    });
+    h += '</td></tr>'; ans.push(d.sx.join(' | '));
+  }
+  /* hàng 4: viết câu */
+  if (d.chep){
+    h += '<tr><td colspan="2"><b class="mh4">' + stt++ + '. Viết câu:</b> ' + hl(d.chep) + oli(2, 'xanh') + '</td></tr>';
+    ans.push(d.chep);
+  }
+  /* hàng 5: nghe viết | điền vần */
+  h += '<tr><td class="c5a"><b class="mh4">' + stt++ + '. Nghe viết:</b>' + oli(8, 'xanh') + '</td><td class="c5b"><b class="mh4">' + stt++ + '. Điền vần thích hợp:</b>';
+  const gr = d.nhom.filter(g => g.ds.length); let ansV = [];
+  gr.forEach(g => { h += '<div class="gv"><mark>' + esc(g.label) + ':</mark></div><div class="gv2">' + g.ds.slice(0, 4).map(x => '<span>' + esc(x[2]) + '</span>').join('') + '</div>'; ansV.push(g.label + ': ' + g.ds.slice(0, 4).map(x => x[1]).join(', ')); });
+  h += '</td></tr>'; ans.push('Nghe cô đọc rồi viết. | ' + ansV.join(' | '));
+  h += '</tbody></table>';
+  return {html: '<div class="mf4">' + h + '</div>', ans};
+}
+
+function vuaTrang(box, caoMm){
+  /* chữ vừa một trang: nhỏ bớt nếu dài, to lên một chút nếu ngắn; rồi kéo dài ô li cho đầy trang */
+  const px = caoMm * 96 / 25.4; let f = 1; const dat = v => box.style.setProperty('--f', v.toFixed(2));
+  dat(f);
+  if (box.scrollHeight > px){ for (let i = 0; i < 20 && box.scrollHeight > px; i++){ f -= .03; dat(f); } }
+  const pt = +$('co').value, got = Math.round(pt * f * 10) / 10;
+  if (f < 1) $('phong-ghi').textContent += ' Chữ đã thu nhỏ còn ' + got + ' pt cho vừa một trang.';
+  const o = box.querySelector('.c5a .olib') || [...box.querySelectorAll('.olib')].pop();
+  if (o){ let r = +getComputedStyle(o).getPropertyValue('--rows'); for (let i = 0; i < 14; i++){ o.style.setProperty('--rows', r + 1); if (box.scrollHeight > px){ o.style.setProperty('--rows', r); break; } r++; } }
+}
+function taoMau(){
+  const bai = +$('bai').value, chi = $('pham').value === 'chi', a5 = $('kho').value === 'a5';
+  const d = duLieuMau(bai, chi), ten = $('ten').value.replace(/[<>&]/g, '') || 'Phiếu luyện Tiếng Việt';
+  const out = a5 ? mauA5(d, ten) : mauA4(d, ten);
+  const to = $('to'), dap = $('dapan');
+  to.className = 'to ' + (a5 ? 'mau5' : 'mau4'); dap.className = 'to dapan ' + (a5 ? 'mau5' : 'mau4');
+  to.innerHTML = out.html; apPhong(to);
+  dap.innerHTML = '<h2 style="text-align:center;font-family:Arial">Đáp án: ' + esc(ten) + '</h2><ol class="dapso">' + out.ans.map(x => '<li>' + esc(x) + '</li>').join('') + '</ol>';
+  vuaTrang(to.firstElementChild, a5 ? 190 : 273);
+  kq = [];
+}
+
+/* ===== Phông chữ khi in: VNI-Avo, Times New Roman, chữ tiểu học HP ===== */
+const VNI_T1 = {'́': 'ù', '̀': 'ø', '̉': 'û', '̃': 'õ', '̣': 'ï'};
+const VNI_T2 = {'́': 'á', '̀': 'à', '̉': 'å', '̃': 'ã', '̣': 'ä'};
+const VNI_T3 = {'́': 'é', '̀': 'è', '̉': 'ú', '̃': 'ü', '̣': 'ë'};
+const VNI_I = {'́': 'í', '̀': 'ì', '̉': 'æ', '̃': 'ó', '̣': 'ò'};
+function vniChar(c){
+  if (c === 'đ') return 'ñ'; if (c === 'Đ') return 'Ñ';
+  const d = c.normalize('NFD'); if (d.length === 1) return c;
+  const up = d[0] !== d[0].toLowerCase(), b = d[0].toLowerCase();
+  let mod = '', tone = '';
+  for (const m of d.slice(1)){ if ('̛̂̆'.includes(m)) mod = m; else tone = m; }
+  let out;
+  if (b === 'i') out = tone ? VNI_I[tone] : 'i';
+  else if (b === 'y') out = tone ? (tone === '̣' ? 'î' : 'y' + VNI_T1[tone]) : 'y';
+  else if (!mod) out = b + (tone ? VNI_T1[tone] : '');
+  else if (mod === '̂') out = b + (tone ? VNI_T2[tone] : 'â');
+  else if (mod === '̆') out = 'a' + (tone ? VNI_T3[tone] : 'ê');
+  else if (mod === '̛') out = (b === 'o' ? 'ô' : 'ö') + (tone ? VNI_T1[tone] : '');
+  else out = c;
+  return up ? out.toUpperCase() : out;
+}
+function vni(s){ return s.normalize('NFC').replace(/[À-ỹ]/g, vniChar); }
+function vniCay(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), ds = [];
+  while (w.nextNode()) ds.push(w.currentNode);
+  ds.forEach(n => { if (/[À-ỹ]/.test(n.nodeValue)) n.nodeValue = vni(n.nodeValue); });
+}
+function coFont(ten){
+  try {
+    const c = document.createElement('canvas').getContext('2d'), t = 'mmmmmmmmmmlliWWW';
+    return ['monospace', 'serif'].some(f => { c.font = '40px ' + f; const a = c.measureText(t).width; c.font = '40px "' + ten + '", ' + f; return c.measureText(t).width !== a; });
+  } catch (e) { return false; }
+}
+const PHONG_TIMES = '"Times New Roman", Times, "Noto Serif", serif';
+function phongDangDung(){
+  const p = $('phong').value, hp = $('hp').value;
+  if (p === 'vni'){
+    if (coFont('VNI-Avo')) return {ff: '"VNI-Avo", sans-serif', vni: true, ghi: ''};
+    return {ff: PHONG_TIMES, vni: false, ghi: 'Máy này chưa cài phông VNI-Avo nên phiếu đang dùng Times New Roman. Chị cài phông VNI-Avo rồi tải lại trang.'};
+  }
+  if (p === 'hp'){
+    if (coFont(hp)) return {ff: '"OpSym", "' + hp + '", "Andika", sans-serif', vni: false, ghi: ''};
+    return {ff: PHONG_TIMES, vni: false, ghi: 'Máy này chưa cài phông ' + hp + ' nên phiếu đang dùng Times New Roman.'};
+  }
+  return {ff: PHONG_TIMES, vni: false, ghi: ''};
+}
+/* áp phông, cỡ chữ cho một tờ phiếu (gọi sau khi đã vẽ nội dung) */
+function apPhong(el){
+  const f = phongDangDung();
+  el.style.fontFamily = f.ff; el.style.setProperty('--pt', $('co').value);
+  if (f.vni) vniCay(el);
+  $('phong-ghi').textContent = f.ghi;
+  $('o-hp').style.display = $('phong').value === 'hp' ? '' : 'none';
+}
+const HTML_PHONG = `<div><label for="phong">Phông chữ khi in</label>
+        <select id="phong"><option value="vni">VNI-Avo</option><option value="times">Times New Roman</option><option value="hp">Chữ tiểu học (HP)</option></select></div>
+      <div id="o-hp" style="display:none"><label for="hp">Kiểu chữ tiểu học</label>
+        <select id="hp"><option>HP001 4 hàng</option><option>HP001 5 hàng</option><option>HP001 4H</option><option>HP001 5H</option><option>HP001 4 hàng 1 ô ly</option><option>HP001 4 hàng 2 ô ly</option><option>HP001 Tap Do</option></select></div>
+      <div><label for="co">Cỡ chữ (pt)</label>
+        <select id="co"><option>11</option><option>12</option><option>13</option><option selected>14</option><option>15</option><option>16</option></select></div>`;
+
+const TAT = ['doc', 'dienvan', 'chontu', 'timtieng', 'ghep', 'sapxep', 'demtieng', 'chinhta', 'chep', 'doccau'];
+const TOIDA = {doc: 1, doccau: 1, chep: 2};
+let kq = [];
+function tao(){
+  if ($('kho').value !== 'tudo'){ taoMau(); return; }
+  $('to').className = 'to'; $('dapan').className = 'to dapan';
+  const bai = +$('bai').value, chi = $('pham').value === 'chi', soCau = +$('sl').value;
+  const K = kho(bai, chi), KT = kho(bai, true), U = donVi(bai);
+  const ctx = {n: bai, K, KT, U};
+  let ds = $('dang').value === 'hon' ? TAT : [$('dang').value];
+  kq = []; const thay = new Set(); let thu = 0, i = 0, khong = 0;
+  while (kq.length < soCau && thu++ < 3000 && khong < ds.length * 40){
+    const d = ds[i++ % ds.length];
+    if (ds.length > 1 && TOIDA[d] && kq.filter(x => x.loai === d).length >= TOIDA[d]) { khong++; continue; }
+    const o = mot(d, ctx);
+    if (!o){ khong++; continue; }
+    if (thay.has(o.id) && thu < 1800) { khong++; continue; }
+    o.loai = d; thay.add(o.id); kq.push(o); khong = 0;
+  }
+  /* sắp theo nhóm dạng bài, có tiêu đề từng phần */
+  const THUTU = ['doc', 'doccau', 'chontu', 'timtieng', 'dienvan', 'chinhta', 'ghep', 'sapxep', 'dienteucau', 'demtieng', 'chep'];
+  const NHOM = [['Luyện đọc', ['doc', 'doccau']], ['Âm và vần', ['chontu', 'timtieng', 'dienvan', 'chinhta']], ['Từ và câu', ['ghep', 'sapxep', 'dienteucau', 'demtieng']], ['Tập chép', ['chep']]];
+  kq.sort((a, b) => THUTU.indexOf(a.loai) - THUTU.indexOf(b.loai));
+  const khung = (nd, td) => '<div class="dau"><span>Họ và tên: ................................</span><span>Lớp: ........</span></div><h2>' + td + '</h2>' + nd + '<div class="chan">Điệp Trần tặng thầy cô</div>';
+  const ten = $('ten').value.replace(/[<>&]/g, '') || 'Phiếu luyện Tiếng Việt';
+  const the = (o, i, nd) => '<div class="bai' + (o.full ? ' full' : '') + '"><small>' + (i + 1) + '.</small>' + nd + '</div>';
+  const dung = (dsx, nd) => { let kqh = '', cu = ''; dsx.forEach((o, i) => { const nh = NHOM.findIndex(g => g[1].includes(o.loai)); const ten2 = ds.length > 1 ? NHOM[nh][0] : ''; if (ten2 && ten2 !== cu){ cu = ten2; kqh += '<div class="nhom">' + ['I', 'II', 'III', 'IV'][nh] + '. ' + ten2 + '</div>'; } kqh += nd(o, i); }); return kqh; };
+  $('to').innerHTML = khung('<div class="luoi">' + dung(kq, (o, i) => the(o, i, o.h)) + '</div>', ten);
+  $('dapan').innerHTML = khung('<div class="luoi">' + dung(kq, (o, i) => the({full: o.full && o.d.length > 22}, i, o.d)) + '</div>', 'Đáp án: ' + ten);
+  apPhong($('to'));
+  if (!kq.length) $('to').innerHTML = '<p style="padding:20px">Bài này mới học chữ đầu tiên nên chưa đủ chữ để ra phiếu. Chị chọn bài sau, hoặc dạng bài khác. Bài này chưa đủ chữ để ra dạng bài đã chọn. Chị thử dạng "Trộn nhiều dạng" hoặc chọn bài khác nhé.</p>';
+}
+function doiBai(){
+  const b = +$('bai').value;
+  $('ten').value = 'Phiếu luyện Tiếng Việt 1 - Bài ' + b + ': ' + BAI[b].ten;
+  tao();
+}
+function apKho(doi){
+  const k = $('kho').value, tudo = k === 'tudo';
+  $('o-dang').style.display = tudo ? '' : 'none'; $('o-sl').style.display = tudo ? '' : 'none';
+  $('pg').textContent = k === 'a5' ? '@page{size:A5;margin:8mm}' : '@page{size:A4;margin:12mm}';
+  if (doi && tudo) $('sl').value = '10';
+}
+$('kho').onchange = () => { apKho(true); tao(); };
+$('tao').onclick = tao;
+$('phong').onchange = $('hp').onchange = $('co').onchange = tao;
+$('bai').onchange = doiBai;
+$('dang').onchange = $('pham').onchange = $('sl').onchange = tao;
+$('in').onclick = () => { $('dapan').hidden = true; $('dap').textContent = 'Xem đáp án'; window.print(); };
+$('dap').onclick = () => { const h = $('dapan').hidden; $('dapan').hidden = !h; $('dap').textContent = h ? 'Ẩn đáp án' : 'Xem đáp án'; };
+/* chỉ liệt kê kiểu chữ tiểu học nào máy có */
+{ const co = ['HP001 4 hàng', 'HP001 5 hàng', 'HP001 4H', 'HP001 5H', 'HP001 4 hàng 2 ô ly', 'HP001 4 hang 1 ô ly', 'HP001 Tap Do'].filter(coFont);
+  if (co.length) $('hp').innerHTML = co.map(x => '<option>' + x + '</option>').join(''); }
+$('phong').value = coFont('VNI-Avo') ? 'vni' : 'times';
+apKho(false); $('bai').value = '21'; doiBai();
+</script>
+</body>
+</html>

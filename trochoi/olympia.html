@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đường lên đỉnh tri thức</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* ĐƯỜNG LÊN ĐỈNH TRI THỨC: 4 tổ thi qua 4 vòng (Khởi động, Vượt chướng ngại vật, Tăng tốc, Về đích). Chiếu tivi,
+     cô đọc câu hỏi (hoặc bấm loa), các tổ giơ tay trả lời, cô bấm Đúng / Sai để cộng điểm.
+     Nội dung sửa ở khối NOI_DUNG đầu phần script. */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --nen1: #4a0e2e; --nen2: #1a0b3d; --vang: #ffd43b; --cam: #ff922b; --la: #37b24d; --do: #f03e3e; --xanh: #339af0;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font-family: var(--font); font-weight: 800; color: #fff; overflow: hidden; display: flex; flex-direction: column;
+    background: radial-gradient(ellipse at 50% 0%, #c2255c 0, var(--nen1) 40%, var(--nen2) 100%); user-select: none; -webkit-user-select: none; }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; color: inherit; }
+  button:focus-visible { outline: 4px solid var(--vang); outline-offset: 3px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 8px 16px; flex-wrap: wrap; justify-content: center; }
+  h1 { font-size: max(20px, calc(var(--u) * 4)); color: var(--vang); text-shadow: 0 3px 0 #000; white-space: nowrap; }
+  .vong { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .vong button { font-size: max(13px, calc(var(--u) * 2.3)); padding: 3px 14px; border-radius: 20px; border: 2px solid var(--vang); background: rgba(0,0,0,.3); color: var(--vang); }
+  .vong button.dang { background: var(--vang); color: #4a0e2e; }
+  main { flex: 1; min-height: 0; position: relative; }
+  .man { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1.6); padding: 0 16px 10px; overflow-y: auto; }
+  .tieu-de { font-size: max(30px, calc(var(--u) * 7)); color: var(--vang); text-shadow: 0 4px 0 #000; text-align: center; line-height: 1.1; }
+  .luat { background: rgba(0,0,0,.35); border: 2px solid rgba(255,212,59,.5); border-radius: 18px; padding: 10px 22px; font-size: max(15px, calc(var(--u) * 2.8)); font-weight: 600; max-width: 900px; line-height: 1.5; }
+  .luat b { color: var(--vang); }
+  .nut { font-size: max(16px, calc(var(--u) * 3)); padding: 6px 22px; border-radius: 30px; border: 3px solid #fff; background: linear-gradient(#ffa94d, #e8590c); box-shadow: 0 4px 0 #8a3200; }
+  .nut:active { transform: translateY(3px); box-shadow: none; }
+  .nut.la { background: linear-gradient(#69db7c, #2b8a3e); box-shadow: 0 4px 0 #1e5b2a; }
+  .nut.do { background: linear-gradient(#ff8787, #c92a2a); box-shadow: 0 4px 0 #7a1414; }
+  .nut.xam { background: linear-gradient(#868e96, #495057); box-shadow: 0 4px 0 #212529; }
+  .nut.xanh { background: linear-gradient(#74c0fc, #1971c2); box-shadow: 0 4px 0 #0b3d73; }
+  .nut:disabled { opacity: .35; cursor: default; }
+  .hang { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .o-cau { width: min(100%, 1100px); background: rgba(255,255,255,.95); color: #2b0a1e; border-radius: 22px; border: 5px solid var(--vang); padding: calc(var(--u) * 2) calc(var(--u) * 3); text-align: center; font-size: max(26px, calc(var(--u) * 6)); line-height: 1.3; text-wrap: balance; min-height: calc(var(--u) * 18); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; }
+  .o-cau .so { font-size: .5em; color: #c2255c; }
+  .o-cau .dap { font-size: .8em; color: var(--la); background: #ebfbee; border-radius: 14px; padding: 0 18px; }
+  .dong-ho { font-size: max(30px, calc(var(--u) * 6)); color: var(--vang); min-width: 2.4em; text-align: center; background: rgba(0,0,0,.4); border-radius: 20px; padding: 0 14px; }
+  .dong-ho.gap { color: var(--do); }
+
+  /* bảng điểm 4 tổ */
+  .bang-diem { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 8px 16px 12px; }
+  .to { background: rgba(0,0,0,.35); border: 3px solid var(--mau); border-radius: 18px; padding: 6px 10px; display: flex; align-items: center; gap: 8px; }
+  .to.chon { box-shadow: 0 0 0 4px var(--vang), 0 0 24px var(--vang); }
+  .to .ten { font-size: max(15px, calc(var(--u) * 3)); color: var(--mau); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .to .diem { font-size: max(24px, calc(var(--u) * 5)); min-width: 2.2em; text-align: center; background: var(--mau); color: #fff; border-radius: 12px; }
+  .to button { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; background: rgba(255,255,255,.15); font-size: 18px; }
+
+  /* chọn tổ */
+  .chon-to { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chon-to button { font-size: max(16px, calc(var(--u) * 3)); padding: 6px 20px; border-radius: 16px; border: 3px solid var(--mau); background: rgba(0,0,0,.3); color: var(--mau); }
+  .chon-to button.bat { background: var(--mau); color: #fff; }
+  .chon-to button.xong { opacity: .4; }
+
+  /* vượt chướng ngại vật */
+  .vcnv { display: flex; gap: calc(var(--u) * 3); align-items: center; justify-content: center; flex-wrap: wrap; width: 100%; }
+  .hang-chu { display: flex; flex-direction: column; gap: 10px; }
+  .dong-chu { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .dong-chu .stt { width: 40px; height: 40px; border-radius: 50%; background: var(--cam); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .dong-chu .o { width: max(30px, calc(var(--u) * 5.4)); height: max(30px, calc(var(--u) * 5.4)); border-radius: 50%; background: #e7f5ff; color: #1864ab; display: flex; align-items: center; justify-content: center; font-size: max(17px, calc(var(--u) * 3.2)); }
+  .dong-chu .o.trong { background: none; width: 10px; }
+  .dong-chu.sai .o { background: #868e96; }
+  .dong-chu.dung .o { background: var(--la); color: #fff; }
+  .dong-chu.dang .stt { background: var(--vang); color: #4a0e2e; }
+  .tranh { position: relative; width: max(200px, calc(var(--u) * 34)); aspect-ratio: 4/3; border-radius: 16px; overflow: hidden; border: 5px solid var(--vang); background: #fff; display: flex; align-items: center; justify-content: center; }
+  .tranh .hinh { font-family: var(--emoji); font-size: max(110px, calc(var(--u) * 24)); }
+  .tranh .manh { position: absolute; background: linear-gradient(135deg, #1971c2, #5f3dc4); border: 2px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 34px; transition: opacity .6s; }
+  .tranh .manh.mo { opacity: 0; pointer-events: none; }
+  .tu-khoa { font-size: max(16px, calc(var(--u) * 3)); background: rgba(0,0,0,.4); border-radius: 14px; padding: 4px 16px; }
+  .tu-khoa b { color: var(--vang); letter-spacing: 4px; }
+
+  /* về đích */
+  .goi { display: flex; gap: 12px; }
+  .goi button { width: max(70px, calc(var(--u) * 12)); aspect-ratio: 1; border-radius: 50%; border: 4px solid var(--vang); background: radial-gradient(#c2255c, #4a0e2e); font-size: max(24px, calc(var(--u) * 5)); color: var(--vang); }
+  .goi button.da { opacity: .3; }
+  .sao-hv { font-size: max(16px, calc(var(--u) * 3)); }
+  .sao-hv.bat { background: var(--vang); color: #4a0e2e; }
+
+  .bang-xh { display: flex; gap: 20px; align-items: flex-end; justify-content: center; }
+  .bang-xh div { width: max(110px, calc(var(--u) * 20)); border-radius: 16px 16px 0 0; background: var(--mau); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 10px; font-size: max(18px, calc(var(--u) * 3.4)); }
+  .bang-xh .cup { font-family: var(--emoji); font-size: 2.2em; }
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 11; }
+  #phao i { position: absolute; top: -20px; width: 14px; height: 20px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  #loi-may { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 99; background: #c92a2a; color: #fff; font: 16px/1.3 Arial, sans-serif; padding: 8px 12px; border-radius: 10px; }
+  .thuong-hieu { font-size: 14px; background: #ae3ec9; border-radius: 20px; padding: 2px 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏔️ Đường lên đỉnh tri thức</h1>
+  <div class="vong" id="vong">
+    <button data-v="0">Mở đầu</button><button data-v="1">1. Khởi động</button><button data-v="2">2. Vượt chướng ngại vật</button>
+    <button data-v="3">3. Tăng tốc</button><button data-v="4">4. Về đích</button><button data-v="5">🏆 Tổng kết</button>
+  </div>
+</header>
+<main id="main"></main>
+<div class="bang-diem" id="bang-diem"></div>
+<div id="phao"></div>
+
+<script src="danh-sach-lop.js"></script>
+<script>
+window.onerror = (m, f, d) => {
+  const goc = s => String(s || "").split(/[?#]/)[0];
+  if (/zalo|FBNav|instagram/i.test(m) || !f || goc(f) !== goc(location.href)) return; // lỗi của app Zalo/Facebook chèn vào, không phải của trò chơi
+  const o = document.getElementById('loi-may') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'loi-may' }));
+  o.textContent = 'Lỗi: ' + m + ' (dòng ' + d + ')';
+};
+// ====== NỘI DUNG (cô sửa ở đây theo tuần). Mỗi câu: [câu hỏi, đáp án] ======
+// Tuần 7: Tiếng Việt bài 26-30 (ph, qu, v, x, y, chính tả c/k, g/gh, ng/ngh), Toán hình phẳng, số đến 10, mấy và mấy.
+// (Bản tuần 8 cũ lưu trong thư mục "Bản cũ".)
+const NOI_DUNG = {
+  khoiDong: [   // mỗi tổ 6 câu, 60 giây
+    ['Hình tam giác có mấy cạnh?', '3'], ['Hình vuông có mấy cạnh?', '4'], ['Hình chữ nhật có mấy cạnh?', '4'],
+    ['Mặt đồng hồ treo tường có dạng hình gì?', 'Hình tròn'], ['Cái bảng lớp mình có dạng hình gì?', 'Hình chữ nhật'], ['Lá cờ đỏ sao vàng có dạng hình gì?', 'Hình chữ nhật'],
+    ['Số liền sau số 7 là số mấy?', '8'], ['Số liền trước số 10 là số mấy?', '9'], ['Số nào lớn nhất: 3, 9, 6?', '9'],
+    ['Số nào bé nhất: 8, 2, 5?', '2'], ['3 và 2 được mấy?', '5'], ['5 gồm 4 và mấy?', '1'],
+    ['Tiếng "phố" có âm đầu là gì?', 'ph'], ['Tiếng "quê" có âm đầu là gì?', 'qu'], ['Tiếng "vẽ" có âm đầu là gì?', 'v'], ['Tiếng "xe" có âm đầu là gì?', 'x'],
+    ['Đọc to: quả khế', 'quả khế'], ['Đọc to: vỉa hè', 'vỉa hè'], ['Đọc to: y tá', 'y tá'],
+    ['Tiếng "cá" viết c hay k?', 'c'], ['Tiếng "kẻ" viết c hay k?', 'k'], ['Tiếng "ghế" viết g hay gh?', 'gh'], ['Tiếng "ngõ" viết ng hay ngh?', 'ng'],
+    ['Tiếng "nghé" viết ng hay ngh?', 'ngh'], ['Nói một tiếng có âm v.', 'vở, về, vẽ, vua...'], ['Nói một tiếng có âm x.', 'xe, xa, xô, xứ...']
+  ],
+  vcnv: {   // 4 hàng ngang (đáp án là một từ) + 1 câu ô giữa; mở hàng nào thì mở một góc tranh
+    hang: [
+      ['Quyển vở có trang giấy trắng để bé vẽ tranh gọi là gì?', 'VỞ VẼ'],
+      ['Xe có bánh rất to và nặng, dùng để làm phẳng mặt đường?', 'XE LU'],
+      ['Loài hoa màu vàng có trong bài "Y y"?', 'DÃ QUỲ'],
+      ['Củ có màu vàng, dùng để nấu ăn, có trong bài chính tả ng - ngh?', 'CỦ NGHỆ']
+    ],
+    giua: ['Hình có 3 cạnh gọi là hình gì?', 'TAM GIÁC'],
+    hinh: '🥥', tuKhoa: 'QUẢ DỪA'
+  },
+  tangToc: [   // 4 câu, 30 giây; tổ đúng nhanh nhất 40 điểm, rồi 30, 20, 10
+    ['Có 3 con cá và 2 con cá. Có tất cả mấy con cá?', '5'],
+    ['Tiếng nào có âm "qu": quê, phố, xe?', 'quê'],
+    ['Xếp thành câu: vẽ / Hà / xe đạp', 'Hà vẽ xe đạp.'],
+    ['Điền c hay k: ...ẻ vở', 'k (kẻ vở)']
+  ],
+  veDich: {   // mỗi tổ chọn 3 câu trong các gói 10, 20, 30 điểm
+    10: [['Hình tròn có mấy cạnh?', 'Không có cạnh nào'], ['Đọc to: phố cổ', 'phố cổ'], ['Số liền sau số 9 là số mấy?', '10'], ['Đọc to: xe lu', 'xe lu'], ['Tiếng "quả" có âm đầu là gì?', 'qu'], ['Đọc to: đá quý', 'đá quý']],
+    20: [['4 và 1 được mấy?', '5'], ['Tìm 2 tiếng có âm "ph": phở, quạ, pha, vở', 'phở, pha'], ['Đọc to câu: Bà cho bé quà quê.', 'Đọc đúng, rõ ràng'],
+      ['Số 7 và số 4, số nào lớn hơn?', '7'], ['Điền g hay gh: ...à gô', 'g (gà gô)'], ['Đọc to câu: Hà vẽ xe đạp.', 'Đọc đúng, rõ ràng']],
+    30: [['Nói 3 tiếng có âm "x".', 'xe, xa, xô, xứ, xưa...'], ['Đọc to câu: Nghỉ hè, bố mẹ cho Hà về quê.', 'Đọc đúng, rõ ràng'], ['5 gồm 2 và mấy?', '3'],
+      ['Điền ng hay ngh: củ ...ệ', 'ngh (củ nghệ)'], ['Đọc to câu: Xa nhà, bé nhớ mẹ. Xa quê, bé nhớ bà.', 'Đọc đúng, rõ ràng'], ['Kể tên 2 đồ vật có dạng hình vuông.', 'khăn mùi xoa, viên gạch, ô cửa sổ...']]
+  }
+};
+// ==========================================================================
+
+const $ = id => document.getElementById(id);
+const KHOA = 'olympia-' + location.pathname;
+const luu = (k, v) => { try { localStorage.setItem(KHOA + k, JSON.stringify(v)); } catch (e) {} };
+const doc = k => { try { return JSON.parse(localStorage.getItem(KHOA + k)); } catch (e) { return null; } };
+const tron = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const MAU_TO = ['#ff6b6b', '#4dabf7', '#51cf66', '#fcc419'];
+let TO = doc('to') || [{ ten: 'Tổ 1', diem: 0 }, { ten: 'Tổ 2', diem: 0 }, { ten: 'Tổ 3', diem: 0 }, { ten: 'Tổ 4', diem: 0 }];
+const luuTo = () => luu('to', TO);
+
+// ----- âm thanh, giọng đọc, pháo giấy -----
+let amThanh = null;
+function keu(ds, kieu = 'triangle', cach = 0.12, to = 0.35) {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    if (amThanh.state === 'suspended') amThanh.resume();
+    ds.forEach((f, i) => { const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + i * cach;
+      o.frequency.value = f; o.type = kieu; g.gain.setValueAtTime(to, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      o.connect(g); g.connect(amThanh.destination); o.start(t); o.stop(t + 0.27); });
+  } catch (e) {}
+}
+const vui = () => keu([523, 659, 784, 1047]);
+const tiec = () => keu([300, 220], 'sawtooth', 0.2, 0.2);
+let giong = null;
+function timGiong() { if (!window.speechSynthesis) return; const ds = speechSynthesis.getVoices().filter(v => /^vi/i.test(v.lang)); giong = ds.find(v => /natural|online|hoaimy/i.test(v.name)) || ds[0] || null; }
+if (window.speechSynthesis) { timGiong(); speechSynthesis.onvoiceschanged = timGiong; }
+// Tự đọc câu mới, nút loa để nghe lại (cô Điệp dặn 16/10/2026)
+let choDoc = false;
+document.addEventListener('click', e => { if (e.target.closest('.nut-nghe, #nut-loa, #nghe, #nut-nghe')) { choDoc = true; setTimeout(() => choDoc = false, 0); } }, true);
+function noi(chu) { if (!choDoc) return;
+  if (!giong) timGiong();
+  if (!giong) return;
+  speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(chu.replace(/"/g, '').replace(/\.\.\./g, ' chấm chấm ').replace(/\//g, ',')); u.voice = giong; u.lang = giong.lang; u.rate = 0.9; speechSynthesis.speak(u);
+}
+function phaoGiay(n) {
+  const p = $('phao'); p.textContent = '';
+  for (let i = 0; i < n; i++) { const g = document.createElement('i'); g.style.left = Math.random() * 100 + 'vw'; g.style.background = MAU_TO[i % 4]; g.style.animationDuration = (2 + Math.random() * 2.5) + 's'; g.style.animationDelay = Math.random() * .8 + 's'; p.appendChild(g); }
+  setTimeout(() => { p.textContent = ''; }, 6000);
+}
+
+// ----- bảng điểm -----
+function veDiem() {
+  $('bang-diem').innerHTML = TO.map((t, i) => `<div class="to" style="--mau:${MAU_TO[i]}" id="to${i}"><span class="ten" data-i="${i}" title="Bấm để đổi tên">${t.ten}</span>
+    <button data-i="${i}" data-d="-10">−</button><span class="diem">${t.diem}</span><button data-i="${i}" data-d="10">+</button></div>`).join('');
+  $('bang-diem').querySelectorAll('button').forEach(b => b.onclick = () => congDiem(+b.dataset.i, +b.dataset.d));
+  $('bang-diem').querySelectorAll('.ten').forEach(s => s.onclick = () => { const t = prompt('Tên tổ:', TO[+s.dataset.i].ten); if (t) { TO[+s.dataset.i].ten = t.trim(); luuTo(); veDiem(); } });
+}
+function congDiem(i, d) { TO[i].diem = Math.max(0, TO[i].diem + d); luuTo(); veDiem(); if (d > 0) keu([660, 880], 'sine', 0.08, 0.25); }
+function danhDauTo(i) { document.querySelectorAll('.to').forEach((e, k) => e.classList.toggle('chon', k === i)); }
+
+// ----- đồng hồ dùng chung -----
+let demGio = null;
+function chayGio(s, khiHet, id = 'gio') {
+  clearInterval(demGio); let g = s;
+  const ve = () => { const e = $(id); if (!e) return; e.textContent = g; e.classList.toggle('gap', g <= 5); };
+  ve();
+  demGio = setInterval(() => { g--; ve(); if (g <= 5 && g > 0) keu([880], 'sine', 0, 0.12); if (g <= 0) { clearInterval(demGio); tiec(); if (khiHet) khiHet(); } }, 1000);
+}
+const dungGio = () => clearInterval(demGio);
+
+// ----- các vòng -----
+let vong = 0;
+function denVong(v) {
+  vong = v; dungGio(); danhDauTo(-1); if (window.speechSynthesis) speechSynthesis.cancel();
+  document.querySelectorAll('#vong button').forEach(b => b.classList.toggle('dang', +b.dataset.v === v));
+  [moDau, khoiDong, vcnv, tangToc, veDich, tongKet][v]();
+}
+document.querySelectorAll('#vong button').forEach(b => b.onclick = () => denVong(+b.dataset.v));
+
+function moDau() {
+  $('main').innerHTML = `<div class="man"><div class="thuong-hieu">Cô Điệp AI</div><div class="tieu-de">🏔️ Đường lên đỉnh tri thức</div>
+    <div class="luat"><b>4 tổ thi qua 4 vòng:</b><br>1. <b>Khởi động</b>: mỗi tổ 60 giây trả lời nhanh 6 câu, đúng +10.<br>
+    2. <b>Vượt chướng ngại vật</b>: 4 hàng chữ + ô giữa, mỗi câu đúng +10 và mở một góc bức tranh. Đoán được từ khóa thì được nhiều điểm.<br>
+    3. <b>Tăng tốc</b>: 4 câu, tổ trả lời đúng nhanh nhất +40, rồi +30, +20, +10.<br>
+    4. <b>Về đích</b>: mỗi tổ chọn 3 câu 10, 20 hoặc 30 điểm. Có <b>ngôi sao hy vọng</b>: đúng được gấp đôi, sai bị trừ.<br>
+    Bấm vào tên tổ ở dưới để đổi tên. Nút + và − để cô sửa điểm.</div>
+    <div class="hang"><button class="nut la" id="vao">Vào vòng Khởi động ➜</button><button class="nut xam" id="xoa">Chơi lại từ đầu (xóa điểm)</button></div></div>`;
+  $('vao').onclick = () => denVong(1);
+  $('xoa').onclick = () => { if (!confirm('Xóa hết điểm các tổ?')) return; TO.forEach(t => t.diem = 0); luuTo(); veDiem(); kdDaXong = []; vcnvTT = null; vdDaXong = []; };
+}
+
+// Vòng 1
+let kdDaXong = [], kdBo = [];
+function khoiDong() {
+  $('main').innerHTML = `<div class="man"><div class="tieu-de">1. Khởi động</div>
+    <div class="hang"><span>Chọn tổ thi:</span><div class="chon-to" id="ct"></div></div>
+    <div class="o-cau" id="cau"><div>Mỗi tổ 60 giây, 6 câu hỏi. Cô chọn tổ rồi bấm Bắt đầu.</div></div>
+    <div class="hang"><span class="dong-ho" id="gio">60</span><button class="nut" id="bat" disabled>Bắt đầu</button><button class="nut xanh" id="nghe" disabled>🔊</button><button class="nut xam" id="xem" disabled>Xem đáp án</button>
+    <button class="nut la" id="dung" disabled>Đúng +10</button><button class="nut do" id="sai" disabled>Sai</button><button class="nut xam" id="bo" disabled>Bỏ qua</button></div></div>`;
+  let to = -1, ds = [], k = 0;
+  $('ct').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}" class="${kdDaXong.includes(i) ? 'xong' : ''}">${t.ten}</button>`).join('');
+  $('ct').querySelectorAll('button').forEach(b => b.onclick = () => {
+    to = +b.dataset.i; $('ct').querySelectorAll('button').forEach(x => x.classList.toggle('bat', x === b)); danhDauTo(to); $('bat').disabled = false;
+  });
+  const hien = () => {
+    const [h, d] = ds[k];
+    $('cau').innerHTML = `<div class="so">${TO[to].ten} · Câu ${k + 1}/6</div><div>${h}</div><div class="dap" id="dap" hidden>${d}</div>`; noi(h);
+  };
+  const tiep = () => { k++; if (k < ds.length) hien(); else xong(); };
+  const xong = () => {
+    dungGio(); kdDaXong.push(to); ['nghe', 'xem', 'dung', 'sai', 'bo'].forEach(id => $(id).disabled = true);
+    $('cau').innerHTML = `<div>${TO[to].ten} đã xong phần thi Khởi động!</div><div class="so">Đang có ${TO[to].diem} điểm</div>`;
+    $('ct').querySelector(`[data-i="${to}"]`).classList.add('xong');
+  };
+  $('bat').onclick = () => {
+    if (to < 0) return;
+    if (!kdBo.length || kdBo.length < 6) kdBo = tron(NOI_DUNG.khoiDong);
+    ds = kdBo.splice(0, 6); k = 0;
+    $('bat').disabled = true; ['nghe', 'xem', 'dung', 'sai', 'bo'].forEach(id => $(id).disabled = false);
+    hien(); chayGio(60, xong);
+  };
+  $('nghe').onclick = () => noi(ds[k][0]);
+  $('xem').onclick = () => { $('dap').hidden = false; };
+  $('dung').onclick = () => { congDiem(to, 10); vui(); tiep(); };
+  $('sai').onclick = () => { tiec(); $('dap').hidden = false; setTimeout(tiep, 1200); };
+  $('bo').onclick = tiep;
+}
+
+// Vòng 2
+let vcnvTT = null;
+function vcnv() {
+  const N = NOI_DUNG.vcnv;
+  if (!vcnvTT) vcnvTT = { hang: N.hang.map(() => ''), giua: '', moTuKhoa: false };
+  const T = vcnvTT;
+  const oChu = (dap, tt) => [...dap].map(ch => ch === ' ' ? '<span class="o trong"></span>' : `<span class="o">${tt === 'dung' || T.moTuKhoa ? ch : ''}</span>`).join('');
+  const manh = [['0', '0', '50%', '50%'], ['50%', '0', '50%', '50%'], ['0', '50%', '50%', '50%'], ['50%', '50%', '50%', '50%']];
+  $('main').innerHTML = `<div class="man"><div class="tieu-de">2. Vượt chướng ngại vật</div>
+    <div class="vcnv"><div class="hang-chu">${N.hang.map(([h, d], i) => `<div class="dong-chu ${T.hang[i]}" data-i="${i}"><span class="stt">${i + 1}</span>${oChu(d, T.hang[i])}</div>`).join('')}
+      <div class="dong-chu ${T.giua}" data-i="g"><span class="stt">★</span>${oChu(N.giua[1], T.giua)}</div></div>
+      <div><div class="tranh"><span class="hinh">${N.hinh}</span>${manh.map(([l, t, w, h], i) => `<div class="manh ${T.hang[i] === 'dung' || T.moTuKhoa ? 'mo' : ''}" style="left:${l};top:${t};width:${w};height:${h}">${i + 1}</div>`).join('')}
+        <div class="manh ${T.giua === 'dung' || T.moTuKhoa ? 'mo' : ''}" style="left:30%;top:30%;width:40%;height:40%;background:linear-gradient(135deg,#f08c00,#c2255c)">★</div></div>
+        <div class="tu-khoa" style="margin-top:8px">Từ khóa: <b>${T.moTuKhoa ? N.tuKhoa : [...N.tuKhoa].map(c => c === ' ' ? ' ' : '_').join('')}</b> (${N.tuKhoa.replace(/ /g, '').length} chữ cái)</div></div></div>
+    <div class="o-cau" id="cau"><div>Các tổ lần lượt chọn hàng ngang. Cô bấm vào số hàng để hiện câu hỏi.</div></div>
+    <div class="hang"><span class="dong-ho" id="gio">15</span><button class="nut xanh" id="nghe">🔊</button><button class="nut xam" id="xem">Mở đáp án</button>
+      <span>Tổ trả lời đúng:</span><div class="chon-to" id="ct"></div><button class="nut la" id="cham">Chấm điểm</button><button class="nut" id="doan">🔑 Đoán từ khóa</button></div></div>`;
+  let dang = null, chon = new Set();
+  $('ct').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}">${t.ten}</button>`).join('');
+  $('ct').querySelectorAll('button').forEach(b => b.onclick = () => { const i = +b.dataset.i; chon.has(i) ? chon.delete(i) : chon.add(i); b.classList.toggle('bat', chon.has(i)); });
+  const cauCua = i => i === 'g' ? N.giua : N.hang[i];
+  document.querySelectorAll('.dong-chu').forEach(d => d.onclick = () => {
+    const i = d.dataset.i === 'g' ? 'g' : +d.dataset.i, tt = i === 'g' ? T.giua : T.hang[i];
+    if (tt) return;
+    dang = i; document.querySelectorAll('.dong-chu').forEach(x => x.classList.toggle('dang', x === d));
+    $('cau').innerHTML = `<div class="so">${i === 'g' ? 'Ô giữa' : 'Hàng ngang số ' + (i + 1)} · ${cauCua(i)[1].replace(/ /g, '').length} chữ cái</div><div>${cauCua(i)[0]}</div><div class="dap" id="dap" hidden>${cauCua(i)[1]}</div>`;
+    noi(cauCua(i)[0]); chayGio(15);
+  });
+  $('nghe').onclick = () => { if (dang !== null) noi(cauCua(dang)[0]); };
+  $('xem').onclick = () => { const d = $('dap'); if (d) d.hidden = false; };
+  $('cham').onclick = () => {
+    if (dang === null) return;
+    dungGio();
+    const kq = chon.size ? 'dung' : 'sai';
+    if (dang === 'g') T.giua = kq; else T.hang[dang] = kq;
+    chon.forEach(i => congDiem(i, 10));
+    kq === 'dung' ? vui() : tiec();
+    vcnv();
+  };
+  $('doan').onclick = () => {
+    if (T.moTuKhoa) return;
+    const soMo = T.hang.filter(x => x).length + (T.giua ? 1 : 0), diem = Math.max(20, 60 - soMo * 10);
+    const ten = TO.map((t, i) => `${i + 1}. ${t.ten}`).join('\n');
+    const i = parseInt(prompt(`Tổ nào đoán đúng từ khóa? (được ${diem} điểm)\n${ten}\nGõ số tổ, để trống nếu đoán sai:`), 10) - 1;
+    if (i >= 0 && i < 4) { congDiem(i, diem); T.moTuKhoa = true; phaoGiay(100); vui(); noi(`Chính xác! Từ khóa là ${N.tuKhoa}`); vcnv(); }
+    else tiec();
+  };
+}
+
+// Vòng 3
+let ttCau = 0;
+function tangToc() {
+  const ds = NOI_DUNG.tangToc;
+  $('main').innerHTML = `<div class="man"><div class="tieu-de">3. Tăng tốc</div>
+    <div class="o-cau" id="cau"></div>
+    <div class="hang"><span class="dong-ho" id="gio">30</span><button class="nut" id="bat">▶ Bắt đầu 30 giây</button><button class="nut xanh" id="nghe">🔊</button><button class="nut xam" id="xem">Xem đáp án</button></div>
+    <div class="hang"><span>Bấm tổ theo thứ tự trả lời đúng (nhanh nhất trước):</span><div class="chon-to" id="ct"></div></div>
+    <div class="hang"><button class="nut la" id="cham">Chấm điểm</button><button class="nut xam" id="truoc">◀ Câu trước</button><button class="nut xam" id="sau">Câu sau ▶</button></div></div>`;
+  let thuTu = [];
+  const ve = () => {
+    const [h, d] = ds[ttCau]; thuTu = [];
+    $('cau').innerHTML = `<div class="so">Câu ${ttCau + 1}/${ds.length}</div><div>${h}</div><div class="dap" id="dap" hidden>${d}</div>`;
+    $('ct').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}">${t.ten}</button>`).join('');
+    $('ct').querySelectorAll('button').forEach(b => b.onclick = () => {
+      const i = +b.dataset.i; if (thuTu.includes(i)) return;
+      thuTu.push(i); b.classList.add('bat'); b.textContent = `${thuTu.length}. ${TO[i].ten} (+${[40, 30, 20, 10][thuTu.length - 1]})`;
+    });
+    $('gio').textContent = 30; $('gio').classList.remove('gap');
+  };
+  $('bat').onclick = () => { noi(ds[ttCau][0]); chayGio(30); };
+  $('nghe').onclick = () => noi(ds[ttCau][0]);
+  $('xem').onclick = () => { $('dap').hidden = false; };
+  $('cham').onclick = () => { dungGio(); thuTu.forEach((i, k) => congDiem(i, [40, 30, 20, 10][k])); $('dap').hidden = false; thuTu.length ? vui() : tiec(); thuTu = []; $('ct').querySelectorAll('button').forEach(b => b.disabled = true); };
+  $('truoc').onclick = () => { if (ttCau > 0) { ttCau--; dungGio(); ve(); } };
+  $('sau').onclick = () => { if (ttCau < ds.length - 1) { ttCau++; dungGio(); ve(); } };
+  ve();
+}
+
+// Vòng 4
+let vdDaXong = [], vdDaDung = { 10: [], 20: [], 30: [] };
+function veDich() {
+  $('main').innerHTML = `<div class="man"><div class="tieu-de">4. Về đích</div>
+    <div class="hang"><span>Tổ đang thi:</span><div class="chon-to" id="ct"></div></div>
+    <div class="hang"><span>Chọn gói câu hỏi (mỗi tổ 3 câu):</span><div class="goi" id="goi"><button data-d="10">10</button><button data-d="20">20</button><button data-d="30">30</button></div>
+      <button class="nut xam sao-hv" id="sao">⭐ Ngôi sao hy vọng</button><span id="con-lai"></span></div>
+    <div class="o-cau" id="cau"><div>Cô chọn tổ, rồi tổ chọn gói 10, 20 hoặc 30 điểm.</div></div>
+    <div class="hang"><span class="dong-ho" id="gio">--</span><button class="nut xanh" id="nghe">🔊</button><button class="nut xam" id="xem">Xem đáp án</button>
+      <button class="nut la" id="dung">Đúng</button><button class="nut do" id="sai">Sai</button><span>Tổ khác giành quyền:</span><div class="chon-to" id="gianh"></div></div></div>`;
+  let to = -1, soCau = 0, cau = null, goi = 0, sao = false;
+  $('ct').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}" class="${vdDaXong.includes(i) ? 'xong' : ''}">${t.ten}</button>`).join('');
+  $('ct').querySelectorAll('button').forEach(b => b.onclick = () => { to = +b.dataset.i; soCau = 0; $('ct').querySelectorAll('button').forEach(x => x.classList.toggle('bat', x === b)); danhDauTo(to); $('con-lai').textContent = 'Còn 3 câu'; });
+  $('gianh').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}">${t.ten}</button>`).join('');
+  $('gianh').querySelectorAll('button').forEach(b => b.onclick = () => { if (!cau) return; const i = +b.dataset.i; if (i === to) return; congDiem(i, goi); vui(); $('dap').hidden = false; ketCau(); });
+  $('sao').onclick = () => { if (cau) return; sao = !sao; $('sao').classList.toggle('bat', sao); };
+  $('goi').querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (to < 0 || cau || soCau >= 3) return;
+    goi = +b.dataset.d;
+    let kho = NOI_DUNG.veDich[goi].filter((_, k) => !vdDaDung[goi].includes(k));
+    if (!kho.length) { vdDaDung[goi] = []; kho = NOI_DUNG.veDich[goi]; }
+    cau = kho[Math.floor(Math.random() * kho.length)]; vdDaDung[goi].push(NOI_DUNG.veDich[goi].indexOf(cau));
+    $('cau').innerHTML = `<div class="so">${TO[to].ten} · Câu ${soCau + 1}/3 · Gói ${goi} điểm${sao ? ' · ⭐ Ngôi sao hy vọng' : ''}</div><div>${cau[0]}</div><div class="dap" id="dap" hidden>${cau[1]}</div>`;
+    noi(cau[0]); chayGio(goi === 10 ? 15 : goi === 20 ? 20 : 30);
+  });
+  const ketCau = () => {
+    dungGio(); cau = null; sao = false; $('sao').classList.remove('bat'); soCau++;
+    $('con-lai').textContent = soCau < 3 ? `Còn ${3 - soCau} câu` : 'Xong 3 câu';
+    if (soCau >= 3 && !vdDaXong.includes(to)) { vdDaXong.push(to); $('ct').querySelector(`[data-i="${to}"]`).classList.add('xong'); }
+  };
+  $('nghe').onclick = () => { if (cau) noi(cau[0]); };
+  $('xem').onclick = () => { const d = $('dap'); if (d) d.hidden = false; };
+  $('dung').onclick = () => { if (!cau) return; congDiem(to, sao ? goi * 2 : goi); vui(); $('dap').hidden = false; ketCau(); };
+  $('sai').onclick = () => { if (!cau) return; if (sao) congDiem(to, -goi); tiec(); $('dap').hidden = false; dungGio(); $('cau').querySelector('.so').textContent += ' · Tổ khác có thể giành quyền trả lời'; const c = cau; setTimeout(() => { if (cau === c) ketCau(); }, 8000); };
+}
+
+function tongKet() {
+  const xh = TO.map((t, i) => ({ ...t, i })).sort((a, b) => b.diem - a.diem);
+  const cao = Math.max(1, xh[0].diem), cup = ['🏆', '🥈', '🥉', '🎖️'];
+  $('main').innerHTML = `<div class="man"><div class="thuong-hieu">Cô Điệp AI</div><div class="tieu-de">🏆 Tổng kết</div>
+    <div class="bang-xh">${xh.map((t, k) => `<div style="--mau:${MAU_TO[t.i]};height:${120 + 200 * t.diem / cao}px"><span class="cup">${cup[k]}</span>${t.ten}<span>${t.diem} điểm</span></div>`).join('')}</div>
+    <div class="tieu-de" style="font-size:max(26px,calc(var(--u)*5))">Chúc mừng ${xh[0].ten}!</div></div>`;
+  phaoGiay(150); keu([392, 523, 659, 784, 1047, 1319, 1568]); noi(`Chúc mừng ${xh[0].ten} đã về nhất`);
+}
+
+veDiem(); denVong(0);
+</script>
+</body>
+</html>

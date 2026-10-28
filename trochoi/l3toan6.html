@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trò chơi Một phần mấy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* Hai trò chiếu tivi cho Toán 3 - Bài 14 Một phần mấy (T1).
+     Trò 1 "Chia bánh có công bằng không?" (Khởi động): HS giơ hoa đa năng xanh/đỏ.
+     Trò 2 "Nhìn hình, viết nhanh" (Khám phá): HS viết 1/2 hoặc 1/4 vào bảng con.
+     Cô bấm nút lớn (hoặc phím Cách/Enter): đếm 3-2-1 -> đáp án -> hình tiếp theo. Mũi tên trái/phải để lùi/tới. */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --chu: #12304a;
+    --cam: #f08c00;
+    --xanh: #2f9e44; --xanh-dam: #1e6b2e;
+    --do: #e03131; --do-dam: #a61e1e;
+    --lam: #1c7ed6; --lam-dam: #1250a0;
+    --to: #4dabf7;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu);
+    background: radial-gradient(circle at 20% 10%, #fff3bf, #ffe8cc 40%, #d0ebff);
+    overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; border: none; }
+  button:focus-visible { outline: 5px solid var(--chu); outline-offset: 4px; }
+  .man { height: 100%; display: flex; flex-direction: column; align-items: center; padding: calc(var(--u) * 2) 16px; gap: calc(var(--u) * 1.6); }
+
+  /* Màn chọn trò */
+  .bia h1 { font-size: max(30px, calc(var(--u) * 8)); color: var(--cam); text-shadow: 0 5px 0 #fff; text-align: center; line-height: 1.1; margin-top: calc(var(--u) * 4); }
+  .bia .phu { font-size: max(16px, calc(var(--u) * 3.4)); text-align: center; }
+  .chon { display: flex; gap: calc(var(--u) * 4); flex-wrap: wrap; justify-content: center; margin-top: calc(var(--u) * 4); }
+  .the-chon {
+    width: min(90vw, calc(var(--u) * 62)); background: #fff; border-radius: calc(var(--u) * 4);
+    border: 8px solid var(--cam); box-shadow: 0 10px 0 #c76f00; padding: calc(var(--u) * 3);
+    display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1.5); color: var(--chu);
+  }
+  .the-chon:active { transform: translateY(6px); box-shadow: none; }
+  .the-chon svg { width: calc(var(--u) * 26); height: calc(var(--u) * 26); }
+  .the-chon .ten { font-size: max(22px, calc(var(--u) * 5)); line-height: 1.1; }
+  .the-chon .hd { font-size: max(14px, calc(var(--u) * 2.8)); font-weight: 600; }
+  .ky { font-size: max(13px, calc(var(--u) * 2.4)); font-weight: 600; margin-top: auto; opacity: .7; }
+
+  /* Màn chơi */
+  .dau { width: min(100%, 1500px); display: flex; align-items: center; gap: 16px; }
+  .dau h2 { font-size: max(22px, calc(var(--u) * 5.5)); color: var(--cam); text-shadow: 0 3px 0 #fff; flex: 1; text-align: center; line-height: 1; }
+  .nho { font-size: max(15px, calc(var(--u) * 3)); padding: calc(var(--u) * .5) calc(var(--u) * 2); border-radius: 999px; background: #fff; color: var(--chu); box-shadow: 0 4px 0 #adb5bd; }
+  .dem { font-size: max(16px, calc(var(--u) * 3.4)); min-width: 4.5em; text-align: right; }
+  .chu-giai { display: flex; gap: calc(var(--u) * 2); font-size: max(15px, calc(var(--u) * 3)); }
+  .chu-giai span { padding: 0 calc(var(--u) * 2); border-radius: 999px; color: #fff; }
+  .chu-giai .x { background: var(--xanh); } .chu-giai .d { background: var(--do); }
+
+  .san { flex: 1; min-height: 0; width: min(100%, 1500px); display: grid; grid-template-columns: 1.3fr 1fr; gap: calc(var(--u) * 3); align-items: stretch; }
+  .khung-hinh { background: #fff; border-radius: calc(var(--u) * 4); border: 8px solid var(--cam); display: flex; align-items: center; justify-content: center; padding: calc(var(--u) * 2); min-height: 0; }
+  .khung-hinh svg { width: 100%; height: 100%; max-height: calc(var(--u) * 62); }
+  .ben-phai { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: calc(var(--u) * 2.5); text-align: center; }
+  .cau-hoi { font-size: max(22px, calc(var(--u) * 5.2)); line-height: 1.15; }
+  .dap-an { min-height: calc(var(--u) * 26); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--u) * 1.5); }
+  .nhan { font-size: max(26px, calc(var(--u) * 6.5)); color: #fff; padding: 0 calc(var(--u) * 3.5); border-radius: calc(var(--u) * 3); line-height: 1.3; animation: bung .5s cubic-bezier(.3,1.6,.5,1); }
+  .nhan.dung { background: var(--xanh); box-shadow: 0 8px 0 var(--xanh-dam); }
+  .nhan.sai { background: var(--do); box-shadow: 0 8px 0 var(--do-dam); }
+  .giai-thich { font-size: max(17px, calc(var(--u) * 3.6)); font-weight: 600; line-height: 1.3; animation: hien .5s; }
+  .ps { display: inline-flex; flex-direction: column; align-items: center; font-size: max(60px, calc(var(--u) * 17)); line-height: .95; color: var(--lam); animation: bung .5s cubic-bezier(.3,1.6,.5,1); }
+  .ps i { font-style: normal; } .ps b { display: block; width: 1.1em; height: .1em; background: currentColor; border-radius: 1em; margin: .06em 0; }
+  @keyframes bung { 0% { transform: scale(.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes hien { from { opacity: 0; } to { opacity: 1; } }
+
+  .nut-chinh { font-size: max(22px, calc(var(--u) * 5)); color: #fff; background: var(--lam); box-shadow: 0 8px 0 var(--lam-dam); padding: calc(var(--u) * .8) calc(var(--u) * 4); border-radius: calc(var(--u) * 3); }
+  .nut-chinh:active { transform: translateY(6px); box-shadow: none; }
+  .duoi { display: flex; gap: calc(var(--u) * 2); align-items: center; }
+  .mui { font-size: max(20px, calc(var(--u) * 4)); width: calc(var(--u) * 9); min-width: 44px; aspect-ratio: 1; border-radius: 50%; background: #fff; color: var(--chu); box-shadow: 0 5px 0 #adb5bd; }
+  .mui:disabled { opacity: .3; cursor: default; }
+
+  /* Đếm ngược */
+  .phu-dem { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(18, 48, 74, .55); z-index: 10; }
+  .phu-dem div { font-size: max(120px, calc(var(--u) * 40)); color: #fff; text-shadow: 0 10px 0 var(--cam); animation: bung .45s cubic-bezier(.3,1.6,.5,1); text-align: center; line-height: 1; }
+  .phu-dem div.chu { font-size: max(50px, calc(var(--u) * 15)); }
+
+  /* Màn kết */
+  .ket h1 { font-size: max(32px, calc(var(--u) * 10)); color: var(--cam); text-shadow: 0 5px 0 #fff; margin-top: calc(var(--u) * 8); text-align: center; }
+  .ket p { font-size: max(20px, calc(var(--u) * 4.6)); text-align: center; max-width: 1100px; line-height: 1.25; }
+  .ket .sao { font-size: max(50px, calc(var(--u) * 14)); }
+
+  @media (max-aspect-ratio: 1/1) {
+    .san { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    .khung-hinh svg { max-height: 40vh; }
+  }
+</style>
+</head>
+<body>
+
+<section class="man bia" id="mBia">
+  <h1>Một phần mấy</h1>
+  <div class="phu">Toán 3 - Bài 14 - Tiết 1</div>
+  <div class="chon">
+    <button class="the-chon" onclick="batDau('banh')">
+      <svg viewBox="0 0 200 200" id="anhBanh"></svg>
+      <div class="ten">Chia bánh có công bằng không?</div>
+      <div class="hd">Khởi động - giơ hoa đa năng</div>
+    </button>
+    <button class="the-chon" onclick="batDau('hinh')">
+      <svg viewBox="0 0 200 200" id="anhHinh"></svg>
+      <div class="ten">Nhìn hình, viết nhanh</div>
+      <div class="hd">Khám phá - viết vào bảng con</div>
+    </button>
+  </div>
+  <div class="ky">Phím Cách hoặc Enter: bước tiếp theo · Mũi tên trái/phải: lùi/tới</div>
+</section>
+
+<section class="man choi" id="mChoi" hidden>
+  <div class="dau">
+    <button class="nho" onclick="veBia()">⌂ Chọn trò</button>
+    <h2 id="tenTro"></h2>
+    <div class="dem" id="dem"></div>
+  </div>
+  <div class="chu-giai" id="chuGiai"><span class="x">Xanh: Công bằng</span><span class="d">Đỏ: Không công bằng</span></div>
+  <div class="san">
+    <div class="khung-hinh" id="khungHinh"></div>
+    <div class="ben-phai">
+      <div class="cau-hoi" id="cauHoi"></div>
+      <div class="dap-an" id="dapAn"></div>
+      <button class="nut-chinh" id="nutChinh" onclick="buocTiep()"></button>
+    </div>
+  </div>
+  <div class="duoi">
+    <button class="mui" id="nutLui" onclick="sang(-1)" aria-label="Hình trước">◀</button>
+    <button class="mui" id="nutToi" onclick="sang(1)" aria-label="Hình sau">▶</button>
+  </div>
+</section>
+
+<section class="man ket" id="mKet" hidden>
+  <div class="sao">🌟🌟🌟</div>
+  <h1 id="ketTieuDe"></h1>
+  <p id="ketChot"></p>
+  <div class="duoi">
+    <button class="nut-chinh" onclick="choiLai()">Chơi lại</button>
+    <button class="nut-chinh" style="background:var(--cam);box-shadow:0 8px 0 #c76f00" onclick="veBia()">Chọn trò khác</button>
+  </div>
+</section>
+
+<div class="phu-dem" id="phuDem" hidden><div id="soDem"></div></div>
+
+<script>
+/* ---------- Vẽ hình (SVG 200x200 hoặc theo khung) ---------- */
+const VIEN = '#12304a';
+function diem(cx, cy, r, doGoc) { const g = (doGoc - 90) * Math.PI / 180; return [cx + r * Math.cos(g), cy + r * Math.sin(g)]; }
+function quat(cx, cy, r, a0, a1, to) {
+  const [x0, y0] = diem(cx, cy, r, a0), [x1, y1] = diem(cx, cy, r, a1);
+  const lon = (a1 - a0) > 180 ? 1 : 0;
+  return `<path d="M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 ${lon} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${to}"/>`;
+}
+function duongCat(cx, cy, r, goc, mau, day) {
+  return goc.map(a => { const [x, y] = diem(cx, cy, r, a); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${mau}" stroke-width="${day}" stroke-linecap="round"/>`; }).join('');
+}
+// các góc ranh giới từ danh sách độ lớn từng phần
+function ranhGioi(phan) { let s = 0; const g = [0]; phan.forEach(p => { s += p; g.push(s); }); return g; }
+
+/* Hình tròn chia phần (trò 2): phan = mảng độ lớn (độ), toIdx = phần được tô */
+function hinhTron(phan, toIdx) {
+  const g = ranhGioi(phan);
+  let s = `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="#fff"/>`;
+  s += quat(100, 100, 88, g[toIdx], g[toIdx + 1], 'var(--to)');
+  s += duongCat(100, 100, 88, g.slice(0, -1), VIEN, 4);
+  return s + `<circle cx="100" cy="100" r="88" fill="none" stroke="${VIEN}" stroke-width="5"/></svg>`;
+}
+/* Hình chữ nhật/vuông chia dải: ti = tỉ lệ các dải, doc = cắt dọc */
+function hinhDai(w, h, ti, toIdx, doc) {
+  const tong = ti.reduce((a, b) => a + b, 0);
+  const W = 200, H = 200 * h / w, ox = 0, oy = 0;
+  let s = `<svg viewBox="-8 -8 ${W + 16} ${H + 16}"><rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  let vt = 0; const vach = [];
+  ti.forEach((t, i) => {
+    const d = (doc ? W : H) * t / tong;
+    if (i === toIdx) s += doc ? `<rect x="${vt}" y="0" width="${d}" height="${H}" fill="var(--to)"/>` : `<rect x="0" y="${vt}" width="${W}" height="${d}" fill="var(--to)"/>`;
+    vt += d; if (i < ti.length - 1) vach.push(vt);
+  });
+  vach.forEach(v => s += doc ? `<line x1="${v}" y1="0" x2="${v}" y2="${H}" stroke="${VIEN}" stroke-width="4"/>` : `<line x1="0" y1="${v}" x2="${W}" y2="${v}" stroke="${VIEN}" stroke-width="4"/>`);
+  return s + `<rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="${VIEN}" stroke-width="5"/></svg>`;
+}
+/* Hình vuông 2x2 */
+function vuongLuoi() {
+  return `<svg viewBox="-8 -8 216 216"><rect width="200" height="200" fill="#fff"/><rect x="100" y="0" width="100" height="100" fill="var(--to)"/>
+    <line x1="100" y1="0" x2="100" y2="200" stroke="${VIEN}" stroke-width="4"/><line x1="0" y1="100" x2="200" y2="100" stroke="${VIEN}" stroke-width="4"/>
+    <rect width="200" height="200" fill="none" stroke="${VIEN}" stroke-width="5"/></svg>`;
+}
+/* Hình vuông cắt chéo: 2 tam giác hoặc 4 tam giác */
+function vuongCheo(bon) {
+  let s = `<svg viewBox="-8 -8 216 216"><rect width="200" height="200" fill="#fff"/>`;
+  if (bon) {
+    s += `<polygon points="0,200 200,200 100,100" fill="var(--to)"/><line x1="0" y1="0" x2="200" y2="200" stroke="${VIEN}" stroke-width="4"/><line x1="200" y1="0" x2="0" y2="200" stroke="${VIEN}" stroke-width="4"/>`;
+  } else {
+    s += `<polygon points="0,0 200,0 0,200" fill="var(--to)"/><line x1="200" y1="0" x2="0" y2="200" stroke="${VIEN}" stroke-width="4"/>`;
+  }
+  return s + `<rect width="200" height="200" fill="none" stroke="${VIEN}" stroke-width="5"/></svg>`;
+}
+
+/* Bánh tròn (trò 1) */
+function banhTron(phan, loai) {
+  const g = ranhGioi(phan);
+  const pizza = loai === 'pizza';
+  let s = `<svg viewBox="0 0 200 200">`;
+  if (pizza) {
+    s += `<circle cx="100" cy="100" r="90" fill="#e8a33d"/><circle cx="100" cy="100" r="78" fill="#ffd43b"/><circle cx="100" cy="100" r="74" fill="#ffe066" opacity=".6"/>`;
+    [[70,60],[128,62],[60,112],[100,95],[140,118],[96,145],[118,40],[48,82],[150,86],[78,138],[132,150]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="9" fill="#e03131"/><circle cx="${x-2}" cy="${y-2}" r="3" fill="#ff8787"/>`);
+    [[86,72],[112,124],[66,96],[124,84]].forEach(([x, y]) => s += `<ellipse cx="${x}" cy="${y}" rx="6" ry="3" fill="#2f9e44"/>`);
+  } else {
+    s += `<circle cx="100" cy="100" r="90" fill="#f783ac"/><circle cx="100" cy="100" r="80" fill="#ffdeeb"/>`;
+    for (let a = 0; a < 360; a += 30) { const [x, y] = diem(100, 100, 85, a + 15); s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="#fff"/>`; }
+    [[100,100],[70,80],[132,78],[80,132],[128,128]].forEach(([x, y]) => s += `<circle cx="${x}" cy="${y}" r="8" fill="#c2255c"/><path d="M${x} ${y-8} q4 -10 10 -12" stroke="#2f9e44" stroke-width="3" fill="none"/>`);
+  }
+  s += duongCat(100, 100, 90, g.slice(0, -1), '#fff', 6);
+  s += duongCat(100, 100, 90, g.slice(0, -1), '#5c3b1e', 2);
+  return s + `</svg>`;
+}
+/* Bánh/sô-cô-la chữ nhật: ti = tỉ lệ các miếng (cắt dọc) */
+function banhDai(w, h, ti, loai) {
+  const tong = ti.reduce((a, b) => a + b, 0), W = 300, H = 300 * h / w;
+  const nen = { soco: ['#7b4a2b', '#5c3317'], chung: ['#69db7c', '#2b8a3e'], bong: ['#ffe066', '#f08c00'] }[loai];
+  let s = `<svg viewBox="-10 -10 ${W + 20} ${H + 20}"><rect width="${W}" height="${H}" rx="10" fill="${nen[0]}" stroke="${nen[1]}" stroke-width="8"/>`;
+  if (loai === 'chung') s += `<line x1="0" y1="${H/2}" x2="${W}" y2="${H/2}" stroke="#fff3bf" stroke-width="6" opacity=".9"/>`;
+  if (loai === 'bong') s += `<rect width="${W}" height="${H * .22}" rx="10" fill="#faa2c1"/>` + [0.15,.35,.55,.75,.92].map(t => `<circle cx="${W*t}" cy="${H*.11}" r="8" fill="#e64980"/>`).join('');
+  if (loai === 'soco') for (let i = 1; i < 3; i++) s += `<line x1="0" y1="${H*i/3}" x2="${W}" y2="${H*i/3}" stroke="#9c6644" stroke-width="3"/>`;
+  let vt = 0;
+  ti.slice(0, -1).forEach(t => { vt += W * t / tong; s += `<line x1="${vt}" y1="-6" x2="${vt}" y2="${H + 6}" stroke="#fff" stroke-width="8"/><line x1="${vt}" y1="-6" x2="${vt}" y2="${H + 6}" stroke="#343a40" stroke-width="2"/>`; });
+  return s + `</svg>`;
+}
+
+/* ---------- Dữ liệu ---------- */
+const TRO = {
+  banh: {
+    ten: 'Chia bánh có công bằng không?',
+    hoi: 'Bánh này chia có công bằng không?',
+    nutDem: '3, 2, 1 - Giơ hoa!', chuDem: 'GIƠ HOA!',
+    ket: 'Chia công bằng là chia thành các phần bằng nhau.',
+    the: [
+      { ve: () => banhTron([90, 90, 90, 90], 'pizza'), dung: true, giai: 'Bánh pi-za được chia thành 4 phần bằng nhau.<br>Mỗi bạn được một phần tư cái bánh.' },
+      { ve: () => banhTron([170, 115, 75], 'kem'), dung: false, giai: 'Bánh kem được chia thành 3 phần,<br>nhưng các miếng to nhỏ khác nhau.' },
+      { ve: () => banhDai(300, 140, [1, 1, 1, 1, 1], 'soco'), dung: true, giai: 'Thanh sô-cô-la được chia thành 5 phần bằng nhau.<br>Mỗi bạn được một phần năm thanh sô-cô-la.' },
+      { ve: () => banhDai(300, 300, [2, 1], 'chung'), dung: false, giai: 'Bánh chưng được chia thành 2 phần,<br>nhưng một miếng to, một miếng nhỏ.' },
+      { ve: () => banhDai(300, 150, [1.5, 0.8, 1.2, 0.5], 'bong'), dung: false, giai: 'Bánh bông lan được chia thành 4 phần,<br>nhưng các miếng không bằng nhau.' },
+      { ve: () => banhTron([60, 60, 60, 60, 60, 60], 'pizza'), dung: true, giai: 'Bánh pi-za được chia thành 6 phần bằng nhau.<br>Mỗi bạn được một phần sáu cái bánh.' },
+    ],
+  },
+  hinh: {
+    ten: 'Nhìn hình, viết nhanh',
+    hoi: 'Đã tô màu mấy phần của hình?',
+    nutDem: '3, 2, 1 - Giơ bảng!', chuDem: 'GIƠ BẢNG!',
+    ket: 'Một phần mấy là một phần trong các phần bằng nhau của một hình.',
+    the: [
+      { ve: () => hinhTron([180, 180], 1), mau: 2, giai: 'Hình tròn chia thành 2 phần bằng nhau, tô màu 1 phần.' },
+      { ve: () => vuongLuoi(), mau: 4, giai: 'Hình vuông chia thành 4 phần bằng nhau, tô màu 1 phần.' },
+      { ve: () => hinhDai(300, 150, [1, 1, 1, 1], 0, true), mau: 4, giai: 'Hình chữ nhật chia thành 4 phần bằng nhau, tô màu 1 phần.' },
+      { ve: () => vuongCheo(false), mau: 2, giai: 'Hình vuông chia thành 2 phần bằng nhau, tô màu 1 phần.' },
+      { ve: () => hinhTron([220, 140], 1), mau: 0, giai: 'Hình tròn chia thành 2 phần <u>không bằng nhau</u>,<br>nên không phải một phần hai.' },
+      { ve: () => hinhTron([90, 90, 90, 90], 2), mau: 4, giai: 'Hình tròn chia thành 4 phần bằng nhau, tô màu 1 phần.' },
+      { ve: () => hinhDai(300, 160, [1, 1], 0, false), mau: 2, giai: 'Hình chữ nhật chia thành 2 phần bằng nhau, tô màu 1 phần.' },
+      { ve: () => vuongCheo(true), mau: 4, giai: 'Hình vuông chia thành 4 phần bằng nhau, tô màu 1 phần.' },
+    ],
+  },
+};
+const TEN_PS = { 2: 'Một phần hai', 4: 'Một phần tư' };
+
+/* ---------- Điều khiển ---------- */
+let tro = null, so = 0, buoc = 0, dangDem = false;  // buoc: 0 = đang hỏi, 1 = đã xem đáp án
+const $ = id => document.getElementById(id);
+
+function hienMan(id) { ['mBia', 'mChoi', 'mKet'].forEach(m => $(m).hidden = m !== id); }
+function veBia() { tro = null; hienMan('mBia'); }
+function batDau(key) { tro = TRO[key]; tro.key = key; so = 0; hienMan('mChoi'); veThe(); }
+function choiLai() { batDau(tro.key); }
+
+function veThe() {
+  const t = tro.the[so]; buoc = 0;
+  $('tenTro').textContent = tro.ten;
+  $('dem').textContent = `${so + 1}/${tro.the.length}`;
+  $('chuGiai').hidden = tro.key !== 'banh';
+  $('khungHinh').innerHTML = t.ve();
+  $('cauHoi').textContent = tro.hoi;
+  $('dapAn').innerHTML = '';
+  $('nutChinh').textContent = tro.nutDem;
+  $('nutLui').disabled = so === 0;
+}
+function hienDapAn() {
+  const t = tro.the[so]; buoc = 1;
+  let h = '';
+  if (tro.key === 'banh') {
+    h = t.dung ? '<div class="nhan dung">✔ Công bằng</div>' : '<div class="nhan sai">✘ Không công bằng</div>';
+  } else if (t.mau) {
+    h = `<div class="ps"><i>1</i><b></b><i>${t.mau}</i></div><div class="nhan dung">${TEN_PS[t.mau]}</div>`;
+  } else {
+    h = '<div class="nhan sai">✘ Không</div>';
+  }
+  $('dapAn').innerHTML = h + `<div class="giai-thich">${t.giai}</div>`;
+  $('nutChinh').textContent = so < tro.the.length - 1 ? 'Hình tiếp theo ▶' : 'Kết thúc 🌟';
+}
+function demNguoc() {
+  if (dangDem) return; dangDem = true;
+  const chuoi = ['3', '2', '1', tro.chuDem]; let i = 0;
+  $('phuDem').hidden = false;
+  const buocDem = () => {
+    if (i < chuoi.length) {
+      const el = $('soDem'); el.textContent = chuoi[i]; el.className = i === 3 ? 'chu' : '';
+      el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+      i++; setTimeout(buocDem, i === 4 ? 1300 : 800);
+    } else { $('phuDem').hidden = true; dangDem = false; hienDapAn(); }
+  };
+  buocDem();
+}
+function buocTiep() {
+  if (dangDem) return;
+  if (buoc === 0) demNguoc();
+  else if (so < tro.the.length - 1) { so++; veThe(); }
+  else ketThuc();
+}
+function sang(d) {
+  if (dangDem) return;
+  const moi = so + d;
+  if (moi < 0) return;
+  if (moi >= tro.the.length) { ketThuc(); return; }
+  so = moi; veThe();
+}
+function ketThuc() {
+  $('ketTieuDe').textContent = 'Cả lớp giỏi quá!';
+  $('ketChot').textContent = tro.ket;
+  hienMan('mKet');
+}
+
+document.addEventListener('keydown', e => {
+  if (!tro || $('mChoi').hidden) return;
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); buocTiep(); }
+  else if (e.key === 'ArrowRight') sang(1);
+  else if (e.key === 'ArrowLeft') sang(-1);
+});
+
+// Ảnh minh họa ở màn chọn trò
+$('anhBanh').outerHTML = banhTron([90, 90, 90, 90], 'pizza').replace('<svg ', '<svg id="anhBanh" ');
+$('anhHinh').outerHTML = hinhTron([90, 90, 90, 90], 0).replace('<svg ', '<svg id="anhHinh" ');
+</script>
+</body>
+</html>

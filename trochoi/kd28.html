@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Câu cá - Khởi động Bài 28</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<style>
+  /* Trò khởi động chiếu tivi: mỗi lượt cô đọc yêu cầu, bạn được gọi lên chạm đúng chú cá để câu lên.
+     Câu đủ 5 lượt thì hé lộ bài mới. Kích thước theo --u để vừa tivi lẫn máy tính. */
+  [hidden] { display: none !important; }
+  :root {
+    --u: min(1vh, 1.6vw);
+    --chu: #12304a;
+    --xanh: #0b5cab;
+    --do: #e03131;
+    --la: #2f9e44;
+    --la-dam: #1e6b2e;
+    --font: "Baloo 2", "Segoe UI", Arial, sans-serif;
+    --emoji: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font); font-weight: 800; color: var(--chu);
+    background: #e7f5ff;
+    display: flex; flex-direction: column; align-items: center;
+    padding: calc(var(--u) * 1.6) 16px; gap: calc(var(--u) * 1.2);
+    user-select: none; -webkit-user-select: none; touch-action: manipulation; overflow: hidden;
+  }
+  button { font-family: inherit; font-weight: 800; cursor: pointer; }
+  button:focus-visible { outline: 5px solid var(--xanh); outline-offset: 4px; }
+  header { width: min(100%, 1400px); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: max(26px, calc(var(--u) * 6.5)); line-height: 1; color: var(--xanh); }
+  .gio { font-size: max(18px, calc(var(--u) * 4)); color: var(--la-dam); display: flex; align-items: center; gap: 6px; }
+  .gio span { font-family: var(--emoji); }
+  .yeu-cau {
+    font-size: max(26px, calc(var(--u) * 6.5)); line-height: 1.15; text-align: center; text-wrap: balance;
+    background: #fff; border: 5px solid var(--xanh); border-radius: 60px; padding: calc(var(--u) * .5) calc(var(--u) * 4);
+  }
+  .yeu-cau b { color: var(--do); }
+
+  /* ao cá */
+  .ao {
+    position: relative; flex: 1; width: min(100%, 1400px); min-height: 0;
+    border-radius: calc(var(--u) * 4); overflow: hidden;
+    background: linear-gradient(#74c0fc, #1c7ed6 70%, #1864ab);
+    border: 6px solid #1864ab;
+  }
+  .song { position: absolute; left: 0; right: 0; top: 0; height: calc(var(--u) * 4); background: radial-gradient(circle at 50% 0, #a5d8ff 60%, transparent 62%) 0 0 / calc(var(--u) * 8) 100% repeat-x; opacity: .8; }
+  .can-cau { position: absolute; top: calc(var(--u) * -1); left: 50%; transform: translateX(-50%); font-family: var(--emoji); font-size: calc(var(--u) * 9); z-index: 3; }
+  #day { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+  .ca {
+    position: absolute; width: calc(var(--u) * 30); height: calc(var(--u) * 18);
+    background: none; border: none; padding: 0;
+    animation: boi 3s ease-in-out infinite; animation-delay: calc(var(--i) * -.7s);
+  }
+  .ca svg { width: 100%; height: 100%; overflow: visible; }
+  .ca text { font-family: var(--font); font-weight: 800; }
+  @keyframes boi { 0%, 100% { translate: 0 calc(var(--u) * -1); } 50% { translate: calc(var(--u) * 2) calc(var(--u) * 1); } }
+  .ca.sai { animation: lac .5s; opacity: .45; cursor: default; }
+  @keyframes lac { 25% { translate: -14px 0; } 75% { translate: 14px 0; } }
+  .ca.len { animation: none; transition: transform .9s cubic-bezier(.5,-0.3,.6,1), opacity .9s; z-index: 4; }
+
+  .duoi { display: flex; align-items: center; gap: 16px; min-height: calc(var(--u) * 8); }
+  .loi { font-size: max(22px, calc(var(--u) * 5)); }
+  .loi.dung { color: var(--la); }
+  .loi.sai { color: #e8590c; }
+  .nut-lon { font-size: max(22px, calc(var(--u) * 5)); padding: calc(var(--u) * .4) calc(var(--u) * 4); color: #fff; background: var(--la); border: none; border-radius: calc(var(--u) * 3); box-shadow: 0 7px 0 var(--la-dam); }
+  .nut-nho { font-size: max(15px, calc(var(--u) * 2.6)); padding: 4px 18px; border-radius: 30px; border: 3px solid var(--xanh); background: #fff; color: var(--xanh); }
+
+  /* bài mới */
+  .man { position: fixed; inset: 0; background: rgba(18, 48, 74, .82); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 5; }
+  .the-hoi {
+    width: min(100%, 1100px); max-height: 100%; overflow-y: auto; background: #fff;
+    border-radius: calc(var(--u) * 4); border: 8px solid #f2b705; padding: calc(var(--u) * 3) calc(var(--u) * 4);
+    display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 2.5); text-align: center;
+    animation: bung .45s cubic-bezier(.3,1.5,.5,1);
+  }
+  @keyframes bung { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .nhan { font-size: max(18px, calc(var(--u) * 3.4)); color: #fff; background: #f2b705; border-radius: 30px; padding: 2px 22px; }
+  .bai-moi { font-size: max(30px, calc(var(--u) * 7)); color: var(--xanh); }
+  .am-moi { display: flex; gap: calc(var(--u) * 6); justify-content: center; flex-wrap: wrap; }
+  .am-moi div { display: flex; flex-direction: column; align-items: center; }
+  .am-moi .chu-to { font-size: max(80px, calc(var(--u) * 20)); line-height: 1; color: var(--do); }
+  .am-moi .vd { font-size: max(30px, calc(var(--u) * 7)); display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .am-moi .vd span { font-family: var(--emoji); font-size: 1.9em; }
+
+  #phao { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 6; }
+  #phao i { position: absolute; top: -20px; width: 14px; height: 20px; border-radius: 3px; animation: roi linear forwards; }
+  @keyframes roi { to { transform: translateY(110vh) rotate(720deg); } }
+  @media (prefers-reduced-motion: reduce) { .ca, .the-hoi { animation: none; } #phao { display: none; } }
+  /* điện thoại dọc: cá nhỏ lại, xếp 2 cột trong ao cho khỏi tràn (22/10/2026) */
+  @media (max-aspect-ratio: 1/1) {
+    .ca { width: 46%; height: auto; aspect-ratio: 5 / 3; }
+    .ca:nth-of-type(1) { left: 2% !important; top: 14% !important; }
+    .ca:nth-of-type(2) { left: 52% !important; top: 30% !important; }
+    .ca:nth-of-type(3) { left: 2% !important; top: 52% !important; }
+    .ca:nth-of-type(4) { left: 52% !important; top: 68% !important; }
+    .loi { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Câu cá</h1>
+  <div class="gio"><span>🧺</span>Giỏ cá: <span id="so-ca">0</span>/<span id="tong">5</span></div>
+</header>
+<div class="yeu-cau" id="yeu-cau"></div>
+<div class="ao" id="ao">
+  <div class="song"></div>
+  <div class="can-cau">🎣</div>
+  <svg id="day"></svg>
+</div>
+<div class="duoi">
+  <div class="loi" id="loi">Mời bạn lên câu cá nhé!</div>
+  <button class="nut-lon" id="tiep" hidden>Lượt tiếp</button>
+  <button class="nut-nho" id="choi-lai">Chơi lại</button>
+</div>
+
+<div class="man" id="man" hidden><div class="the-hoi" id="the-hoi"></div></div>
+<div id="phao"></div>
+
+<script>
+// ====== NỘI DUNG (cô sửa ở đây cho bài khác) ======
+// Ôn bài 26-27 (ph, qu, v, x) và âm cũ. Không dùng y vì các con chưa học.
+// Mỗi lượt: yêu cầu (phần trong <b> tô đỏ), tiếng đúng, 3 tiếng sai.
+const LUOT = [
+  { hoi: 'Câu chú cá có âm <b>ph</b>', dap: 'phở', sai: ['quê', 'vẽ', 'xe'] },
+  { hoi: 'Câu chú cá có âm <b>qu</b>', dap: 'quê', sai: ['phố', 'vở', 'xa'] },
+  { hoi: 'Câu chú cá có âm <b>v</b>', dap: 'vẽ', sai: ['xẻ', 'phà', 'quà'] },
+  { hoi: 'Câu chú cá có âm <b>x</b>', dap: 'xe lu', sai: ['vỉa hè', 'phố cổ', 'quả khế'] },
+  { hoi: 'Câu chú cá có từ <b>vở vẽ</b>', dap: 'vở vẽ', sai: ['xa xa', 'phố cổ', 'quê nhà'] }
+];
+const BAI_MOI = { ten: 'Bài 28', am: [['y', '👩‍⚕️', 'y tá'], ['y', '💎', 'đá quý'], ['y', '🌼', 'dã quỳ']] };
+// ====================================================
+
+const MAU_CA = ['#ff922b', '#f06595', '#fcc419', '#51cf66', '#cc5de8', '#ff6b6b'];
+// 4 chỗ cá bơi trong ao (theo phần trăm)
+const CHO = [[8, 28], [56, 22], [14, 64], [60, 62]];
+const $ = id => document.getElementById(id);
+let luot = 0, soCa = 0, khoa = false, amThanh = null;
+
+function tron(m) { for (let i = m.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [m[i], m[j]] = [m[j], m[i]]; } return m; }
+function keu(dsTanSo, kieu = 'triangle') {
+  try {
+    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    dsTanSo.forEach((f, i) => {
+      const o = amThanh.createOscillator(), g = amThanh.createGain();
+      const t = amThanh.currentTime + i * 0.12;
+      o.frequency.value = f; o.type = kieu;
+      g.gain.setValueAtTime(0.25, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+      o.connect(g); g.connect(amThanh.destination);
+      o.start(t); o.stop(t + 0.3);
+    });
+  } catch (e) {}
+}
+function phaoGiay(soLuong) {
+  const p = $('phao'); p.textContent = '';
+  const mau = [...MAU_CA, '#4dabf7'];
+  for (let i = 0; i < soLuong; i++) {
+    const g = document.createElement('i');
+    g.style.left = Math.random() * 100 + 'vw';
+    g.style.background = mau[i % mau.length];
+    g.style.animationDuration = (2.2 + Math.random() * 2.5) + 's';
+    g.style.animationDelay = Math.random() * 1 + 's';
+    p.appendChild(g);
+  }
+  setTimeout(() => { p.textContent = ''; }, 6500);
+}
+
+function veCa(mau, chu, lat) {
+  return `<svg viewBox="0 0 300 180"><g${lat ? ' transform="translate(300,0) scale(-1,1)"' : ''}>
+    <path d="M250 90 L298 40 L290 90 L298 140 Z" fill="${mau}" stroke="#12304a" stroke-width="5" stroke-linejoin="round"/>
+    <ellipse cx="140" cy="90" rx="128" ry="78" fill="${mau}" stroke="#12304a" stroke-width="5"/>
+    <path d="M120 14 Q150 -10 180 18" fill="${mau}" stroke="#12304a" stroke-width="5"/>
+    <circle cx="48" cy="72" r="11" fill="#fff" stroke="#12304a" stroke-width="4"/><circle cx="45" cy="72" r="5" fill="#12304a"/>
+  </g>
+    <text x="${lat ? 160 : 150}" y="100" font-size="${chu.length > 3 ? 70 : 84}" text-anchor="middle" dominant-baseline="central" fill="#fff" stroke="#12304a" stroke-width="7" paint-order="stroke">${chu}</text>
+  </svg>`;
+}
+
+function raLuot() {
+  const l = LUOT[luot], ao = $('ao');
+  khoa = false;
+  $('yeu-cau').innerHTML = l.hoi;
+  $('loi').className = 'loi'; $('loi').textContent = 'Mời bạn lên câu cá nhé!';
+  $('tiep').hidden = true;
+  $('day').innerHTML = '';
+  ao.querySelectorAll('.ca').forEach(c => c.remove());
+  const mauDs = tron([...MAU_CA]);
+  tron([l.dap, ...l.sai]).forEach((chu, i) => {
+    const b = document.createElement('button');
+    b.className = 'ca' + (i % 2 ? ' lat' : '');
+    b.style.left = CHO[i][0] + '%'; b.style.top = CHO[i][1] + '%';
+    b.style.setProperty('--i', i);
+    b.setAttribute('aria-label', 'Cá có tiếng ' + chu);
+    b.innerHTML = veCa(mauDs[i], chu, i % 2);
+    b.onclick = () => chonCa(b, chu === l.dap);
+    ao.appendChild(b);
+  });
+}
+
+function chonCa(ca, dung) {
+  if (khoa || ca.classList.contains('sai')) return;
+  if (!dung) {
+    ca.classList.add('sai');
+    $('loi').className = 'loi sai'; $('loi').textContent = 'Chú cá này lặn mất rồi. Bạn thử lại nhé!';
+    keu([220, 196]);
+    return;
+  }
+  khoa = true;
+  // thả dây câu xuống chú cá rồi kéo lên
+  const ao = $('ao').getBoundingClientRect(), r = ca.getBoundingClientRect();
+  const x1 = ao.width / 2, y1 = 0, x2 = r.left - ao.left + r.width / 2, y2 = r.top - ao.top + r.height * 0.2;
+  $('day').innerHTML = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="4" stroke-dasharray="4 4"/>`;
+  keu([330, 392], 'sine');
+  setTimeout(() => {
+    ca.classList.add('len');
+    ca.style.transform = `translate(${x1 - x2}px, ${-(r.top - ao.top) - r.height}px) rotate(-20deg) scale(.6)`;
+    ca.style.opacity = '0';
+    $('day').innerHTML = '';
+    soCa++; $('so-ca').textContent = soCa;
+    $('loi').className = 'loi dung'; $('loi').textContent = 'Câu được rồi! Giỏi quá!';
+    phaoGiay(30);
+    keu([523, 659, 784, 1047]);
+    $('tiep').textContent = luot === LUOT.length - 1 ? 'Xem bài mới' : 'Lượt tiếp';
+    $('tiep').hidden = false;
+    $('tiep').focus();
+  }, 500);
+}
+
+$('tiep').onclick = () => {
+  luot++;
+  if (luot < LUOT.length) raLuot(); else moBaiMoi();
+};
+
+function moBaiMoi() {
+  $('tiep').hidden = true;
+  const the = $('the-hoi');
+  the.innerHTML = `<div class="nhan">Bài mới</div>
+    <div class="bai-moi">Hôm nay chúng mình học ${BAI_MOI.ten}</div>
+    <div class="am-moi">${BAI_MOI.am.map(([chu, hinh, vd]) => `<div><div class="chu-to">${chu}</div><div class="vd"><span>${hinh}</span>${vd}</div></div>`).join('')}</div>
+    <button class="nut-lon" id="dong">Vào bài mới!</button>`;
+  $('dong').onclick = () => { $('man').hidden = true; };
+  $('man').hidden = false;
+  $('dong').focus();
+  phaoGiay(90);
+  keu([392, 523, 659, 784, 1047, 1319, 1568]);
+}
+
+function batDau() {
+  luot = 0; soCa = 0;
+  $('so-ca').textContent = 0; $('tong').textContent = LUOT.length;
+  $('man').hidden = true;
+  raLuot();
+}
+$('choi-lai').onclick = batDau;
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('man').hidden = true; });
+batDau();
+</script>
+</body>
+</html>

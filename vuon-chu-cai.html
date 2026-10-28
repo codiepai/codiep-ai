@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vườn chữ cái - CÔ ĐIỆP AI</title>
+<meta name="description" content="4 trò chơi chữ cái cho bé lớp 1: học chữ, ghép chữ hoa chữ thường, bắn bóng chữ, tập viết có cô giáo AI chấm điểm. Chữ, âm và vần theo từng bài sách Tiếng Việt 1.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378;--vien:#d3e6f8;--hong:#ff4d79}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:radial-gradient(900px 480px at 90% -10%,#ffd6e455,transparent 60%),linear-gradient(180deg,#e3f3ff,#f6fbff 40%,#fff8e8);min-height:100vh}
+.bia{background:linear-gradient(135deg,#06285a,#0b5cab 55%,#1d7bd8);color:#fff;padding:18px 16px 56px;position:relative;overflow:hidden}
+.bia::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,#ffffff33,transparent 65%)}
+.rong{max-width:960px;margin:0 auto;position:relative}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(28px,6vw,40px)/1.1 "Baloo 2",sans-serif;margin:10px 0 4px}.bia h1 b{color:var(--gold)}
+.bia p{margin:0;opacity:.92;max-width:620px}
+.sao{position:absolute;right:0;top:0;background:#ffffff26;border:1px solid #ffffff55;border-radius:999px;padding:6px 14px;font:800 16px "Baloo 2",sans-serif}
+main{max-width:960px;margin:-34px auto 0;padding:0 14px 50px;position:relative}
+.the{background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(11,92,171,.16);padding:18px;margin-bottom:16px}
+.chon{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.chon label{font-weight:600;font-size:13.5px;color:var(--phu);display:block;margin-bottom:4px}
+select{font:500 15px "Be Vietnam Pro",sans-serif;padding:9px 10px;border:2px solid var(--vien);border-radius:12px;background:#fff;color:var(--ink);max-width:100%}
+.ghi{color:var(--phu);font-size:13px;margin:8px 0 0}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.tab{border:2px solid var(--vien);background:#fff;border-radius:18px;padding:10px 6px;text-align:center;cursor:pointer;font:700 15px/1.15 "Baloo 2",sans-serif;color:var(--royal);transition:.15s}
+.tab span{display:block;font-size:30px;line-height:1.1}
+.tab.on{border-color:var(--blue);background:#eaf5ff;box-shadow:0 0 0 3px #9fd4ff88}
+.nut{border:0;border-radius:16px;padding:11px 18px;font:800 17px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 5px 0 #b86200;cursor:pointer}
+.nut:active{transform:translateY(2px);box-shadow:0 3px 0 #b86200}
+.nut.xanh{background:linear-gradient(180deg,#3d9bf0,#0b5cab);box-shadow:0 5px 0 #073d73}
+.nut.xam{background:#fff;color:var(--royal);border:2px solid var(--vien);box-shadow:0 4px 0 var(--vien)}
+.nut.luc{background:linear-gradient(180deg,#34c97a,#169a50);box-shadow:0 5px 0 #0d6e37}
+.hang{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+h2{font:800 21px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 4px}
+.mota{color:var(--phu);font-size:14px;margin:0 0 12px}
+.an{display:none}
+/* hoc */
+.hoc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.luoi{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;align-content:start}
+.chip{border:2px solid var(--vien);border-radius:14px;background:#fff;padding:8px 2px;font:800 20px "Baloo 2",sans-serif;color:var(--ink);cursor:pointer;text-align:center;line-height:1.1}
+.chip small{display:block;font-size:12px;color:var(--phu);font-weight:600}
+.chip.on{background:var(--hong);border-color:var(--hong);color:#fff}.chip.on small{color:#ffe3ea}
+.chi{border:3px solid #ffd0dc;border-radius:22px;background:linear-gradient(180deg,#fff,#fff5f8);padding:16px;text-align:center}
+.lon{font:800 88px/1 "Baloo 2",sans-serif;color:var(--hong);letter-spacing:6px}
+.lon i{font-style:normal;color:var(--royal)}
+.chi img{width:130px;height:130px;object-fit:contain;display:block;margin:6px auto 0}
+.tu{font:800 26px "Baloo 2",sans-serif;margin-top:2px}.tu em{font-style:normal;color:var(--hong)}
+/* ghep */
+.ghep{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:520px;margin:0 auto}
+.cot{display:grid;gap:10px}
+.the2{border:3px solid var(--vien);border-radius:16px;background:#fff;font:800 34px "Baloo 2",sans-serif;padding:10px 4px;cursor:pointer;color:var(--ink);transition:.12s}
+.the2.hinh{font-size:15px;padding:6px 4px;line-height:1.1}.the2.hinh img{width:64px;height:64px;object-fit:contain;display:block;margin:0 auto 2px}.the2.hinh small{font-weight:700}
+.chip:disabled{opacity:.4}
+.the2.chon1{border-color:var(--blue);background:#eaf5ff;transform:scale(1.04)}
+.the2.dung{border-color:var(--ok);background:#e6f8ee;color:var(--ok);pointer-events:none}
+.the2.sai{animation:lac .4s;border-color:var(--bad)}
+@keyframes lac{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* bong */
+.dich{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-weight:700}
+.dich .muc{font:800 34px "Baloo 2",sans-serif;color:#fff;background:var(--hong);border-radius:12px;padding:0 14px;line-height:1.3}
+.dich .dem{margin-left:auto;background:#fff7dc;border:2px solid var(--gold);border-radius:999px;padding:2px 14px;font:800 18px "Baloo 2",sans-serif;color:#7a5200}
+.troi{position:relative;height:400px;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#bfe5ff,#e9f6ff 60%,#fff8e0);border:3px solid var(--vien);touch-action:manipulation}
+.bong{position:absolute;width:74px;height:74px;margin:-37px 0 0 -37px;border-radius:50%;display:grid;place-items:center;font:800 32px "Baloo 2",sans-serif;color:#fff;cursor:pointer;user-select:none;box-shadow:inset -8px -10px 16px #00000026,inset 8px 8px 14px #ffffff66,0 4px 10px #0b5cab33;will-change:transform}
+.bong.no{animation:no .25s forwards}
+@keyframes no{to{transform:scale(1.8);opacity:0}}
+.bong.lac{animation:lac .35s}
+.batdau{position:absolute;inset:0;display:grid;place-items:center;background:#ffffffcc}
+/* viet */
+.vhead{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.vhead .chip{padding:6px 10px;font-size:18px;min-width:50px}
+.bang{position:relative;width:100%;max-width:600px;aspect-ratio:600/320;margin:0 auto;border-radius:18px;overflow:hidden;background:#fff;border:4px solid #1b3b63;touch-action:none}
+.bang canvas{position:absolute;inset:0;width:100%;height:100%}
+.nx{margin:12px auto 0;max-width:600px;border-radius:16px;background:#f2f9ff;border:2px dashed var(--vien);padding:10px 14px;text-align:center;font-weight:600;min-height:64px}
+.nx .sao5{font-size:28px;letter-spacing:3px;display:block}
+/* modal */
+#mo{position:fixed;inset:0;background:#0b1f3a99;display:none;place-items:center;z-index:50;padding:16px}
+#mo.hien{display:grid}
+.hop{background:#fff;border-radius:26px;padding:24px 22px;max-width:360px;width:100%;text-align:center;border:4px solid var(--gold);animation:nay .35s}
+@keyframes nay{from{transform:scale(.6);opacity:0}}
+.hop .cup{font-size:56px}.hop h3{font:800 26px "Baloo 2",sans-serif;color:var(--royal);margin:4px 0}
+.hop p{margin:0 0 14px;color:var(--phu)}
+@media(max-width:700px){.hoc{grid-template-columns:1fr}.tab{font-size:13px}.tab span{font-size:26px}.sao{position:static;display:inline-block;margin-top:8px}.troi{height:340px}}
+</style>
+</head>
+<body>
+<div class="bia"><div class="rong">
+  <a href="index.html">&larr; Trang chủ CÔ ĐIỆP AI</a>
+  <h1>Vườn chữ cái <b>vui nhộn</b></h1>
+  <p>Chữ, âm và vần đúng theo từng bài sách Tiếng Việt 1 (Bài 1 đến 83). Cô chọn bài, bé chơi 4 trò: học chữ, ghép chữ, bắn bóng, tập viết.</p>
+  <div class="sao">&#11088; Sao của bé: <span id="tongSao">0</span></div>
+</div></div>
+
+<main>
+<div class="the">
+  <div class="chon">
+    <div><label for="lo">Học từ</label><select id="lo"></select></div>
+    <div><label for="hi">đến</label><select id="hi"></select></div>
+    <div style="font-size:14px;color:var(--phu)" id="demChu"></div>
+  </div>
+  <p class="ghi">Chữ cái và âm mới của mỗi bài hiện ở danh sách. Muốn ôn riêng bài vừa học, chọn "từ" và "đến" cùng một bài. Cô có thể gửi link kèm bài, ví dụ <b>vuon-chu-cai.html?tu=21&amp;den=25</b>.</p>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-g="hoc"><span>&#128266;</span>Học chữ cái</div>
+  <div class="tab" data-g="ghep"><span>&#129513;</span>Ghép chữ hoa</div>
+  <div class="tab" data-g="bong"><span>&#127880;</span>Bắn bóng chữ</div>
+  <div class="tab" data-g="viet"><span>&#9999;&#65039;</span>AI tập viết</div>
+</div>
+
+<!-- 1. HOC -->
+<div class="the" id="g-hoc">
+  <h2>Học chữ cái</h2><p class="mota">Bấm vào một chữ. Bé nghe cách đọc, xem chữ hoa chữ thường và hình minh họa.</p>
+  <div class="hoc"><div class="luoi" id="hocLuoi"></div>
+  <div class="chi" id="hocChi"></div></div>
+  <p class="ghi" id="giong"></p>
+</div>
+
+<!-- 2. GHEP -->
+<div class="the an" id="g-ghep">
+  <h2>Ghép chữ</h2><p class="mota">Bấm một thẻ bên trái, rồi bấm thẻ đúng bên phải. Có hai kiểu: ghép chữ hoa với chữ thường, hoặc ghép vần với hình.</p>
+  <div class="hang" style="justify-content:center;margin:0 0 12px"><button class="chip on" id="gKH" style="padding:6px 12px;font-size:16px">Chữ hoa - chữ thường</button><button class="chip" id="gKV" style="padding:6px 12px;font-size:16px">Vần - hình</button></div>
+  <div class="ghep"><div class="cot" id="gA"></div><div class="cot" id="gB"></div></div>
+  <p class="ghi" id="gNote" style="text-align:center"></p>
+  <div class="hang" style="justify-content:center"><button class="nut xam" id="gMoi">Chơi lại</button></div>
+</div>
+
+<!-- 3. BONG -->
+<div class="the an" id="g-bong">
+  <h2>Bắn bóng chữ</h2><p class="mota">Bóng chữ bay lên. Bé bấm đúng chữ cô đọc để bóng nổ. Đủ 5 quả là thắng.</p>
+  <div class="dich"><span>Tìm và bắn bóng chữ:</span><span class="muc" id="bMuc">?</span><button class="nut xanh" id="bNghe" style="padding:6px 12px;font-size:15px">&#128266; Nghe</button><span class="dem" id="bDem">0/5 &#11088;</span></div>
+  <div class="troi" id="troi"><div class="batdau" id="bStart"><button class="nut luc" id="bGo">&#9654; Bắt đầu chơi</button></div></div>
+</div>
+
+<!-- 4. VIET -->
+<div class="the an" id="g-viet">
+  <h2>AI tập viết chữ</h2><p class="mota">Bé tô theo nét mẫu bằng ngón tay hoặc chuột. Bấm "Chấm điểm", cô giáo AI cho sao và lời khen.</p>
+  <div class="vhead" id="vChu"></div>
+  <div class="hang" style="margin:0 0 10px"><span style="font-weight:600;font-size:14px;color:var(--phu)">Kiểu chữ:</span>
+    <button class="chip on" id="kThuong" style="padding:4px 12px;font-size:16px">thường</button>
+    <button class="chip" id="kHoa" style="padding:4px 12px;font-size:16px">HOA</button>
+    <button class="chip" id="vNghe" style="padding:4px 12px;font-size:16px">&#128266; nghe</button></div>
+  <div class="bang"><canvas id="cvT" width="600" height="320"></canvas><canvas id="cvV" width="600" height="320"></canvas></div>
+  <div class="nx" id="vNx">&#129302; Cô giáo AI đang chờ bé viết...</div>
+  <div class="hang" style="justify-content:center"><button class="nut xam" id="vXoa">Xóa, viết lại</button><button class="nut luc" id="vCham">&#10004; Chấm điểm</button></div>
+  <p class="ghi" style="text-align:center">Máy so nét bé viết với nét mẫu ngay trên điện thoại, không gửi gì đi đâu và không tốn phí.</p>
+</div>
+</main>
+
+<div id="mo"><div class="hop"><div class="cup">&#127942;</div><h3 id="moT"></h3><p id="moP"></p><button class="nut" id="moOk">Chơi tiếp</button></div></div>
+
+<script>
+/* ===== DỮ LIỆU: chữ và âm theo từng bài sách Tiếng Việt 1 (Kết nối tri thức) ===== */
+var TIEU={1:"A a",2:"B b, dấu huyền",3:"C c, dấu sắc",4:"E e, Ê ê",5:"Ôn tập",6:"O o, dấu hỏi",7:"Ô ô, dấu nặng",8:"D d, Đ đ",9:"Ơ ơ, dấu ngã",10:"Ôn tập",11:"I i, K k",12:"H h, L l",13:"U u, Ư ư",14:"Ch ch, Kh kh",15:"Ôn tập",16:"M m, N n",17:"G g, Gi gi",18:"Gh gh, Nh nh",19:"Ng ng, Ngh ngh",20:"Ôn tập",21:"R r, S s",22:"T t, Tr tr",23:"Th th, ia",24:"ua, ưa",25:"Ôn tập",26:"Ph ph, Qu qu",27:"V v, X x",28:"Y y",29:"Luyện tập chính tả",30:"Ôn tập",31:"an ăn ân (chữ Ă â)",32:"on ôn ơn",33:"en ên in un",34:"am ăm âm",35:"Ôn tập",36:"om ôm ơm",37:"em êm im um",38:"ai ay ây",39:"oi ôi ơi",40:"Ôn tập",41:"ui ưi",42:"ao eo",43:"au âu êu",44:"iu ưu",45:"Ôn tập",46:"ac ăc âc",47:"oc ôc uc ưc",48:"at ăt ât",49:"ot ôt ơt",50:"Ôn tập",51:"et êt it",52:"ut ưt",53:"ap ăp âp",54:"op ôp ơp",55:"Ôn tập",56:"ep êp ip up",57:"anh ênh inh",58:"ach êch ich",59:"ang ăng âng",60:"Ôn tập",61:"ong ông ung ưng",62:"iêc iên iêp",63:"iêng iêm yên",64:"iêt iêu yêu",65:"Ôn tập",66:"uôi uôm",67:"uôc uôt",68:"uôn uông",69:"ươi ươu",70:"Ôn tập",71:"ươc ươt",72:"ươm ươp",73:"ươn ương",74:"oa oe",75:"Ôn tập",76:"oan oăn oat oăt",77:"oai uê uy",78:"uân uât",79:"uyên uyêt",80:"Ôn tập",81:"Ôn tập cuối kì",82:"Ôn tập cuối kì",83:"Ôn tập cuối kì"};
+/* [bài, thường, hoa, cách đọc, từ mẫu ([] là chữ cần nhớ), tên hình] */
+var D=[
+[1,"a","A","a","c[à] chua","qua-ca-chua"],
+[2,"b","B","bờ","[b]ò sữa","bo-sua"],
+[3,"c","C","cờ","[c]ò","co"],
+[4,"e","E","e","b[è] tre","be-tre"],[4,"ê","Ê","ê","cá h[ề]","ca-he"],
+[6,"o","O","o","bụi c[ỏ]","bui-co"],
+[7,"ô","Ô","ô","[ô] tô","o-to"],
+[8,"d","D","dờ","[d]ù","du-luon"],[8,"đ","Đ","đờ","[đ]ò","do"],
+[9,"ơ","Ơ","ơ","quả b[ơ]","qua-bo"],
+[11,"i","I","i","b[í] đỏ","qua-bi-do"],[11,"k","K","ca","[k]ẹo bông","keo-bong"],
+[12,"h","H","hờ","[h]ổ","ho"],[12,"l","L","lờ","[l]á đỏ","la-do"],
+[13,"u","U","u","đ[u] đủ","qua-du-du"],[13,"ư","Ư","ư","s[ư] tử","su-tu"],
+[14,"ch","Ch","chờ","[ch]ó","cho"],[14,"kh","Kh","khờ","[kh]ỉ","khi"],
+[16,"m","M","mờ","[m]èo","meo"],[16,"n","N","nờ","ca [n]ô","ca-no"],
+[17,"g","G","gờ","[g]à con","ga-con"],[17,"gi","Gi","giờ","[gi]á đỗ","gia-do"],
+[18,"gh","Gh","gờ","cái [gh]ế","cai-ghe"],[18,"nh","Nh","nhờ","[nh]à gỗ","nha-go"],
+[19,"ng","Ng","ngờ","bắp [ng]ô","bap-ngo"],[19,"ngh","Ngh","ngờ","[ngh]é","nghe-ngu-o-ngo"],
+[21,"r","R","rờ","[r]ùa","rua"],[21,"s","S","sờ","chim [s]ẻ","chim-se"],
+[22,"t","T","tờ","ô [t]ô","o-to"],[22,"tr","Tr","trờ","cá [tr]ê","ca-tre"],
+[23,"th","Th","thờ","cái [th]ìa","cai-thia"],[23,"ia",null,"ia","cái đ[ĩa]","cai-dia"],
+[24,"ua",null,"ua","c[ua]","cua"],[24,"ưa",null,"ưa","d[ưa] hấu","qua-dua-hau"],
+[26,"ph","Ph","phờ","[ph]ở","pho"],[26,"qu","Qu","quờ","[qu]ạ","qua"],
+[27,"v","V","vờ","[v]ở","quyen-vo"],[27,"x","X","xờ","[x]e buýt","xe-buyt"],
+[28,"y","Y","i","[y] tá","y-ta"],
+[31,"ă","Ă","ă","kh[ă]n kẻ ô","khan-ke-o"],[31,"â","Â","ớ","quả m[ậ]n","qua-man"]
+].map(function(r){return{b:r[0],l:r[1],u:r[2],s:r[3],w:r[4],g:r[5]}});
+/* Vần Bài 31-79: [bài, "vần|từ mẫu|tên hình;..."]. Từ nào chưa có hình trong kho thì để trống, trang chỉ hiện chữ. */
+var VAN="31:an|cái b[àn]|cai-ban;ăn|kh[ăn] kẻ ô|khan-ke-o;ân|quả m[ận]|qua-man@32:on|n[ón] lá|non-la;ôn|con ch[ồn]|con-chon;ơn|s[ơn] ca|chim-son-ca@33:en|hoa s[en]|hoa-sen;ên|ngọn n[ến]|ngon-nen;in|đèn p[in]|den-pin;un|c[ún] con|cun-con@34:am|quả c[am]|qua-cam;ăm|hộp t[ăm] bông|hop-tam-bong;âm|củ s[âm]|cu-sam@36:om|đ[om] đóm|dom-dom;ôm|chó đ[ốm]|cho-dom;ơm|mâm c[ơm]|mam-com@37:em|t[em] thư|tem-thu;êm|th[ềm] nhà|them-nha;im|tủm t[ỉm]|be-cuoi-tum-tim;um|t[ủm] tỉm|be-cuoi-tum-tim@38:ai|chùm v[ải]|chum-vai;ay|m[áy] cày|may-cay;ây|đám m[ây]|dam-may@39:oi|chim b[ói] cá|chim-boi-ca;ôi|th[ổi] còi|be-thoi-coi;ơi|đồ ch[ơi]|hop-do-choi@41:ui|n[úi]|nui;ưi|g[ửi] thư|be-bo-thu-vao-hom@42:ao|ngôi s[ao]|ngoi-sao;eo|k[ẹo] bông|keo-bong@43:au|r[au] cải|rau-cai;âu|con tr[âu]|trau;êu|chú t[ễu]|chu-teu@44:iu|cái r[ìu]|cai-riu;ưu|quả l[ựu]|qua-luu@46:ac|b[ác] sĩ|bac-si;ăc|m[ắc] áo|mac-ao;âc|xôi g[ấc]|xoi-gac@47:oc|s[óc]|soc;ôc|cái c[ốc]|cai-coc;uc|máy x[úc]|may-xuc;ưc|m[ực]|muc@48:at|bãi c[át]|bai-cat;ăt|m[ặt] trời|mat-troi;ât|b[ật] lửa|bat-lua@49:ot|quả nh[ót]|qua-nhot;ôt|lá l[ốt]|la-lot;ơt|quả [ớt]|qua-ot@51:et|v[ẹt]|vet;êt|bồ k[ết]|bo-ket;it|quả m[ít]|qua-mit@52:ut|b[út] chì|but-chi;ưt|m[ứt] dừa|mut-dua@53:ap|xe đ[ạp]|xe-dap;ăp|c[ặp] sách hồng|cap-sach-hong;âp|cá m[ập]|ca-map@54:op|con c[ọp]|con-cop;ôp|h[ộp] bút|hop-but;ơp|tia ch[ớp]|tia-chop@56:ep|ba đôi ủng d[ép]|ba-doi-ung-dep;êp|đầu b[ếp]|dau-bep;ip|bìm b[ịp]|bim-bip;up|b[úp] sen|bup-sen@57:anh|quả ch[anh]|qua-chanh;ênh|bờ k[ênh]|bo-kenh;inh|k[ính] bơi|kinh-boi@58:ach|quyển s[ách]|quyen-sach;êch|[ếch]|ech;ich|l[ịch] tháng 1|lich-thang-1@59:ang|cá v[àng]|ca-vang;ăng|quả m[ăng] cụt|qua-mang-cut;âng|nhà t[ầng]|nha-tang@61:ong|ch[ong] chóng|chong-chong;ông|[ông] mặt trời|ong-mat-troi;ung|hoa s[úng] đỏ|hoa-sung-do;ưng|bánh ch[ưng]|banh-chung@62:iêc|xanh b[iếc]|xanh-biec;iên|rùa b[iển]|rua-bien;iêp|sò đ[iệp]|so-diep@63:iêng|sầu r[iêng]|cay-sau-rieng;iêm|cá k[iếm]|ca-kiem;yên|chim [yến]|chim-yen@64:iêt|nh[iệt] kế|nhiet-ke;iêu|d[iều]|dieu;yêu|[yêu] chiều|yeu-chieu@66:uôi|s[uối]|con-suoi;uôm|quả m[uỗm]|qua-muom@67:uôc|th[uốc] ho|thuoc-ho;uôt|dưa ch[uột]|qua-dua-chuot@68:uôn|c[uộn] chỉ|cuon-chi;uông|ớt ch[uông] đỏ|ot-chuong-do@69:ươi|quả b[ưởi]|qua-buoi;ươu|ốc b[ươu]|oc-buou@71:ươc|th[ước] kẻ|thuoc-ke;ươt|l[ướt] ván|be-luot-van@72:ươm|con b[ướm]|buom;ươp|m[ướp] đắng|muop-dang@73:ươn|khu v[ườn]|khu-vuon;ương|con đ[ường]|con-duong@74:oa|h[oa] sen|hoa-sen;oe|váy x[oè]|vay-xoe@76:oan|hoa x[oan]|hoa-xoan;oăn|tóc x[oăn]|toc-xoan;oat|h[oạt] hình|phim-hoat-hinh;oăt|nhọn h[oắt]|nhon-hoat@77:oai|kh[oai] tây|khoai-tay;uê|vạn t[uế]|cay-van-tue;uy|tàu th[uỷ]|tau-thuy-van@78:uân|mùa x[uân]|canh-dao-mua-xuan;uât|võ th[uật]|be-mac-vo-phuc@79:uyên|[thuyền] buồm|thuyen-buom;uyêt|trăng kh[uyết]|trang-khuyet";
+VAN.split("@").forEach(function(g){var p=g.split(":"),b=+p[0];p[1].split(";").forEach(function(x){var f=x.split("|");D.push({b:b,l:f[0],u:null,s:f[0],w:f[1],g:f[2]||""})})});
+var PHU=["ch","kh","gi","gh","nh","ng","ngh","th","tr","ph","qu"];
+D.forEach(function(i){i.v=i.b>=23&&i.l.length>1&&PHU.indexOf(i.l)<0});
+D.sort(function(x,y){return x.b-y.b});
+
+/* ===== TIỆN ÍCH ===== */
+var $=function(i){return document.getElementById(i)};
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function xao(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function hl(w){return w.replace(/\[(.+?)\]/g,"<em>$1</em>")}
+function sach(w){return w.replace(/[\[\]]/g,"")}
+var sao=parseInt(ls("vuon-sao")||"0",10)||0;
+function congSao(n){sao+=n;ls("vuon-sao",sao);$("tongSao").textContent=sao}
+$("tongSao").textContent=sao;
+var viVoice=null;
+function layGiong(){if(!window.speechSynthesis)return;var v=speechSynthesis.getVoices();viVoice=v.filter(function(x){return/^vi[-_]?/i.test(x.lang)||/vietnam|tiếng việt/i.test(x.name)})[0]||null}
+if(window.speechSynthesis){layGiong();speechSynthesis.onvoiceschanged=layGiong}
+/* Ưu tiên giọng Việt có sẵn trong máy. Máy nào không có thì đọc bằng giọng Việt trực tuyến (cần mạng). */
+var amDS=[],amTT=0;
+function noi(){
+  var ds=[].slice.call(arguments);
+  amTT++;var tt=amTT;amDS.forEach(function(a){a.pause()});amDS=[];
+  if(window.speechSynthesis)speechSynthesis.cancel();
+  if(viVoice&&window.speechSynthesis){ds.forEach(function(t){var u=new SpeechSynthesisUtterance(t);u.lang=viVoice.lang;u.voice=viVoice;u.rate=.8;speechSynthesis.speak(u)});return}
+  (function tiep(i){
+    if(i>=ds.length||tt!==amTT)return;
+    var a=new Audio("https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=vi&q="+encodeURIComponent(ds[i]));
+    amDS.push(a);a.onended=function(){tiep(i+1)};a.onerror=function(){tiep(i+1)};
+    var p=a.play();if(p&&p.catch)p.catch(function(){});
+  })(0);
+}
+function mo(t,p,btn,cb){$("moT").textContent=t;$("moP").textContent=p;$("moOk").textContent=btn||"Chơi tiếp";$("mo").className="hien";$("moOk").onclick=function(){$("mo").className="";cb&&cb()}}
+
+/* ===== CHỌN BÀI ===== */
+var BAI=[];for(var n=1;n<=83;n++)BAI.push(n);
+function opt(sel,val){sel.innerHTML=BAI.map(function(n){return'<option value="'+n+'">Bài '+n+' · '+TIEU[n]+'</option>'}).join("");sel.value=val}
+var q=new URLSearchParams(location.search);
+var lo=parseInt(q.get("tu")||ls("vuon-lo")||"1",10)||1,hi=parseInt(q.get("den")||ls("vuon-hi")||"5",10)||5;
+lo=Math.min(Math.max(lo,1),83);hi=Math.min(Math.max(hi,lo),83);
+opt($("lo"),lo);opt($("hi"),hi);
+function dsach(){return D.filter(function(i){return i.b>=lo&&i.b<=hi})}
+function doiBai(){lo=+$("lo").value;hi=+$("hi").value;if(hi<lo){hi=lo;$("hi").value=hi}ls("vuon-lo",lo);ls("vuon-hi",hi);lamLai()}
+$("lo").onchange=doiBai;$("hi").onchange=function(){hi=+$("hi").value;if(hi<lo){lo=hi;$("lo").value=lo}ls("vuon-lo",lo);ls("vuon-hi",hi);lamLai()};
+
+function lamLai(){
+  var d=dsach();
+  $("demChu").textContent=d.length?d.length+" chữ, âm và vần: "+d.slice(0,30).map(function(i){return i.l}).join(" ")+(d.length>30?" ...":""):"Các bài này là bài ôn tập, chưa có chữ mới. Chọn thêm bài khác nhé.";
+  hocVe();ghepMoi();bongReset();vVe();
+}
+
+/* ===== TAB ===== */
+var game="hoc";
+function chonGame(g){game=g;["hoc","ghep","bong","viet"].forEach(function(x){$("g-"+x).className=(x=="hoc"||x=="ghep"||x=="bong"||x=="viet")&&x==g?"the":"the an"});
+  [].forEach.call($("tabs").children,function(t){t.className="tab"+(t.dataset.g==g?" on":"")});
+  if(g!="bong")bongDung();if(g=="viet")vVe()}
+[].forEach.call($("tabs").children,function(t){t.onclick=function(){chonGame(t.dataset.g)}});
+
+/* ===== 1. HỌC ===== */
+var cur=null;
+function hocVe(){
+  var d=dsach();cur=d.length?d[0]:null;
+  $("hocLuoi").innerHTML=d.map(function(i,k){return'<button class="chip" data-k="'+k+'">'+(i.u?i.u+" "+i.l:i.l)+'</button>'}).join("");
+  [].forEach.call($("hocLuoi").children,function(c){c.onclick=function(){chonChu(+c.dataset.k)}});
+  if(!d.length){$("hocChi").innerHTML='<p style="color:var(--phu)">Chưa có chữ trong khoảng bài này.</p>';return}
+  chonChu(0,true);
+  $("giong").textContent=viVoice?"":"Máy này chưa có giọng đọc tiếng Việt, nên trang sẽ đọc bằng giọng Việt trực tuyến. Cần có mạng và bật loa nhé.";
+}
+function chonChu(k,im){
+  var d=dsach();cur=d[k];[].forEach.call($("hocLuoi").children,function(c,i){c.className="chip"+(i==k?" on":"")});
+  $("hocChi").innerHTML='<div class="lon"'+(cur.l.length>3?' style="font-size:64px"':'')+'>'+(cur.u?cur.u+' <i>'+cur.l+'</i>':'<i>'+cur.l+'</i>')+'</div>'+(cur.g?'<img alt="" src="hinh/'+cur.g+'.webp">':'<div style="height:24px"></div>')+'<div class="tu">'+hl(cur.w)+'</div>'+
+   '<div class="hang" style="justify-content:center"><button class="nut" id="hNgheC">&#128266; Nghe chữ</button><button class="nut xanh" id="hNgheT">&#128266; Nghe từ</button></div>';
+  $("hNgheC").onclick=function(){noi(cur.s)};$("hNgheT").onclick=function(){noi(sach(cur.w))};
+  if(!im)noi(cur.s,sach(cur.w));
+}
+
+/* ===== 2. GHÉP ===== */
+var gChon=null,gDung=0,gTong=0;
+var gKieu="hoa";
+function boDau(s){return s.normalize("NFD").replace(/[̣̀́̃̉]/g,"").normalize("NFC").toLowerCase()}
+function ghepPool(k){
+  if(k=="hoa")return dsach().filter(function(i){return i.u});
+  /* ghép vần với hình: bỏ cặp mà từ này có chứa vần của cặp kia, để mỗi hình chỉ có một đáp án */
+  var chon=[];xao(dsach().filter(function(i){return i.v&&i.g})).forEach(function(i){
+    if(chon.length>=6)return;var wi=boDau(sach(i.w));
+    var xung=chon.some(function(c){return wi.indexOf(boDau(c.l))>=0||boDau(sach(c.w)).indexOf(boDau(i.l))>=0});
+    if(!xung)chon.push(i)});
+  return chon;
+}
+function ghepMoi(){
+  var kh=ghepPool("hoa").length>=2,kv=ghepPool("hinh").length>=2;
+  if(gKieu=="hoa"&&!kh&&kv)gKieu="hinh";else if(gKieu=="hinh"&&!kv&&kh)gKieu="hoa";
+  $("gKH").className="chip"+(gKieu=="hoa"?" on":"");$("gKV").className="chip"+(gKieu=="hinh"?" on":"");
+  $("gKH").disabled=!kh;$("gKV").disabled=!kv;
+  var d=xao(ghepPool(gKieu)).slice(0,6);gChon=null;gDung=0;gTong=d.length;
+  $("gNote").textContent=d.length<2?"Chưa đủ chữ để ghép. Chọn thêm bài nhé (chữ hoa từ Bài 2, vần có hình từ Bài 24).":"";
+  $("gA").innerHTML="";$("gB").innerHTML="";
+  if(d.length<2)return;
+  function the(i,trai){var b=document.createElement("button");b.className="the2";
+    if(gKieu=="hoa")b.textContent=trai?i.u:i.l;
+    else if(trai)b.textContent=i.l;
+    else{b.className+=" hinh";b.innerHTML='<img alt="" src="hinh/'+i.g+'.webp"><small>'+sach(i.w)+'</small>'}
+    b.onclick=function(){bam(b,i,trai)};return b}
+  xao(d).forEach(function(i){$("gA").appendChild(the(i,true))});
+  xao(d).forEach(function(i){$("gB").appendChild(the(i,false))});
+}
+$("gKH").onclick=function(){gKieu="hoa";ghepMoi()};$("gKV").onclick=function(){gKieu="hinh";ghepMoi()};
+function bam(b,i,hoa){
+  if(hoa){[].forEach.call($("gA").children,function(c){c.classList.remove("chon1")});b.classList.add("chon1");gChon={b:b,i:i};noi(i.s);return}
+  if(!gChon){$("gNote").textContent="Bé bấm cột bên trái trước nhé.";return}
+  if(gChon.i===i){gChon.b.className="the2 dung";b.className="the2 dung";gChon=null;gDung++;$("gNote").textContent="";
+    if(gDung==gTong){congSao(3);setTimeout(function(){mo("Ghép cặp thành công!","Bé giỏi quá, được thêm 3 sao.","Chơi lại",ghepMoi)},350)}}
+  else{b.classList.add("sai");setTimeout(function(){b.classList.remove("sai")},420)}
+}
+$("gMoi").onclick=ghepMoi;
+
+/* ===== 3. BẮN BÓNG ===== */
+var MAU=["#ff6a3d","#1d7bd8","#22b35e","#9b5de5","#ff4d79","#f5a000","#00a6a6"];
+var bB=[],bMuc=null,bHit=0,bChay=false,bT0=0,bSinh=0,bRaf=0;
+function bongReset(){bongDung();$("bStart").style.display="grid";$("bMuc").textContent="?";$("bDem").textContent="0/5 ⭐";
+  var d=dsach();$("bGo").textContent=d.length<3?"Cần ít nhất 3 chữ: chọn thêm bài":"▶ Bắt đầu chơi";$("bGo").disabled=d.length<3}
+function bongDung(){bChay=false;cancelAnimationFrame(bRaf);bB.forEach(function(b){b.el.remove()});bB=[]}
+function bongVong(){
+  var d=dsach();bMuc=d[Math.floor(Math.random()*d.length)];bHit=0;
+  $("bMuc").textContent=bMuc.u?bMuc.u+" "+bMuc.l:bMuc.l;$("bDem").textContent="0/5 ⭐";noi(bMuc.s);
+}
+$("bNghe").onclick=function(){if(bMuc)noi(bMuc.s)};
+$("bGo").onclick=function(){$("bStart").style.display="none";bongDung();bongVong();bChay=true;bT0=performance.now();bSinh=0;bRaf=requestAnimationFrame(bongLap)};
+function bSpawn(){
+  var T=$("troi"),w=T.clientWidth,d=dsach(),it;
+  if(Math.random()<.42)it=bMuc;else{do{it=d[Math.floor(Math.random()*d.length)]}while(it===bMuc)}
+  var hoa=it.u&&Math.random()<.35,el=document.createElement("div");
+  el.className="bong";el.textContent=hoa?it.u:it.l;el.style.background=MAU[Math.floor(Math.random()*MAU.length)];
+  var o={el:el,it:it,x:40+Math.random()*(w-80),y:T.clientHeight+40,v:42+Math.random()*38};
+  if(it.l.length>2)el.style.fontSize=it.l.length>3?"21px":"26px";
+  el.onpointerdown=function(e){e.preventDefault();bBam(o)};
+  T.appendChild(el);bB.push(o);
+}
+function bBam(o){
+  if(!bChay||o.chet)return;
+  if(o.it===bMuc){o.chet=1;o.el.className+=" no";setTimeout(function(){o.el.remove()},260);bB=bB.filter(function(x){return x!==o});bHit++;$("bDem").textContent=bHit+"/5 ⭐";
+    if(bHit>=5){bChay=false;congSao(3);setTimeout(function(){bongDung();mo("Giỏi quá!","Bé bắn đúng 5 bóng chữ "+bMuc.l+". Được thêm 3 sao.","Chơi tiếp",function(){$("bGo").onclick()})},300)}}
+  else{o.el.classList.remove("lac");void o.el.offsetWidth;o.el.classList.add("lac");noi("Chưa đúng, bé tìm lại nhé")}
+}
+function bongLap(t){
+  if(!bChay)return;var dt=Math.min((t-(bongLap.p||t))/1000,.05);bongLap.p=t;
+  bSinh+=dt;if(bSinh>.75&&bB.length<9){bSinh=0;bSpawn()}
+  bB.slice().forEach(function(o){o.y-=o.v*dt;o.x+=Math.sin(o.y/38+o.v)*.5;o.el.style.left=o.x+"px";o.el.style.top=o.y+"px";if(o.y<-50){o.el.remove();bB=bB.filter(function(x){return x!==o})}});
+  bRaf=requestAnimationFrame(bongLap);
+}
+
+/* ===== 4. AI TẬP VIẾT ===== */
+var W=600,H=320,vIt=null,vHoa=false,nét=[],dangVe=false;
+var cT=$("cvT").getContext("2d"),cV=$("cvV").getContext("2d");
+var FONT='"Quicksand","Arial Rounded MT Bold","Segoe UI",Arial,sans-serif';
+function vChu(){return vIt?(vHoa&&vIt.u?vIt.u:vIt.l):""}
+function datChu(c,S){c.font="700 "+S+"px "+FONT;c.textAlign="center";c.textBaseline="alphabetic"}
+function coSo(txt){var S=280;var c=$("cvT").getContext("2d");datChu(c,S);var w=c.measureText(txt).width;if(w>W*.84)S=Math.floor(S*W*.84/w);return S}
+function vVe(){
+  var d=dsach();
+  $("vChu").innerHTML=d.map(function(i,k){return'<button class="chip'+(vIt===i?" on":"")+'" data-k="'+k+'">'+i.l+'</button>'}).join("");
+  [].forEach.call($("vChu").children,function(c){c.onclick=function(){vIt=dsach()[+c.dataset.k];vXoa();vVe()}});
+  if(!d.length){vIt=null}else if(!vIt||d.indexOf(vIt)<0){vIt=d[0]}
+  [].forEach.call($("vChu").children,function(c,k){c.className="chip"+(d[k]===vIt?" on":"")});
+  $("kThuong").className="chip"+(vHoa?"":" on");$("kHoa").className="chip"+(vHoa?" on":"");
+  cT.clearRect(0,0,W,H);
+  cT.setLineDash([8,8]);cT.lineWidth=2;cT.strokeStyle="#9cc6ee";
+  [60,110,250].forEach(function(y){cT.beginPath();cT.moveTo(0,y);cT.lineTo(W,y);cT.stroke()});
+  cT.strokeStyle="#4a90d9";cT.setLineDash([]);cT.beginPath();cT.moveTo(0,250);cT.lineTo(W,250);cT.stroke();
+  if(!vIt)return;var t=vChu(),S=coSo(t);datChu(cT,S);
+  cT.fillStyle="#dcebfa";cT.fillText(t,W/2,250);
+  cT.setLineDash([7,7]);cT.lineWidth=2;cT.strokeStyle="#5aa0e6";cT.strokeText(t,W/2,250);cT.setLineDash([]);
+}
+if(document.fonts&&document.fonts.load){document.fonts.load("700 200px Quicksand","aăâơ").then(function(){vVe()})}
+function vXoa(){nét=[];cV.clearRect(0,0,W,H);$("vNx").innerHTML="🤖 Cô giáo AI đang chờ bé viết..."}
+$("vXoa").onclick=vXoa;
+$("kThuong").onclick=function(){vHoa=false;vXoa();vVe()};
+$("kHoa").onclick=function(){if(vIt&&vIt.u){vHoa=true;vXoa();vVe()}else $("vNx").textContent="Chữ này không có chữ hoa riêng. Bé viết chữ thường nhé."};
+$("vNghe").onclick=function(){if(vIt)noi(vIt.s)};
+function vToaDo(e){var r=$("cvV").getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]}
+var cvV=$("cvV");
+cvV.onpointerdown=function(e){e.preventDefault();cvV.setPointerCapture(e.pointerId);dangVe=true;var p=vToaDo(e);nét.push([p]);cV.fillStyle="#e5484d";cV.beginPath();cV.arc(p[0],p[1],11,0,7);cV.fill()};
+cvV.onpointermove=function(e){if(!dangVe)return;var s=nét[nét.length-1],p=vToaDo(e),l=s[s.length-1];s.push(p);cV.strokeStyle="#e5484d";cV.lineWidth=22;cV.lineCap="round";cV.lineJoin="round";cV.beginPath();cV.moveTo(l[0],l[1]);cV.lineTo(p[0],p[1]);cV.stroke()};
+cvV.onpointerup=cvV.onpointercancel=function(){dangVe=false};
+function mask(fn){var o=document.createElement("canvas");o.width=W;o.height=H;var c=o.getContext("2d");fn(c);return c.getImageData(0,0,W,H).data}
+$("vCham").onclick=function(){
+  if(!vIt)return;if(!nét.length){$("vNx").textContent="Bé tô theo nét xám trước, rồi mới bấm chấm điểm nhé.";return}
+  var t=vChu(),S=coSo(t);
+  var T=mask(function(c){datChu(c,S);c.fillStyle="#000";c.fillText(t,W/2,250)});
+  var Tt=mask(function(c){datChu(c,S);c.fillStyle="#000";c.strokeStyle="#000";c.lineWidth=46;c.lineJoin="round";c.strokeText(t,W/2,250);c.fillText(t,W/2,250)});
+  var C=mask(function(c){c.strokeStyle="#000";c.fillStyle="#000";c.lineWidth=26;c.lineCap="round";c.lineJoin="round";nét.forEach(function(s){c.beginPath();s.forEach(function(p,i){i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1])});c.stroke();c.beginPath();c.arc(s[0][0],s[0][1],13,0,7);c.fill()})});
+  var nT=0,nTC=0,nC=0,nCT=0;
+  for(var i=3;i<T.length;i+=4){var a=T[i]>100,b=C[i]>100;if(a){nT++;if(b)nTC++}if(b){nC++;if(Tt[i]>100)nCT++}}
+  var cov=nT?nTC/nT:0,pre=nC?nCT/nC:0,st=1;
+  if(cov>.85&&pre>.85)st=5;else if(cov>.75&&pre>.75)st=4;else if(cov>.6&&pre>.6)st=3;else if(cov>.42&&pre>.45)st=2;
+  var lk={5:["Tuyệt vời! Nét chữ của bé đẹp như cô viết.","Giỏi quá! Bé viết chữ rất đều nét."],4:["Rất tốt! Bé chỉ cần đi sát nét mẫu thêm chút nữa.","Giỏi lắm! Chữ của bé gần như hoàn hảo."],3:["Khá lắm! Bé thử viết thêm một lần cho đẹp hơn nhé.","Được rồi! Bé cố gắng đi theo nét xám nhé."],2:["Bé cố lên! Bé tô kín nét xám hơn nhé.","Chưa được đẹp, mình viết lại nhé."],1:["Mình thử lại nhé. Bé tô từ đầu nét xám đến cuối nét."]};
+  var gop=cov<.55?"Bé tô còn thiếu nét, tô kín chữ xám hơn nhé.":(pre<.6?"Bé viết hơi lệch ra ngoài nét mẫu.":"");
+  var tx=lk[st][Math.floor(Math.random()*lk[st].length)];
+  var sa="";for(var k=0;k<5;k++)sa+=k<st?"⭐":"☆";
+  $("vNx").innerHTML='<span class="sao5">'+sa+'</span>🤖 '+tx+(gop&&st<4?"<br><small style='color:var(--phu)'>"+gop+"</small>":"");
+  if(st>=3){congSao(st-2);noi(tx)}
+};
+
+/* ===== KHỞI ĐỘNG ===== */
+var g0=q.get("game");lamLai();if(g0&&["hoc","ghep","bong","viet"].indexOf(g0)>=0)chonGame(g0);
+</script>
+</body>
+</html>
