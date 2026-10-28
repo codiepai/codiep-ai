@@ -6,7 +6,7 @@
 <title>Vườn chữ cái - CÔ ĐIỆP AI</title>
 <meta name="description" content="4 trò chơi chữ cái cho bé lớp 1: học chữ, ghép chữ hoa chữ thường, bắn bóng chữ, tập viết có cô giáo AI chấm điểm. Chữ, âm và vần theo từng bài sách Tiếng Việt 1.">
 <link rel="icon" href="anh-nho.jpg">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#0b1f3a;--royal:#0b5cab;--blue:#1d7bd8;--gold:#ffc94a;--ok:#22b35e;--bad:#e5484d;--phu:#4a6378;--vien:#d3e6f8;--hong:#ff4d79}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -71,7 +71,7 @@ h2{font:800 21px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 4px}
 /* viet */
 .vhead{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .vhead .chip{padding:6px 10px;font-size:18px;min-width:50px}
-.bang{position:relative;width:100%;max-width:600px;aspect-ratio:600/320;margin:0 auto;border-radius:18px;overflow:hidden;background:#fff;border:4px solid #1b3b63;touch-action:none}
+.bang{position:relative;width:100%;max-width:600px;aspect-ratio:600/320;margin:0 auto;border-radius:18px;overflow:hidden;background:#fff;border:4px solid #3bb0e8;touch-action:none}
 .bang canvas{position:absolute;inset:0;width:100%;height:100%}
 .nx{margin:12px auto 0;max-width:600px;border-radius:16px;background:#f2f9ff;border:2px dashed var(--vien);padding:10px 14px;text-align:center;font-weight:600;min-height:64px}
 .nx .sao5{font-size:28px;letter-spacing:3px;display:block}
@@ -136,7 +136,7 @@ h2{font:800 21px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 4px}
 
 <!-- 4. VIET -->
 <div class="the an" id="g-viet">
-  <h2>AI tập viết chữ</h2><p class="mota">Bé tô theo nét mẫu bằng ngón tay hoặc chuột. Bấm "Chấm điểm", cô giáo AI cho sao và lời khen.</p>
+  <h2>AI tập viết chữ</h2><p class="mota">Chữ mẫu viết theo kiểu chữ tiểu học trên vở ô li. Bé tô theo nét mẫu bằng ngón tay hoặc chuột. Bấm "Chấm điểm", cô giáo AI cho sao và lời khen.</p>
   <div class="vhead" id="vChu"></div>
   <div class="hang" style="margin:0 0 10px"><span style="font-weight:600;font-size:14px;color:var(--phu)">Kiểu chữ:</span>
     <button class="chip on" id="kThuong" style="padding:4px 12px;font-size:16px">thường</button>
@@ -336,10 +336,13 @@ function bongLap(t){
 /* ===== 4. AI TẬP VIẾT ===== */
 var W=600,H=320,vIt=null,vHoa=false,nét=[],dangVe=false;
 var cT=$("cvT").getContext("2d"),cV=$("cvV").getContext("2d");
-var FONT='"Quicksand","Arial Rounded MT Bold","Segoe UI",Arial,sans-serif';
+var MET={base:205,asc:171,xh:68,desc:104};
+/* Chữ mẫu là hình chụp sẵn từ phông chữ viết tiểu học (thư mục chu/), tên tệp là mã chữ */
+var mauAnh={},vMau=null;
 function vChu(){return vIt?(vHoa&&vIt.u?vIt.u:vIt.l):""}
-function datChu(c,S){c.font="700 "+S+"px "+FONT;c.textAlign="center";c.textBaseline="alphabetic"}
-function coSo(txt){var S=280;var c=$("cvT").getContext("2d");datChu(c,S);var w=c.measureText(txt).width;if(w>W*.84)S=Math.floor(S*W*.84/w);return S}
+function mauSlug(t){return Array.from(t).map(function(c){return c.codePointAt(0).toString(16)}).join("-")}
+function mauTai(t,cb){var s=mauSlug(t);if(mauAnh[s]){cb(mauAnh[s]);return}var im=new Image();im.onload=function(){mauAnh[s]=im;cb(im)};im.onerror=function(){cb(null)};im.src="chu/"+s+".webp"}
+function tint(im,col){var o=document.createElement("canvas");o.width=W;o.height=H;var c=o.getContext("2d");c.drawImage(im,0,0);c.globalCompositeOperation="source-in";c.fillStyle=col;c.fillRect(0,0,W,H);return o}
 function vVe(){
   var d=dsach();
   $("vChu").innerHTML=d.map(function(i,k){return'<button class="chip'+(vIt===i?" on":"")+'" data-k="'+k+'">'+i.l+'</button>'}).join("");
@@ -348,14 +351,22 @@ function vVe(){
   [].forEach.call($("vChu").children,function(c,k){c.className="chip"+(d[k]===vIt?" on":"")});
   $("kThuong").className="chip"+(vHoa?"":" on");$("kHoa").className="chip"+(vHoa?" on":"");
   cT.clearRect(0,0,W,H);
-  cT.setLineDash([8,8]);cT.lineWidth=2;cT.strokeStyle="#9cc6ee";
-  [60,110,250].forEach(function(y){cT.beginPath();cT.moveTo(0,y);cT.lineTo(W,y);cT.stroke()});
-  cT.strokeStyle="#4a90d9";cT.setLineDash([]);cT.beginPath();cT.moveTo(0,250);cT.lineTo(W,250);cT.stroke();
-  if(!vIt)return;var t=vChu(),S=coSo(t);datChu(cT,S);
-  cT.fillStyle="#dcebfa";cT.fillText(t,W/2,250);
-  cT.setLineDash([7,7]);cT.lineWidth=2;cT.strokeStyle="#5aa0e6";cT.strokeText(t,W/2,250);cT.setLineDash([]);
+  /* vở ô li: ô lớn 68px (chữ thường cao 1 ô, chữ có đầu cao 2,5 ô), mỗi ô lớn chia 4 ô nhỏ */
+  var Q=17,B=MET.base;
+  cT.lineWidth=1;cT.strokeStyle="#a8dcf5";cT.setLineDash([2,3]);
+  for(var y=B%Q;y<H;y+=Q){cT.beginPath();cT.moveTo(0,y+.5);cT.lineTo(W,y+.5);cT.stroke()}
+  for(var x=0;x<W;x+=Q){cT.beginPath();cT.moveTo(x+.5,0);cT.lineTo(x+.5,H);cT.stroke()}
+  cT.setLineDash([]);cT.lineWidth=2;cT.strokeStyle="#3bb0e8";
+  for(var y=B%68;y<H;y+=68){cT.beginPath();cT.moveTo(0,y);cT.lineTo(W,y);cT.stroke()}
+  for(var x=0;x<W;x+=68){cT.beginPath();cT.moveTo(x,0);cT.lineTo(x,H);cT.stroke()}
+  vMau=null;if(!vIt)return;var t=vChu();
+  mauTai(t,function(im){
+    if(vChu()!==t)return;vMau=im;
+    if(!im){$("vNx").textContent="Chưa tải được chữ mẫu, bé tải lại trang nhé.";return}
+    var vien=tint(im,"#e5484d");[[-3,0],[3,0],[0,-3],[0,3],[-2,-2],[2,2],[-2,2],[2,-2]].forEach(function(o){cT.drawImage(vien,o[0],o[1])});
+    cT.drawImage(tint(im,"#ffe3e5"),0,0);
+  });
 }
-if(document.fonts&&document.fonts.load){document.fonts.load("700 200px Quicksand","aăâơ").then(function(){vVe()})}
 function vXoa(){nét=[];cV.clearRect(0,0,W,H);$("vNx").innerHTML="🤖 Cô giáo AI đang chờ bé viết..."}
 $("vXoa").onclick=vXoa;
 $("kThuong").onclick=function(){vHoa=false;vXoa();vVe()};
@@ -363,22 +374,22 @@ $("kHoa").onclick=function(){if(vIt&&vIt.u){vHoa=true;vXoa();vVe()}else $("vNx")
 $("vNghe").onclick=function(){if(vIt)noi(vIt.s)};
 function vToaDo(e){var r=$("cvV").getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]}
 var cvV=$("cvV");
-cvV.onpointerdown=function(e){e.preventDefault();cvV.setPointerCapture(e.pointerId);dangVe=true;var p=vToaDo(e);nét.push([p]);cV.fillStyle="#e5484d";cV.beginPath();cV.arc(p[0],p[1],11,0,7);cV.fill()};
-cvV.onpointermove=function(e){if(!dangVe)return;var s=nét[nét.length-1],p=vToaDo(e),l=s[s.length-1];s.push(p);cV.strokeStyle="#e5484d";cV.lineWidth=22;cV.lineCap="round";cV.lineJoin="round";cV.beginPath();cV.moveTo(l[0],l[1]);cV.lineTo(p[0],p[1]);cV.stroke()};
+cvV.onpointerdown=function(e){e.preventDefault();cvV.setPointerCapture(e.pointerId);dangVe=true;var p=vToaDo(e);nét.push([p]);cV.fillStyle="#1d5fa8";cV.beginPath();cV.arc(p[0],p[1],11,0,7);cV.fill()};
+cvV.onpointermove=function(e){if(!dangVe)return;var s=nét[nét.length-1],p=vToaDo(e),l=s[s.length-1];s.push(p);cV.strokeStyle="#1d5fa8";cV.lineWidth=22;cV.lineCap="round";cV.lineJoin="round";cV.beginPath();cV.moveTo(l[0],l[1]);cV.lineTo(p[0],p[1]);cV.stroke()};
 cvV.onpointerup=cvV.onpointercancel=function(){dangVe=false};
 function mask(fn){var o=document.createElement("canvas");o.width=W;o.height=H;var c=o.getContext("2d");fn(c);return c.getImageData(0,0,W,H).data}
 $("vCham").onclick=function(){
-  if(!vIt)return;if(!nét.length){$("vNx").textContent="Bé tô theo nét xám trước, rồi mới bấm chấm điểm nhé.";return}
-  var t=vChu(),S=coSo(t);
-  var T=mask(function(c){datChu(c,S);c.fillStyle="#000";c.fillText(t,W/2,250)});
-  var Tt=mask(function(c){datChu(c,S);c.fillStyle="#000";c.strokeStyle="#000";c.lineWidth=46;c.lineJoin="round";c.strokeText(t,W/2,250);c.fillText(t,W/2,250)});
+  if(!vIt)return;if(!nét.length){$("vNx").textContent="Bé tô theo nét đỏ trước, rồi mới bấm chấm điểm nhé.";return}
+  if(!vMau){$("vNx").textContent="Chưa tải được chữ mẫu, bé tải lại trang nhé.";return}
+  var T=mask(function(c){c.drawImage(vMau,0,0)});
+  var Tt=mask(function(c){c.drawImage(vMau,0,0);for(var a=0;a<12;a++){var r=a%2?20:13,g=a*Math.PI/6;c.drawImage(vMau,Math.round(Math.cos(g)*r),Math.round(Math.sin(g)*r))}for(var a=0;a<12;a++){var g=a*Math.PI/6;c.drawImage(vMau,Math.round(Math.cos(g)*20),Math.round(Math.sin(g)*20))}});
   var C=mask(function(c){c.strokeStyle="#000";c.fillStyle="#000";c.lineWidth=26;c.lineCap="round";c.lineJoin="round";nét.forEach(function(s){c.beginPath();s.forEach(function(p,i){i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1])});c.stroke();c.beginPath();c.arc(s[0][0],s[0][1],13,0,7);c.fill()})});
   var nT=0,nTC=0,nC=0,nCT=0;
   for(var i=3;i<T.length;i+=4){var a=T[i]>100,b=C[i]>100;if(a){nT++;if(b)nTC++}if(b){nC++;if(Tt[i]>100)nCT++}}
   var cov=nT?nTC/nT:0,pre=nC?nCT/nC:0,st=1;
   if(cov>.85&&pre>.85)st=5;else if(cov>.75&&pre>.75)st=4;else if(cov>.6&&pre>.6)st=3;else if(cov>.42&&pre>.45)st=2;
-  var lk={5:["Tuyệt vời! Nét chữ của bé đẹp như cô viết.","Giỏi quá! Bé viết chữ rất đều nét."],4:["Rất tốt! Bé chỉ cần đi sát nét mẫu thêm chút nữa.","Giỏi lắm! Chữ của bé gần như hoàn hảo."],3:["Khá lắm! Bé thử viết thêm một lần cho đẹp hơn nhé.","Được rồi! Bé cố gắng đi theo nét xám nhé."],2:["Bé cố lên! Bé tô kín nét xám hơn nhé.","Chưa được đẹp, mình viết lại nhé."],1:["Mình thử lại nhé. Bé tô từ đầu nét xám đến cuối nét."]};
-  var gop=cov<.55?"Bé tô còn thiếu nét, tô kín chữ xám hơn nhé.":(pre<.6?"Bé viết hơi lệch ra ngoài nét mẫu.":"");
+  var lk={5:["Tuyệt vời! Nét chữ của bé đẹp như cô viết.","Giỏi quá! Bé viết chữ rất đều nét."],4:["Rất tốt! Bé chỉ cần đi sát nét mẫu thêm chút nữa.","Giỏi lắm! Chữ của bé gần như hoàn hảo."],3:["Khá lắm! Bé thử viết thêm một lần cho đẹp hơn nhé.","Được rồi! Bé cố gắng đi theo nét đỏ nhé."],2:["Bé cố lên! Bé tô kín nét đỏ hơn nhé.","Chưa được đẹp, mình viết lại nhé."],1:["Mình thử lại nhé. Bé tô từ đầu nét đỏ đến cuối nét."]};
+  var gop=cov<.55?"Bé tô còn thiếu nét, tô kín chữ đỏ hơn nhé.":(pre<.6?"Bé viết hơi lệch ra ngoài nét mẫu.":"");
   var tx=lk[st][Math.floor(Math.random()*lk[st].length)];
   var sa="";for(var k=0;k<5;k++)sa+=k<st?"⭐":"☆";
   $("vNx").innerHTML='<span class="sao5">'+sa+'</span>🤖 '+tx+(gop&&st<4?"<br><small style='color:var(--phu)'>"+gop+"</small>":"");
