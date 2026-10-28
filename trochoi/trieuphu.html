@@ -108,6 +108,8 @@
   <div class="ds" id="ds"></div>
   <button class="nut" id="nut-ngau">🎲 Chọn bạn may mắn</button>
   <button class="nut xanh" id="nut-ds" style="font-size:13px">⚙ Danh sách</button>
+  <button class="nut xanh" id="nut-bo" style="font-size:13px">📚 Bộ câu hỏi</button>
+  <button class="nut xanh" id="nut-hd" style="font-size:13px">❓ Hướng dẫn</button>
 </aside>
 
 <main class="giua">
@@ -134,6 +136,8 @@
 <div id="phao"></div>
 
 <script src="danh-sach-lop.js"></script>
+<script src="cau-hoi-san.js"></script>
+<script src="bo-cau-hoi.js"></script>
 <script>
 window.onerror = (m, f, d) => {
   const goc = s => String(s || "").split(/[?#]/)[0];
@@ -180,8 +184,16 @@ const CAU_HOI = {
     ['Câu nào viết đúng?', ['Nhà bé ở gần bến đò.', 'Nhà bé ở gần bếm đò.', 'Nhà bé ở gằn bến đò.', 'Nhà bé ở gần bến dò.']]
   ]
 };
-const SAO = [1, 2, 3, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100];   // sao ở mỗi bậc; mốc an toàn: câu 5 và câu 10
-const MOC = [4, 9];
+const SAO15 = [1, 2, 3, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100];   // thang sao đầy đủ 15 bậc
+let SAO = SAO15.slice(), MOC = [4, 9];                                      // mốc an toàn mặc định: câu 5 và câu 10
+// Cô chọn số câu (5 đến 15): thang sao và mốc an toàn tự co lại cho vừa số câu
+function datThang(n) {
+  n = Math.max(2, Math.min(15, n | 0));
+  SAO = Array.from({ length: n }, (_, i) => SAO15[Math.round(i * 14 / (n - 1))]);
+  MOC = n >= 9 ? [Math.round(n / 3) - 1, Math.round(2 * n / 3) - 1] : n >= 5 ? [Math.round(n / 2) - 1] : [];
+  veThang();
+}
+let TONG = 0, tongHet = false;   // tổng thời gian cả buổi chơi (giây), 0 là không giới hạn
 // =====================================================================================
 
 const $ = id => document.getElementById(id);
@@ -211,14 +223,14 @@ function veDs() {
   });
 }
 function veThang() {
-  $('thang').innerHTML = SAO.map((s, i) => `<div class="bac ${MOC.includes(i) || i === 14 ? 'moc' : ''} ${i === bac && dangChoi ? 'dang' : ''} ${i < bac ? 'qua' : ''}"><span>${i + 1}</span><span>${s} ⭐</span></div>`).join('');
+  $('thang').innerHTML = SAO.map((s, i) => `<div class="bac ${MOC.includes(i) || i === SAO.length - 1 ? 'moc' : ''} ${i === bac && dangChoi ? 'dang' : ''} ${i < bac ? 'qua' : ''}"><span>${i + 1}</span><span>${s} ⭐</span></div>`).join('');
 }
 
 // ----- âm thanh, giọng đọc -----
 let amThanh = null;
 function keu(ds, kieu = 'triangle', cach = 0.12, to = 0.35) {
   try {
-    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    amThanh = amThanh || BoCauHoi.ctx();
     if (amThanh.state === 'suspended') amThanh.resume();
     ds.forEach((f, i) => { const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + i * cach;
       o.frequency.value = f; o.type = kieu; g.gain.setValueAtTime(to, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
@@ -242,11 +254,24 @@ function dongThe() { $('phu').hidden = true; }
 
 // ----- luồng chơi -----
 let nguoi = -1, bac = 0, boCau = [], dangChoi = false, khoa = false, giay = 60, demGio = null, dungGio = false, troGiup = {};
+let boNgoai = null;   // bộ câu hỏi cô chọn ở nút "Bộ câu hỏi"; chưa chọn thì dùng khối CAU_HOI mẫu ở trên
+// chia thang thành 3 phần dễ, vừa, khó theo số bậc; mỗi phần bốc ngẫu nhiên trong đoạn câu hỏi tương ứng
 function taoBoCau() {
-  const lay = (ds, n) => tron(ds).slice(0, n);
-  return [...lay(CAU_HOI.de, 5), ...lay(CAU_HOI.vua, 5), ...lay(CAU_HOI.kho, 5)].map(([hoi, da]) => ({ hoi, dung: da[0], chon: tron(da) }));
+  const n = SAO.length, a = Math.ceil(n / 3), b = Math.ceil((n - a) / 2), c = n - a - b;
+  const lay = (ds, k) => tron(ds).slice(0, k);
+  let doan = [CAU_HOI.de, CAU_HOI.vua, CAU_HOI.kho];
+  if (boNgoai && boNgoai.length >= n) {
+    const qq = boNgoai.map(x => [x.c, [x.a[x.d], ...x.a.filter((_, k) => k !== x.d)]]), L = qq.length;
+    const t1 = Math.round(L * a / n), t2 = Math.round(L * (a + b) / n);
+    doan = [qq.slice(0, t1), qq.slice(t1, t2), qq.slice(t2)];
+  }
+  let kq = [...lay(doan[0], a), ...lay(doan[1], b), ...lay(doan[2], c)];
+  if (kq.length < n) { const dung = new Set(kq.map(x => x[0])), them = tron([].concat(...doan)).filter(x => !dung.has(x[0])); kq = kq.concat(them.slice(0, n - kq.length)); }
+  return kq.map(([hoi, da]) => ({ hoi, dung: da[0], chon: tron(da) }));
 }
 function batDau(i) {
+  if (tongHet) { moThe('<div class="bieu">⏰</div><div class="vua">Đã hết giờ</div><div class="nho">Muốn chơi tiếp cô bấm nút Bộ câu hỏi để đặt lại thời gian.</div><button class="nut la" id="dong">Đóng</button>'); $('dong').onclick = dongThe; return; }
+  BoCauHoi.gio.bat();
   nguoi = i; bac = 0; boCau = taoBoCau(); dangChoi = true; troGiup = {};
   ['tg-50', 'tg-lop', 'tg-ban'].forEach(id => $(id).classList.remove('het'));
   $('nguoi-choi').textContent = `🎤 Người chơi: ${HS[i].goi}`;
@@ -265,7 +290,8 @@ function veCau() {
     b.onclick = () => chot(b);
     $('dap-an').appendChild(b);
   });
-  veThang(); chayGio(60);
+  veThang();
+  if (TONG) { clearInterval(demGio); } else chayGio(60);
   noi(`Câu ${bac + 1}. ${c.hoi}. ` + c.chon.map((v, k) => `${'ABCD'[k]}: ${v}`).join('. '));
 }
 function chayGio(s) {
@@ -289,7 +315,7 @@ function chot(b) {
     if (b === nutDung) {
       keu([523, 659, 784, 1047]);
       setTimeout(() => {
-        if (bac === 14) return ketThuc('thang');
+        if (bac === SAO.length - 1) return ketThuc('thang');
         const s = SAO[bac];
         bac++; phaoGiay(MOC.includes(bac - 1) ? 80 : 30);
         noi(`Chính xác! ${HS[nguoi].goi} được ${s} sao`);
@@ -304,23 +330,28 @@ function chot(b) {
     }
   }, 1600);
 }
+function hetGioTong() {
+  tongHet = true; clearInterval(demGio); khoa = true;
+  if (dangChoi) ketThuc('tong');
+  else { moThe('<div class="bieu">⏰</div><div class="vua">HẾT GIỜ!</div><div class="nho">Trò chơi đã dừng. Cô xem số sao của các bạn ở cột bên trái.</div><button class="nut la" id="dong">Đóng</button>'); $('dong').onclick = dongThe; }
+}
 function hetGio() { keu([300, 220], 'sawtooth', 0.2, 0.2); const c = boCau[bac]; [...$('dap-an').children].find(x => x.dataset.v === c.dung).classList.add('dung'); khoa = true; setTimeout(() => ketThuc('gio'), 1500); }
 function saoGiu(cach) {
-  if (cach === 'thang') return SAO[14];
-  if (cach === 'dung') return bac > 0 ? SAO[bac - 1] : 0;
+  if (cach === 'thang') return SAO[SAO.length - 1];
+  if (cach === 'dung' || cach === 'tong') return bac > 0 ? SAO[bac - 1] : 0;
   const m = MOC.filter(x => x < bac); return m.length ? SAO[m[m.length - 1]] : 0;
 }
 function ketThuc(cach) {
   dangChoi = false; clearInterval(demGio);
   const s = saoGiu(cach), h = HS[nguoi];
   diem[nguoi] = Math.max(diem[nguoi] || 0, s); daChoi.add(nguoi); luu('diem', diem); luu('daChoi', [...daChoi]);
-  const loi = { thang: 'Xuất sắc! Trả lời đúng cả 15 câu!', dung: 'Bạn đã dừng cuộc chơi.', sai: 'Tiếc quá! Câu này chưa đúng.', gio: 'Hết giờ rồi!' }[cach];
+  const loi = { thang: `Xuất sắc! Trả lời đúng cả ${SAO.length} câu!`, dung: 'Bạn đã dừng cuộc chơi.', sai: 'Tiếc quá! Câu này chưa đúng.', gio: 'Hết giờ rồi!', tong: '⏰ HẾT GIỜ! Trò chơi dừng, bạn giữ số sao đang có.' }[cach];
   if (cach === 'thang') phaoGiay(150);
   noi(`${loi} ${h.goi} nhận được ${s} sao`);
   moThe(`<div class="thuong-hieu">Cô Điệp AI</div><div class="bieu">${cach === 'thang' ? '🏆' : s ? '🌟' : '💪'}</div><div class="vua">${loi}</div>
     <div class="to">${h.goi}: ${s} ⭐</div><div class="nho">${s ? '' : 'Không sao, lần sau cố gắng nhé!'}</div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"><button class="nut" id="moi-ngau">🎲 Bạn may mắn tiếp theo</button><button class="nut xanh" id="dong">Chọn bạn ở danh sách</button></div>`);
-  $('moi-ngau').onclick = () => { dongThe(); chonNgau(); };
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">${tongHet ? '<button class="nut xanh" id="dong">Đóng</button>' : '<button class="nut" id="moi-ngau">🎲 Bạn may mắn tiếp theo</button><button class="nut xanh" id="dong">Chọn bạn ở danh sách</button>'}</div>`);
+  if ($('moi-ngau')) $('moi-ngau').onclick = () => { dongThe(); chonNgau(); };
   $('dong').onclick = () => { dongThe(); };
   $('nguoi-choi').textContent = ''; $('cau-hoi').textContent = 'Cô chọn bạn chơi tiếp theo nhé!'; $('dap-an').innerHTML = ''; $('dong-ho').textContent = '60'; $('dong-ho').classList.remove('gap');
   nguoi = -1; bac = 0; veDs(); veThang();
@@ -334,6 +365,7 @@ $('nut-nghe').onclick = () => {
 
 // ----- chọn bạn may mắn: chạy đèn qua danh sách -----
 function chonNgau() {
+  if (tongHet) { batDau(-1); return; }
   if (dangChoi) return;
   let ung = HS.map((_, i) => i).filter(i => !daChoi.has(i));
   if (!ung.length) { daChoi.clear(); luu('daChoi', []); ung = HS.map((_, i) => i); }
@@ -356,7 +388,7 @@ function dungTroGiup(id) { if (!dangChoi || khoa || troGiup[id]) return false; t
 $('tg-50').onclick = () => {
   if (!dungTroGiup('tg-50')) return;
   const c = boCau[bac];
-  tron([...$('dap-an').children].filter(b => b.dataset.v !== c.dung)).slice(0, 2).forEach(b => b.classList.add('an'));
+  tron([...$('dap-an').children].filter(b => b.dataset.v !== c.dung)).slice(0, Math.max(0, Math.min(2, c.chon.length - 2))).forEach(b => b.classList.add('an'));
   keu([660, 440], 'sine', 0.15);
 };
 $('tg-lop').onclick = () => {
@@ -374,6 +406,25 @@ $('tg-ban').onclick = () => {
   noi(`Bạn ${HS[b].goi} lên giúp bạn ${HS[nguoi].goi} nhé`);
   moThe(`<div class="bieu">📞</div><div class="vua">Bạn được nhờ giúp sức:</div><div class="to">${HS[b].goi}</div><div class="nho">Bạn ấy nói nhỏ đáp án cho ${HS[nguoi].goi} nghe nhé!</div><button class="nut la" id="ok">Đóng</button>`);
   $('ok').onclick = dongThe;
+};
+
+// ----- bộ câu hỏi (dùng chung với các trò chơi cả lớp khác) -----
+$('nut-hd').onclick = () => BoCauHoi.huongDan(BoCauHoi.HD.trieuphu);
+$('nut-bo').onclick = () => {
+  if (dangChoi) return;
+  BoCauHoi.mo({
+    coThoat: true, thoiGian: true, traHetCau: true, huongDan: BoCauHoi.HD.trieuphu,
+    huong: { nenMin: 8, nenMax: 15, toiThieu: 5, toiDa: 45, soMacDinh: 10, cacSo: [5, 8, 10, 12, 15], chonToiDa: 15, giuThuTu: true,
+      nhanSoCau: 'Số câu mỗi lượt chơi (số bậc thang, 5 đến 15)',
+      moTaGio: tg => 'Tổng thời gian ' + tg + ' cho cả buổi chơi (nhiều bạn lần lượt): hết giờ game DỪNG NGAY, bạn đang chơi giữ số sao đang có.',
+      ghiChu: 'Mỗi bạn lên chơi sẽ trả lời đúng số câu cô chọn, xếp từ dễ đến khó. Với câu cô dán, game hiểu thứ tự dán là từ dễ đến khó. Bộ câu hỏi nhiều hơn số câu chọn thì mỗi bạn nhận một bộ khác nhau.' },
+    khiChon: (ds, ten, giay, soCau) => {
+      boNgoai = ds; datThang(soCau); TONG = giay; tongHet = false;
+      BoCauHoi.gio.chuan(giay, hetGioTong);
+      $('dong-ho').style.display = giay ? 'none' : ''; $('nut-dung').style.display = giay ? 'none' : '';   // có giờ tổng thì bỏ giờ từng câu
+      $('cau-hoi').textContent = `Đã chọn bộ câu hỏi: ${ten}. Mỗi bạn trả lời ${soCau} câu${giay ? ', tổng thời gian ' + (giay / 60) + ' phút (đồng hồ chạy khi bạn đầu tiên bắt đầu)' : ''}. Cô chọn một bạn ở danh sách bên trái, hoặc bấm "Chọn bạn may mắn".`;
+    }
+  });
 };
 
 // ----- danh sách -----

@@ -102,12 +102,15 @@
     <button data-v="0">Mở đầu</button><button data-v="1">1. Khởi động</button><button data-v="2">2. Vượt chướng ngại vật</button>
     <button data-v="3">3. Tăng tốc</button><button data-v="4">4. Về đích</button><button data-v="5">🏆 Tổng kết</button>
   </div>
+  <div class="vong"><button id="nut-hd">❓ Hướng dẫn</button><button id="nut-bo">📚 Bộ câu hỏi</button><button id="nut-v2">✏️ Soạn Vòng 2</button></div>
 </header>
 <main id="main"></main>
 <div class="bang-diem" id="bang-diem"></div>
 <div id="phao"></div>
 
 <script src="danh-sach-lop.js"></script>
+<script src="cau-hoi-san.js"></script>
+<script src="bo-cau-hoi.js"></script>
 <script>
 window.onerror = (m, f, d) => {
   const goc = s => String(s || "").split(/[?#]/)[0];
@@ -118,6 +121,7 @@ window.onerror = (m, f, d) => {
 // ====== NỘI DUNG (cô sửa ở đây theo tuần). Mỗi câu: [câu hỏi, đáp án] ======
 // Tuần 7: Tiếng Việt bài 26-30 (ph, qu, v, x, y, chính tả c/k, g/gh, ng/ngh), Toán hình phẳng, số đến 10, mấy và mấy.
 // (Bản tuần 8 cũ lưu trong thư mục "Bản cũ".)
+let SO_KD = 6, SO_TT = 4, SO_VD = 3, TONG = 0;   // số câu: khởi động mỗi tổ, tăng tốc, về đích mỗi tổ; TONG là tổng thời gian cả trò (giây)
 const NOI_DUNG = {
   khoiDong: [   // mỗi tổ 6 câu, 60 giây
     ['Hình tam giác có mấy cạnh?', '3'], ['Hình vuông có mấy cạnh?', '4'], ['Hình chữ nhật có mấy cạnh?', '4'],
@@ -168,7 +172,7 @@ const luuTo = () => luu('to', TO);
 let amThanh = null;
 function keu(ds, kieu = 'triangle', cach = 0.12, to = 0.35) {
   try {
-    amThanh = amThanh || new (window.AudioContext || window.webkitAudioContext)();
+    amThanh = amThanh || BoCauHoi.ctx();
     if (amThanh.state === 'suspended') amThanh.resume();
     ds.forEach((f, i) => { const o = amThanh.createOscillator(), g = amThanh.createGain(), t = amThanh.currentTime + i * cach;
       o.frequency.value = f; o.type = kieu; g.gain.setValueAtTime(to, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
@@ -213,10 +217,16 @@ function chayGio(s, khiHet, id = 'gio') {
   demGio = setInterval(() => { g--; ve(); if (g <= 5 && g > 0) keu([880], 'sine', 0, 0.12); if (g <= 0) { clearInterval(demGio); tiec(); if (khiHet) khiHet(); } }, 1000);
 }
 const dungGio = () => clearInterval(demGio);
+const chayGioGoc = chayGio;
+chayGio = function (s, khiHet, id = 'gio') {          // có giờ tổng thì bỏ giờ từng câu để cô khỏi bị rối kế hoạch
+  if (TONG) { clearInterval(demGio); const e = $(id); if (e) { e.textContent = ''; e.classList.remove('gap'); } return; }
+  return chayGioGoc(s, khiHet, id);
+};
 
 // ----- các vòng -----
 let vong = 0;
 function denVong(v) {
+  if (v >= 1 && v <= 4) BoCauHoi.gio.bat();         // đồng hồ tổng chạy từ khi vào vòng thi đầu tiên
   vong = v; dungGio(); danhDauTo(-1); if (window.speechSynthesis) speechSynthesis.cancel();
   document.querySelectorAll('#vong button').forEach(b => b.classList.toggle('dang', +b.dataset.v === v));
   [moDau, khoiDong, vcnv, tangToc, veDich, tongKet][v]();
@@ -225,10 +235,10 @@ document.querySelectorAll('#vong button').forEach(b => b.onclick = () => denVong
 
 function moDau() {
   $('main').innerHTML = `<div class="man"><div class="thuong-hieu">Cô Điệp AI</div><div class="tieu-de">🏔️ Đường lên đỉnh tri thức</div>
-    <div class="luat"><b>4 tổ thi qua 4 vòng:</b><br>1. <b>Khởi động</b>: mỗi tổ 60 giây trả lời nhanh 6 câu, đúng +10.<br>
+    <div class="luat"><b>4 tổ thi qua 4 vòng:</b><br>1. <b>Khởi động</b>: mỗi tổ trả lời nhanh ${SO_KD} câu${TONG ? '' : ' trong 60 giây'}, đúng +10.<br>
     2. <b>Vượt chướng ngại vật</b>: 4 hàng chữ + ô giữa, mỗi câu đúng +10 và mở một góc bức tranh. Đoán được từ khóa thì được nhiều điểm.<br>
     3. <b>Tăng tốc</b>: 4 câu, tổ trả lời đúng nhanh nhất +40, rồi +30, +20, +10.<br>
-    4. <b>Về đích</b>: mỗi tổ chọn 3 câu 10, 20 hoặc 30 điểm. Có <b>ngôi sao hy vọng</b>: đúng được gấp đôi, sai bị trừ.<br>
+    4. <b>Về đích</b>: mỗi tổ chọn ${SO_VD} câu 10, 20 hoặc 30 điểm. Có <b>ngôi sao hy vọng</b>: đúng được gấp đôi, sai bị trừ.<br>
     Bấm vào tên tổ ở dưới để đổi tên. Nút + và − để cô sửa điểm.</div>
     <div class="hang"><button class="nut la" id="vao">Vào vòng Khởi động ➜</button><button class="nut xam" id="xoa">Chơi lại từ đầu (xóa điểm)</button></div></div>`;
   $('vao').onclick = () => denVong(1);
@@ -240,7 +250,7 @@ let kdDaXong = [], kdBo = [];
 function khoiDong() {
   $('main').innerHTML = `<div class="man"><div class="tieu-de">1. Khởi động</div>
     <div class="hang"><span>Chọn tổ thi:</span><div class="chon-to" id="ct"></div></div>
-    <div class="o-cau" id="cau"><div>Mỗi tổ 60 giây, 6 câu hỏi. Cô chọn tổ rồi bấm Bắt đầu.</div></div>
+    <div class="o-cau" id="cau"><div>Mỗi tổ ${SO_KD} câu hỏi${TONG ? '' : ' trong 60 giây'}. Cô chọn tổ rồi bấm Bắt đầu.</div></div>
     <div class="hang"><span class="dong-ho" id="gio">60</span><button class="nut" id="bat" disabled>Bắt đầu</button><button class="nut xanh" id="nghe" disabled>🔊</button><button class="nut xam" id="xem" disabled>Xem đáp án</button>
     <button class="nut la" id="dung" disabled>Đúng +10</button><button class="nut do" id="sai" disabled>Sai</button><button class="nut xam" id="bo" disabled>Bỏ qua</button></div></div>`;
   let to = -1, ds = [], k = 0;
@@ -250,7 +260,7 @@ function khoiDong() {
   });
   const hien = () => {
     const [h, d] = ds[k];
-    $('cau').innerHTML = `<div class="so">${TO[to].ten} · Câu ${k + 1}/6</div><div>${h}</div><div class="dap" id="dap" hidden>${d}</div>`; noi(h);
+    $('cau').innerHTML = `<div class="so">${TO[to].ten} · Câu ${k + 1}/${SO_KD}</div><div>${h}</div><div class="dap" id="dap" hidden>${d}</div>`; noi(h);
   };
   const tiep = () => { k++; if (k < ds.length) hien(); else xong(); };
   const xong = () => {
@@ -260,8 +270,8 @@ function khoiDong() {
   };
   $('bat').onclick = () => {
     if (to < 0) return;
-    if (!kdBo.length || kdBo.length < 6) kdBo = tron(NOI_DUNG.khoiDong);
-    ds = kdBo.splice(0, 6); k = 0;
+    if (!kdBo.length || kdBo.length < SO_KD) kdBo = tron(NOI_DUNG.khoiDong);
+    ds = kdBo.splice(0, SO_KD); k = 0;
     $('bat').disabled = true; ['nghe', 'xem', 'dung', 'sai', 'bo'].forEach(id => $(id).disabled = false);
     hien(); chayGio(60, xong);
   };
@@ -283,7 +293,7 @@ function vcnv() {
   $('main').innerHTML = `<div class="man"><div class="tieu-de">2. Vượt chướng ngại vật</div>
     <div class="vcnv"><div class="hang-chu">${N.hang.map(([h, d], i) => `<div class="dong-chu ${T.hang[i]}" data-i="${i}"><span class="stt">${i + 1}</span>${oChu(d, T.hang[i])}</div>`).join('')}
       <div class="dong-chu ${T.giua}" data-i="g"><span class="stt">★</span>${oChu(N.giua[1], T.giua)}</div></div>
-      <div><div class="tranh"><span class="hinh">${N.hinh}</span>${manh.map(([l, t, w, h], i) => `<div class="manh ${T.hang[i] === 'dung' || T.moTuKhoa ? 'mo' : ''}" style="left:${l};top:${t};width:${w};height:${h}">${i + 1}</div>`).join('')}
+      <div><div class="tranh"><span class="hinh">${/\.(png|jpe?g|webp|gif)$/i.test(N.hinh) ? `<img src="${N.hinh}" alt="" style="width:100%;height:100%;object-fit:contain">` : N.hinh}</span>${manh.map(([l, t, w, h], i) => `<div class="manh ${T.hang[i] === 'dung' || T.moTuKhoa ? 'mo' : ''}" style="left:${l};top:${t};width:${w};height:${h}">${i + 1}</div>`).join('')}
         <div class="manh ${T.giua === 'dung' || T.moTuKhoa ? 'mo' : ''}" style="left:30%;top:30%;width:40%;height:40%;background:linear-gradient(135deg,#f08c00,#c2255c)">★</div></div>
         <div class="tu-khoa" style="margin-top:8px">Từ khóa: <b>${T.moTuKhoa ? N.tuKhoa : [...N.tuKhoa].map(c => c === ' ' ? ' ' : '_').join('')}</b> (${N.tuKhoa.replace(/ /g, '').length} chữ cái)</div></div></div>
     <div class="o-cau" id="cau"><div>Các tổ lần lượt chọn hàng ngang. Cô bấm vào số hàng để hiện câu hỏi.</div></div>
@@ -355,19 +365,19 @@ let vdDaXong = [], vdDaDung = { 10: [], 20: [], 30: [] };
 function veDich() {
   $('main').innerHTML = `<div class="man"><div class="tieu-de">4. Về đích</div>
     <div class="hang"><span>Tổ đang thi:</span><div class="chon-to" id="ct"></div></div>
-    <div class="hang"><span>Chọn gói câu hỏi (mỗi tổ 3 câu):</span><div class="goi" id="goi"><button data-d="10">10</button><button data-d="20">20</button><button data-d="30">30</button></div>
+    <div class="hang"><span>Chọn gói câu hỏi (mỗi tổ ${SO_VD} câu):</span><div class="goi" id="goi"><button data-d="10">10</button><button data-d="20">20</button><button data-d="30">30</button></div>
       <button class="nut xam sao-hv" id="sao">⭐ Ngôi sao hy vọng</button><span id="con-lai"></span></div>
     <div class="o-cau" id="cau"><div>Cô chọn tổ, rồi tổ chọn gói 10, 20 hoặc 30 điểm.</div></div>
     <div class="hang"><span class="dong-ho" id="gio">--</span><button class="nut xanh" id="nghe">🔊</button><button class="nut xam" id="xem">Xem đáp án</button>
       <button class="nut la" id="dung">Đúng</button><button class="nut do" id="sai">Sai</button><span>Tổ khác giành quyền:</span><div class="chon-to" id="gianh"></div></div></div>`;
   let to = -1, soCau = 0, cau = null, goi = 0, sao = false;
   $('ct').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}" class="${vdDaXong.includes(i) ? 'xong' : ''}">${t.ten}</button>`).join('');
-  $('ct').querySelectorAll('button').forEach(b => b.onclick = () => { to = +b.dataset.i; soCau = 0; $('ct').querySelectorAll('button').forEach(x => x.classList.toggle('bat', x === b)); danhDauTo(to); $('con-lai').textContent = 'Còn 3 câu'; });
+  $('ct').querySelectorAll('button').forEach(b => b.onclick = () => { to = +b.dataset.i; soCau = 0; $('ct').querySelectorAll('button').forEach(x => x.classList.toggle('bat', x === b)); danhDauTo(to); $('con-lai').textContent = `Còn ${SO_VD} câu`; });
   $('gianh').innerHTML = TO.map((t, i) => `<button style="--mau:${MAU_TO[i]}" data-i="${i}">${t.ten}</button>`).join('');
   $('gianh').querySelectorAll('button').forEach(b => b.onclick = () => { if (!cau) return; const i = +b.dataset.i; if (i === to) return; congDiem(i, goi); vui(); $('dap').hidden = false; ketCau(); });
   $('sao').onclick = () => { if (cau) return; sao = !sao; $('sao').classList.toggle('bat', sao); };
   $('goi').querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (to < 0 || cau || soCau >= 3) return;
+    if (to < 0 || cau || soCau >= SO_VD) return;
     goi = +b.dataset.d;
     let kho = NOI_DUNG.veDich[goi].filter((_, k) => !vdDaDung[goi].includes(k));
     if (!kho.length) { vdDaDung[goi] = []; kho = NOI_DUNG.veDich[goi]; }
@@ -377,8 +387,8 @@ function veDich() {
   });
   const ketCau = () => {
     dungGio(); cau = null; sao = false; $('sao').classList.remove('bat'); soCau++;
-    $('con-lai').textContent = soCau < 3 ? `Còn ${3 - soCau} câu` : 'Xong 3 câu';
-    if (soCau >= 3 && !vdDaXong.includes(to)) { vdDaXong.push(to); $('ct').querySelector(`[data-i="${to}"]`).classList.add('xong'); }
+    $('con-lai').textContent = soCau < SO_VD ? `Còn ${SO_VD - soCau} câu` : `Xong ${SO_VD} câu`;
+    if (soCau >= SO_VD && !vdDaXong.includes(to)) { vdDaXong.push(to); $('ct').querySelector(`[data-i="${to}"]`).classList.add('xong'); }
   };
   $('nghe').onclick = () => { if (cau) noi(cau[0]); };
   $('xem').onclick = () => { const d = $('dap'); if (d) d.hidden = false; };
@@ -394,6 +404,89 @@ function tongKet() {
     <div class="tieu-de" style="font-size:max(26px,calc(var(--u)*5))">Chúc mừng ${xh[0].ten}!</div></div>`;
   phaoGiay(150); keu([392, 523, 659, 784, 1047, 1319, 1568]); noi(`Chúc mừng ${xh[0].ten} đã về nhất`);
 }
+
+// ===== BỘ CÂU HỎI DÙNG CHUNG (nút "Bộ câu hỏi") =====
+// Cô chọn: bộ câu hỏi, số câu từng vòng, TỔNG thời gian cả trò. Vòng 1, 3, 4 lấy câu từ bộ đã chọn.
+// Học sinh trả lời miệng, các đáp án A B C hiện ngay trong câu hỏi.
+const cyc = (ds, bat, n) => Array.from({ length: n }, (_, i) => ds[(bat + i) % ds.length]);
+const goiVD = (g) => Math.max(4, Math.ceil(TO.length * g.vd / 3) + 1);        // số câu mỗi gói 10, 20, 30 điểm ở vòng Về đích
+$('nut-bo').onclick = () => {
+  BoCauHoi.mo({
+    coThoat: true, thoiGian: true, huongDan: BoCauHoi.HD.olympia,
+    truong: [
+      { id: 'kd', nhan: 'Vòng 1 Khởi động: số câu mỗi tổ', tuyChon: [3, 4, 5, 6, 8], mac: 6 },
+      { id: 'tt', nhan: 'Vòng 3 Tăng tốc: số câu', tuyChon: [2, 3, 4, 5, 6], mac: 4 },
+      { id: 'vd', nhan: 'Vòng 4 Về đích: số câu mỗi tổ', tuyChon: [1, 2, 3], mac: 3 }
+    ],
+    huong: { nenMin: 24, nenMax: 46, toiThieu: 8, toiDa: 120, anSoCau: true, cacSo: [12, 24, 40],
+      canCau: g => TO.length * g.kd + g.tt + 3 * goiVD(g),
+      moTaGio: tg => 'Tổng thời gian ' + tg + ' cho cả trò: hết giờ game DỪNG NGAY và hiện bảng tổng kết.',
+      ghiChu: 'Cô chọn số câu cho từng vòng (ô bên dưới), game tự tính cần bao nhiêu câu hỏi. Có giờ tổng thì game bỏ giờ từng câu để cô khỏi bị rối. Vòng 2 (ô chữ) cô soạn riêng ở nút "Soạn Vòng 2".' },
+    khiChon: (ds, ten, giay, soCau, g) => {
+      SO_KD = g.kd; SO_TT = g.tt; SO_VD = g.vd;
+      const mo = c => [c.c + '   ' + c.a.map((x, k) => 'ABCD'[k] + '. ' + x).join('   '), 'ABCD'[c.d] + '. ' + c.a[c.d]], q = ds.map(mo), kd = SO_KD * TO.length, ps = goiVD(g);
+      NOI_DUNG.khoiDong = cyc(q, 0, kd);
+      NOI_DUNG.tangToc = cyc(q, kd, SO_TT);
+      NOI_DUNG.veDich = { 10: cyc(q, kd + SO_TT, ps), 20: cyc(q, kd + SO_TT + ps, ps), 30: cyc(q, kd + SO_TT + 2 * ps, ps) };
+      kdBo = []; vdDaDung = { 10: [], 20: [], 30: [] };
+      TONG = giay; BoCauHoi.gio.chuan(giay, hetGioOl);
+      alert('Đã nạp bộ câu hỏi: ' + ten + ' (' + ds.length + ' câu). Khởi động ' + SO_KD + ' câu mỗi tổ, Tăng tốc ' + SO_TT + ' câu, Về đích ' + SO_VD + ' câu mỗi tổ' + (giay ? '. Tổng thời gian ' + (giay / 60) + ' phút, đồng hồ chạy khi vào vòng 1' : '') + '. Vòng 2 (ô chữ) cô soạn ở nút "Soạn Vòng 2".');
+      denVong(0);
+    }
+  });
+};
+function hetGioOl() {                      // hết giờ tổng: dừng ngay, hiện bảng tổng kết
+  clearInterval(demGio); denVong(5);
+  const m = document.querySelector('#main .man');
+  if (m) m.insertAdjacentHTML('afterbegin', '<div style="background:#e03131;color:#fff;font-weight:bold;border-radius:20px;padding:6px 18px;margin-bottom:8px;display:inline-block">⏰ HẾT GIỜ! Trò chơi đã dừng, đây là kết quả.</div>');
+}
+
+// ===== SOẠN VÒNG 2 (ô chữ): cô dán theo mẫu, mọi lớp mọi môn dùng được =====
+const MAU_V2 = ['Hàng 1: Quyển vở để bé vẽ tranh gọi là gì? | VỞ VẼ', 'Hàng 2: Xe có bánh to nặng, làm phẳng mặt đường? | XE LU', 'Hàng 3: Loài hoa màu vàng có trong bài Y y? | DÃ QUỲ',
+  'Hàng 4: Củ màu vàng dùng để nấu ăn? | CỦ NGHỆ', 'Ô giữa: Hình có 3 cạnh gọi là hình gì? | TAM GIÁC', 'Từ khóa: QUẢ DỪA', 'Hình: 🥥'].join('\n');
+function phanTichV2(txt) {
+  const kq = { hang: [], giua: null, tuKhoa: '', hinh: '' }, loi = [];
+  const cau = v => { const k = v.split('|'); return k.length >= 2 && k[0].trim() && k[1].trim() ? [k[0].trim(), k.slice(1).join('|').trim().toUpperCase()] : null; };
+  for (const l of txt.replace(/\r/g, '').split('\n').map(x => x.trim()).filter(Boolean)) {
+    let m;
+    if ((m = l.match(/^h[àa]ng\s*(\d)\s*[:.\-]\s*(.+)$/i))) { const c = cau(m[2]); if (c) kq.hang[+m[1] - 1] = c; else loi.push('Hàng ' + m[1] + ': cần dạng "câu hỏi | ĐÁP ÁN".'); }
+    else if ((m = l.match(/^[ôo]\s*gi[ữu]a\s*[:.\-]\s*(.+)$/i))) { const c = cau(m[1]); if (c) kq.giua = c; else loi.push('Ô giữa: cần dạng "câu hỏi | ĐÁP ÁN".'); }
+    else if ((m = l.match(/^t[ừu]\s*kh[óo]a\s*[:.\-]\s*(.+)$/i))) kq.tuKhoa = m[1].trim().toUpperCase();
+    else if ((m = l.match(/^h[ìi]nh\s*[:.\-]\s*(.+)$/i))) kq.hinh = m[1].trim();
+  }
+  for (let i = 0; i < 4; i++) if (!kq.hang[i]) loi.push('Thiếu Hàng ' + (i + 1) + '.');
+  if (!kq.giua) loi.push('Thiếu dòng Ô giữa.');
+  if (!kq.tuKhoa) loi.push('Thiếu dòng Từ khóa.');
+  if (!kq.hinh) kq.hinh = '🎁';
+  return { kq, loi };
+}
+$('nut-v2').onclick = () => {
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:flex;align-items:center;justify-content:center;padding:12px';
+  ov.innerHTML = `<div style="background:#fff;color:#222;border-radius:20px;width:min(96vw,760px);max-height:94vh;overflow:auto;padding:18px 20px;font:16px/1.5 Arial,sans-serif">
+    <h2 style="color:#c2255c;margin-bottom:6px">✏️ Soạn Vòng 2: Vượt chướng ngại vật</h2>
+    <div style="background:#fff6d6;border:2px solid #ffd166;border-radius:14px;padding:10px 12px;font-size:15px">Gồm <b>4 hàng ngang</b>, <b>1 ô giữa</b>, <b>từ khóa</b> và <b>hình</b> che sau 5 mảnh (đúng một hàng thì mở một mảnh).<br>
+    Mỗi dòng: <b>Hàng 1: câu hỏi | ĐÁP ÁN</b> (đáp án là một từ hoặc cụm từ ngắn, viết hoa).<br>
+    <b>Hình:</b> gõ một biểu tượng (🥥) hoặc tên file ảnh cô đã lưu cùng thư mục, ví dụ <b>hinh/quadua.png</b>.<br>
+    Cô sửa nội dung theo lớp và môn của mình. Mẫu bên dưới là lớp 1.</div>
+    <textarea id="v2" style="width:100%;min-height:210px;margin-top:10px;font:15px/1.5 Arial;padding:8px;border:2px solid #ccc;border-radius:10px"></textarea>
+    <div id="v2-loi" style="color:#c92a2a;font-weight:bold;min-height:22px;margin-top:6px"></div>
+    <button id="v2-mau" style="padding:8px 16px;border-radius:20px;border:0;background:#868e96;color:#fff;font-weight:bold;margin-right:8px">Điền mẫu</button>
+    <button id="v2-luu" style="padding:8px 22px;border-radius:20px;border:0;background:#2b8a3e;color:#fff;font-weight:bold;margin-right:8px">Lưu vòng 2</button>
+    <button id="v2-dong" style="padding:8px 16px;border-radius:20px;border:0;background:#c92a2a;color:#fff;font-weight:bold">Đóng</button></div>`;
+  document.body.appendChild(ov);
+  const ht = NOI_DUNG.vcnv, ta = ov.querySelector('#v2');
+  ta.value = ht.hang.map((h, i) => `Hàng ${i + 1}: ${h[0]} | ${h[1]}`).join('\n') + `\nÔ giữa: ${ht.giua[0]} | ${ht.giua[1]}\nTừ khóa: ${ht.tuKhoa}\nHình: ${ht.hinh}`;
+  ov.querySelector('#v2-mau').onclick = () => { ta.value = MAU_V2; };
+  ov.querySelector('#v2-dong').onclick = () => ov.remove();
+  ov.querySelector('#v2-luu').onclick = () => {
+    const { kq, loi } = phanTichV2(ta.value);
+    if (loi.length) { ov.querySelector('#v2-loi').textContent = loi.join(' '); return; }
+    NOI_DUNG.vcnv = { hang: kq.hang, giua: kq.giua, hinh: kq.hinh, tuKhoa: kq.tuKhoa };
+    luu('vcnv', NOI_DUNG.vcnv); vcnvTT = null; ov.remove(); denVong(2);
+  };
+};
+{ const v = doc('vcnv'); if (v && v.hang && v.hang.length === 4 && v.giua && v.tuKhoa) NOI_DUNG.vcnv = v; }   // nhớ Vòng 2 cô đã soạn
 
 veDiem(); denVong(0);
 </script>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thử âm thanh</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(160deg,#d8efff,#fff6e0);color:#1d3557;min-height:100vh;padding:20px 16px 40px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:28px;color:#e63946;text-align:center;margin-bottom:6px}
+.sub{text-align:center;font-size:17px;color:#5b6b80;margin-bottom:16px;max-width:520px}
+button{font:800 26px system-ui,sans-serif;border:0;border-radius:40px;padding:16px 34px;color:#fff;background:linear-gradient(90deg,#ff5d8f,#ff9a3c);box-shadow:0 6px 0 rgba(0,0,0,.2);width:100%;max-width:420px;margin:8px 0}
+button:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.xanh{background:#2a9d4a;font-size:20px;padding:12px}.do{background:#e63946;font-size:20px;padding:12px}
+.card{background:#fff;border-radius:20px;padding:14px 16px;width:100%;max-width:520px;margin:10px 0;box-shadow:0 6px 16px rgba(29,53,87,.12);font-size:17px;line-height:1.5}
+.card b{color:#c2255c}
+.ok{color:#2a9d4a;font-weight:700}.sai{color:#e63946;font-weight:700}
+.kq{white-space:pre-line}
+</style></head><body>
+<h1>🔊 Thử âm thanh</h1>
+<div class="sub">Cô bấm nút to bên dưới rồi nghe. Em sẽ kêu 2 tiếng "ting" cách nhau 1 giây.</div>
+<button id="thu">🔊 Bấm để thử tiếng</button>
+<div class="card"><b>Em nghe được tiếng nào?</b><br>
+ <button class="xanh" data-k="Nghe được CẢ HAI tiếng">Nghe được cả hai tiếng</button>
+ <button class="do" data-k="Nghe được tiếng 1 mà không nghe tiếng 2">Chỉ nghe tiếng thứ nhất</button>
+ <button class="do" data-k="Nghe được tiếng 2 mà không nghe tiếng 1">Chỉ nghe tiếng thứ hai</button>
+ <button class="do" data-k="KHÔNG nghe tiếng nào">Không nghe tiếng nào</button></div>
+<div class="card"><b>Thông tin máy</b> (cô chụp màn hình gửi em nếu vẫn không nghe)<div class="kq" id="tt">Chưa thử.</div></div>
+<div class="card" style="font-size:15px">Không nghe? Gạt nút nhỏ bên hông iPhone lên (không còn thấy dải màu cam), tăng âm lượng bằng nút bên cạnh, mở bằng Safari hoặc Chrome (không dùng trình duyệt trong Zalo hoặc Messenger).</div>
+<script src="bo-cau-hoi.js"></script>
+<script>
+var ghi = '', traLoi = '';
+function hien() {
+  var t = BoCauHoi.trangThaiAm();
+  document.getElementById('tt').textContent =
+    'Bộ âm thanh (WebAudio): ' + t.ctx + '\nThẻ audio mở khóa: ' + (t.khoa ? 'rồi' : 'chưa') + '\nChế độ phát: ' + t.phien + '\nKết quả thử: ' + ghi + (traLoi ? '\nCô trả lời: ' + traLoi : '') + '\nMáy: ' + navigator.userAgent;
+}
+document.getElementById('thu').onclick = function () {
+  ghi = 'đang thử...';
+  var c = BoCauHoi.ctx();                                   // tiếng 1: bộ âm thanh của trò chơi
+  try {
+    var o = c.createOscillator(), g = c.createGain(); o.type = 'sine'; o.frequency.value = 880; g.gain.setValueAtTime(.4, c.currentTime); g.gain.exponentialRampToValueAtTime(.001, c.currentTime + .6);
+    o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + .6); ghi = 'tiếng 1 đã phát; ';
+  } catch (e) { ghi = 'tiếng 1 LỖI ' + e + '; '; }
+  setTimeout(function () {                                  // tiếng 2: thẻ audio thường
+    var a = new Audio(BoCauHoi.taoWav(660, .6)); var p = a.play();
+    if (p && p.then) p.then(function () { ghi += 'tiếng 2 đã phát'; hien(); }).catch(function (e) { ghi += 'tiếng 2 BỊ CHẶN (' + e.name + ')'; hien(); }); else ghi += 'tiếng 2 đã phát';
+    hien();
+  }, 1000);
+  hien();
+};
+[].forEach.call(document.querySelectorAll('[data-k]'), function (b) { b.onclick = function () { traLoi = b.dataset.k; hien(); }; });
+setInterval(hien, 1500); hien();
+</script></body></html>

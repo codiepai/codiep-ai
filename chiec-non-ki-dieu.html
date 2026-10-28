@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chiếc Nón Kì Diệu</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d3557;--red:#e63946;--yel:#ffd166;--grn:#2a9d4a;--blu:#1d7bd8;--soft:#5b6b80}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(circle at 12% 8%,#ffe0ec 0,transparent 35%),radial-gradient(circle at 90% 90%,#fff0c9 0,transparent 38%),linear-gradient(160deg,#d8efff,#fff6e0);
+  background-attachment:fixed;display:flex;flex-direction:column;align-items:center;padding:14px 12px 70px;overflow-x:hidden}
+.cloud{position:fixed;font-size:64px;opacity:.55;pointer-events:none;animation:drift 38s linear infinite}
+@keyframes drift{from{transform:translateX(-120px)}to{transform:translateX(110vw)}}
+h1{font:800 clamp(34px,7vw,66px)/1 'Baloo 2';color:var(--red);text-align:center;text-shadow:3px 3px 0 #fff,5px 5px 0 rgba(29,53,87,.15);letter-spacing:1px}
+.slogan{font:700 clamp(15px,2.6vw,22px) 'Baloo 2';color:#fff;background:linear-gradient(90deg,#ff5d8f,#ff9a3c);padding:4px 22px;border-radius:30px;margin:8px 0 12px;text-align:center}
+.bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:6px}
+.chip{background:#fff;border-radius:18px;padding:6px 16px;font:700 20px 'Baloo 2';box-shadow:0 6px 14px rgba(29,53,87,.12)}
+.chip b{color:var(--red)}
+select{font:700 18px 'Be Vietnam Pro';padding:7px 12px;border-radius:14px;border:3px solid #fff;background:#fff;color:var(--ink);box-shadow:0 6px 14px rgba(29,53,87,.12)}
+.stage{position:relative;width:min(86vw,440px);aspect-ratio:1;margin:8px auto 6px}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);z-index:3;width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-top:44px solid var(--red);filter:drop-shadow(0 4px 3px rgba(0,0,0,.3))}
+#wheel{width:100%;height:100%;filter:drop-shadow(0 14px 18px rgba(29,53,87,.3))}
+.hint{font:600 17px 'Be Vietnam Pro';color:var(--soft);text-align:center;min-height:26px}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+button{font:800 clamp(18px,3.6vw,26px) 'Baloo 2';border:0;border-radius:40px;padding:10px 30px;cursor:pointer;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.18);transition:transform .08s,box-shadow .08s}
+button:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.b-spin{background:linear-gradient(90deg,#ff5d8f,#ff9a3c);font-size:clamp(24px,5vw,36px);padding:12px 44px}
+.b-blue{background:var(--blu)}.b-green{background:var(--grn)}.b-gray{background:#7a8aa0}
+.sign{position:fixed;left:0;right:0;bottom:0;text-align:center;padding:10px;font:600 15px 'Be Vietnam Pro';color:var(--soft);background:rgba(255,255,255,.75)}
+/* hộp câu hỏi */
+.ov{position:fixed;inset:0;background:rgba(29,53,87,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:10}
+.ov.on{display:flex}
+.card{background:#fff;border-radius:28px;padding:22px 22px 18px;width:min(96vw,720px);max-height:94vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:pop .25s}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.tag{display:inline-block;background:var(--yel);color:var(--ink);font:800 22px 'Baloo 2';border-radius:20px;padding:2px 18px;margin-bottom:8px}
+.q{font:700 clamp(22px,4.4vw,32px)/1.35 'Be Vietnam Pro';margin-bottom:14px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;font:700 clamp(18px,3.6vw,26px) 'Be Vietnam Pro';color:var(--ink);background:#eef6ff;border:4px solid #cfe3fa;border-radius:20px;padding:12px 14px;box-shadow:none}
+.opt i{flex:none;width:44px;height:44px;border-radius:50%;background:var(--blu);color:#fff;font:800 24px/44px 'Baloo 2';text-align:center;font-style:normal}
+.opt.ok{background:#d9f5df;border-color:var(--grn)}.opt.ok i{background:var(--grn)}
+.opt.no{background:#ffe1e1;border-color:var(--red);opacity:.75}.opt.no i{background:var(--red)}
+.msg{font:800 clamp(24px,5vw,34px) 'Baloo 2';margin-top:12px;min-height:44px;text-align:center}
+.msg.good{color:var(--grn)}.msg.bad{color:var(--red)}
+.rowb{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.res{text-align:center}
+.res .big{font:800 72px/1 'Baloo 2';color:var(--red)}
+.res .stars{font-size:46px;margin:6px 0}
+.res p{font:600 20px 'Be Vietnam Pro';margin:4px 0}
+.confetti{position:fixed;top:-20px;font-size:28px;z-index:20;pointer-events:none;animation:fall 2.2s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+</style></head><body>
+<div class="cloud" style="top:6%;left:-100px">☁️</div><div class="cloud" style="top:38%;left:-100px;animation-delay:-16s;font-size:46px">☁️</div>
+
+<h1>CHIẾC NÓN KÌ DIỆU</h1>
+<div class="slogan">HỌC MÀ CHƠI, CHƠI MÀ HỌC</div>
+
+<div class="bar">
+  <button class="b-blue" id="bo" style="font-size:18px;padding:6px 18px" title="Chọn hoặc dán bộ câu hỏi">📚 Bộ câu hỏi</button>
+  <div class="chip">Điểm: <b id="diem">0</b></div>
+  <div class="chip">Câu: <b id="cau">0</b>/<span id="tong">10</span></div>
+  <button class="b-blue" id="hd" style="font-size:18px;padding:6px 18px">❓ Hướng dẫn</button>
+  <button class="b-gray" id="tat" style="font-size:18px;padding:6px 16px" title="Bật hoặc tắt âm thanh">🔊 Âm thanh</button>
+</div>
+
+<div class="stage">
+  <div class="pointer"></div>
+  <svg id="wheel" viewBox="-210 -210 420 420" aria-label="Chiếc nón kì diệu"></svg>
+</div>
+<div class="hint" id="hint">Bấm "QUAY NÓN" để bắt đầu!</div>
+<div class="btns">
+  <button class="b-spin" id="quay">QUAY NÓN</button>
+  <button class="b-blue" id="xem">Xem điểm</button>
+  <button class="b-green" id="lai">Chơi lại</button>
+</div>
+
+<div class="sign">Cô Hồng Điệp - TH Kim Đồng</div>
+
+<!-- hộp câu hỏi -->
+<div class="ov" id="ovq"><div class="card">
+  <div class="tag" id="qtag"></div>
+  <div class="q" id="qtext"></div>
+  <div class="opts" id="opts"></div>
+  <div class="msg" id="msg"></div>
+  <div class="rowb"><button class="b-green" id="tiep" style="display:none">Câu hỏi tiếp theo ▶</button></div>
+</div></div>
+
+<!-- hộp điểm -->
+<div class="ov" id="ovr"><div class="card res">
+  <div class="tag">KẾT QUẢ</div>
+  <div class="big" id="rdiem">0</div>
+  <div class="stars" id="rsao"></div>
+  <p id="rchu"></p>
+  <div class="rowb" style="margin-top:14px">
+    <button class="b-blue" id="dong">Tiếp tục chơi</button>
+    <button class="b-green" id="lai2">Chơi lại</button>
+  </div>
+</div></div>
+
+<script>
+/* Bộ câu hỏi soạn sẵn theo bài. File này do công cụ sinh ra, đừng sửa tay. */
+window.CAUHOI_SAN = [{"mon":"Toán 1","bai":[{"ten":"Bài 1: Các số 0, 1, 2, 3, 4, 5","q":[{"c":"🍎🍎🍎🍎🍎  Có mấy quả táo?","a":["5","3","4"],"d":0},{"c":"Số 1 đọc là gì?","a":["một","không","năm"],"d":0},{"c":"Số «không» viết là số mấy?","a":["0","5","2"],"d":0},{"c":"Số nào đứng ngay sau số 1 trong dãy số?","a":["2","0","5"],"d":0},{"c":"Điền số còn thiếu: 1, __, 3, 4, 5","a":["2","5","1"],"d":0},{"c":"Điền số còn thiếu (đếm ngược): 5, 4, __, 2, 1","a":["5","0","3"],"d":2},{"c":"Đĩa không có quả nào. Trên đĩa có mấy quả?","a":["2","1","0"],"d":2},{"c":"Số nào đứng ngay trước số 4 trong dãy số?","a":["3","2","5"],"d":0},{"c":"🚗🚗🚗🚗  Có mấy chiếc xe?","a":["3","4","1"],"d":1},{"c":"Số 5 đọc là gì?","a":["bốn","năm","hai"],"d":1}]},{"ten":"Bài 2: Các số 6, 7, 8, 9, 10","q":[{"c":"🍎🍎🍎🍎🍎🍎  Có mấy quả táo?","a":["10","6","8"],"d":1},{"c":"Số 9 đọc là gì?","a":["mười","sáu","chín"],"d":2},{"c":"Số «mười» viết là số mấy?","a":["10","6","9"],"d":0},{"c":"Số nào đứng ngay sau số 8 trong dãy số?","a":["5","6","9"],"d":2},{"c":"Điền số còn thiếu: 5, __, 7, 8, 9","a":["5","10","6"],"d":2},{"c":"Điền số còn thiếu (đếm ngược): 9, __, 7, 6, 5","a":["7","8","6"],"d":1},{"c":"Số nào đứng ngay trước số 7 trong dãy số?","a":["8","6","9"],"d":1},{"c":"🌸🌸🌸🌸🌸🌸🌸🌸🌸  Có mấy bông hoa?","a":["6","9","10"],"d":1},{"c":"Số 10 đọc là gì?","a":["sáu","mười","tám"],"d":1},{"c":"Số «bảy» viết là số mấy?","a":["8","7","9"],"d":1}]},{"ten":"Bài 3: Nhiều hơn, ít hơn, bằng nhau","q":[{"c":"🎈   và   🚗\nHai nhóm này thế nào?","a":["Nhóm chiếc xe nhiều hơn","Nhóm quả bóng bay nhiều hơn","Bằng nhau"],"d":2},{"c":"🎈🎈🎈🎈🎈🎈   và   🚗🚗🚗🚗🚗🚗\nHai nhóm này thế nào?","a":["Nhóm quả bóng bay nhiều hơn","Bằng nhau","Nhóm chiếc xe nhiều hơn"],"d":1},{"c":"🎈🎈🎈   và   🍓🍓🍓🍓\nNhóm nào ít hơn?","a":["Quả dâu","Quả bóng bay","Bằng nhau"],"d":1},{"c":"🍎🍎🍎🍎🍎🍎🍎🍎   và   🌸🌸🌸🌸🌸\nNhóm nào nhiều hơn?","a":["Quả táo","Bông hoa","Bằng nhau"],"d":0},{"c":"⭐⭐   và   🚗🚗\nHai nhóm này thế nào?","a":["Nhóm chiếc xe nhiều hơn","Nhóm ngôi sao nhiều hơn","Bằng nhau"],"d":2},{"c":"🍎🍎🍎   và   🍓🍓🍓🍓🍓\nNhóm nào ít hơn?","a":["Bằng nhau","Quả táo","Quả dâu"],"d":1},{"c":"🎈🎈   và   🚗🚗\nHai nhóm này thế nào?","a":["Nhóm quả bóng bay nhiều hơn","Nhóm chiếc xe nhiều hơn","Bằng nhau"],"d":2},{"c":"🐟🐟🐟🐟🐟🐟🐟   và   🐥🐥🐥🐥\nNhóm nào nhiều hơn?","a":["Con cá","Con gà","Bằng nhau"],"d":0},{"c":"🍎🍎🍎🍎🍎🍎   và   🌸🌸🌸🌸🌸🌸\nHai nhóm này thế nào?","a":["Bằng nhau","Nhóm quả táo nhiều hơn","Nhóm bông hoa nhiều hơn"],"d":0},{"c":"🍎🍎🍎🍎🍎🍎🍎   và   🍓🍓🍓🍓🍓\nNhóm nào ít hơn?","a":["Quả dâu","Quả táo","Bằng nhau"],"d":0}]},{"ten":"Bài 4: So sánh số","q":[{"c":"Chọn dấu thích hợp:  8  ?  8","a":[">","<","="],"d":2},{"c":"Số nào lớn hơn 5?","a":["3","1","7"],"d":2},{"c":"Số nào bé hơn 7?","a":["10","9","6"],"d":2},{"c":"Trong các số 10, 3, 2, số nào lớn nhất?","a":["10","3","2"],"d":0},{"c":"Trong các số 7, 8, 10, số nào bé nhất?","a":["8","10","7"],"d":2},{"c":"Chọn dấu thích hợp:  10  ?  10","a":[">","<","="],"d":2},{"c":"Số nào lớn hơn 6?","a":["10","4","0"],"d":0},{"c":"Số nào bé hơn 2?","a":["0","6","9"],"d":0},{"c":"Trong các số 9, 4, 7, số nào lớn nhất?","a":["7","9","4"],"d":1},{"c":"Trong các số 2, 4, 1, số nào bé nhất?","a":["2","4","1"],"d":2}]},{"ten":"Bài 5: Mấy và mấy","q":[{"c":"🌸   thêm   🌸\nTất cả có mấy bông hoa?","a":["2","3","4"],"d":0},{"c":"6 gồm 3 và mấy?","a":["3","4","2"],"d":0},{"c":"🚗   thêm   🚗🚗🚗\nTất cả có mấy chiếc xe?","a":["4","3","2"],"d":0},{"c":"2 và 4 được mấy?","a":["7","6","4"],"d":1},{"c":"5 gồm 2 và mấy?","a":["1","3","4"],"d":1},{"c":"1 và 4 được mấy?","a":["6","5","2"],"d":1},{"c":"2 và 3 được mấy?","a":["4","2","5"],"d":2},{"c":"🎈   thêm   🎈🎈🎈🎈\nTất cả có mấy quả bóng bay?","a":["3","6","5"],"d":2},{"c":"1 và 1 được mấy?","a":["3","5","2"],"d":2},{"c":"4 và 2 được mấy?","a":["6","2","4"],"d":0}]},{"ten":"Bài 6: Luyện tập chung","q":[{"c":"🐥🐥🐥🐥🐥🐥🐥  Có mấy con gà?","a":["7","2","9"],"d":0},{"c":"Chọn dấu thích hợp:  10  ?  10","a":[">","<","="],"d":2},{"c":"Dãy số nào xếp theo thứ tự từ bé đến lớn?","a":["5, 1, 9","9, 5, 1","1, 5, 9","1, 9, 5"],"d":2},{"c":"🎈🎈🎈🎈🎈🎈🎈\n🌸🌸🌸🌸🌸🌸\n🐥🐥🐥\nNhóm nào ít nhất?","a":["bông hoa","con gà","quả bóng bay"],"d":1},{"c":"5 và 1 được mấy?","a":["5","4","6"],"d":2},{"c":"Trong các số 1, 8, 5, số nào lớn nhất?","a":["1","5","8"],"d":2},{"c":"⭐⭐   và   🌸🌸🌸🌸🌸🌸\nNhóm nào nhiều hơn?","a":["Bằng nhau","Bông hoa","Ngôi sao"],"d":1},{"c":"Số 5 đọc là gì?","a":["một","năm","ba"],"d":1},{"c":"🎈🎈🎈🎈🎈🎈  Có mấy quả bóng bay?","a":["6","4","2"],"d":0},{"c":"Chọn dấu thích hợp:  2  ?  6","a":[">","<","="],"d":1}]},{"ten":"Bài 7: Hình vuông, hình tròn, hình tam giác, hình chữ nhật","q":[{"c":"🔺  Đây là hình gì?","a":["Hình tam giác","Hình chữ nhật","Hình vuông","Hình tròn"],"d":0},{"c":"Chiếc bánh chưng nhìn từ trên xuống có dạng hình gì?","a":["Hình chữ nhật","Hình tam giác","Hình tròn","Hình vuông"],"d":3},{"c":"Hình nào có 3 cạnh?","a":["Hình vuông","Hình tròn","Hình tam giác"],"d":2},{"c":"Khăn quàng đỏ của em có dạng hình gì?","a":["Hình tròn","Hình tam giác","Hình vuông","Hình chữ nhật"],"d":1},{"c":"Viên gạch hoa lát nền nhà có dạng hình gì?","a":["Hình chữ nhật","Hình vuông","Hình tròn","Hình tam giác"],"d":1},{"c":"Hình nào có 4 cạnh bằng nhau?","a":["Hình tam giác","Hình vuông","Hình tròn"],"d":1},{"c":"🟦  Đây là hình gì?","a":["Hình chữ nhật","Hình tam giác","Hình tròn","Hình vuông"],"d":3},{"c":"Chiếc đĩa CD có dạng hình gì?","a":["Hình chữ nhật","Hình vuông","Hình tròn","Hình tam giác"],"d":2},{"c":"Hình nào có 4 cạnh, 2 cạnh dài và 2 cạnh ngắn?","a":["Hình tam giác","Hình chữ nhật","Hình tròn"],"d":1},{"c":"Cái bảng đen trong lớp có dạng hình gì?","a":["Hình vuông","Hình tròn","Hình chữ nhật","Hình tam giác"],"d":2}]},{"ten":"Bài 8: Thực hành lắp ghép, xếp hình","q":[{"c":"🟦 🔵 🟦 🔺 🔺 🔺\nCó mấy hình vuông?","a":["2","1","4"],"d":0},{"c":"Muốn xếp một hình tam giác bằng que tính, cần mấy que tính?","a":["6","2","3"],"d":2},{"c":"🔺 🔵 🟦 🔵 🟦 🔺\nCó mấy hình vuông?","a":["3","2","5"],"d":1},{"c":"🔵  Đây là hình gì?","a":["Hình tròn","Hình vuông","Hình chữ nhật","Hình tam giác"],"d":0},{"c":"Cái bảng đen trong lớp có dạng hình gì?","a":["Hình chữ nhật","Hình vuông","Hình tròn","Hình tam giác"],"d":0},{"c":"🔺 🟦 🟦 🟦 🟦\nCó mấy hình tam giác?","a":["4","2","1"],"d":2},{"c":"Muốn xếp một hình vuông bằng que tính, cần mấy que tính?","a":["5","3","4"],"d":2},{"c":"🟦 🟦 🔺 🟦 🔵\nCó mấy hình tròn?","a":["6","4","1"],"d":2},{"c":"🔺  Đây là hình gì?","a":["Hình chữ nhật","Hình vuông","Hình tam giác","Hình tròn"],"d":2},{"c":"Chiếc bánh chưng nhìn từ trên xuống có dạng hình gì?","a":["Hình tròn","Hình chữ nhật","Hình vuông","Hình tam giác"],"d":2}]},{"ten":"Bài 9: Luyện tập chung (hình phẳng)","q":[{"c":"Hình nào điền tiếp vào dãy?\n🟦 🔺 🟦 🔺 🟦 ?","a":["🔵","🟦","🔺"],"d":2},{"c":"🟦 🔵 🔺 🔵 🟦 🔵 🔺\nCó mấy hình tròn?","a":["1","3","2"],"d":1},{"c":"Quyển vở của em có dạng hình gì?","a":["Hình vuông","Hình tam giác","Hình tròn","Hình chữ nhật"],"d":3},{"c":"Hình nào có 3 cạnh?","a":["Hình tròn","Hình vuông","Hình tam giác"],"d":2},{"c":"🔵  Đây là hình gì?","a":["Hình tròn","Hình vuông","Hình chữ nhật","Hình tam giác"],"d":0},{"c":"Hình nào điền tiếp vào dãy?\n🟦 🔵 🔺 🟦 🔵 🔺 🟦 ?","a":["🔺","🟦","🔵"],"d":2},{"c":"🟦 🟦 🟦 🟦 🔺\nCó mấy hình tam giác?","a":["1","3","5"],"d":0},{"c":"Mặt bàn học của em thường có dạng hình gì?","a":["Hình tam giác","Hình vuông","Hình tròn","Hình chữ nhật"],"d":3},{"c":"Hình nào có 4 cạnh bằng nhau?","a":["Hình tam giác","Hình vuông","Hình tròn"],"d":1},{"c":"🔺  Đây là hình gì?","a":["Hình tròn","Hình vuông","Hình chữ nhật","Hình tam giác"],"d":3}]}]},{"mon":"Tiếng Việt 1","bai":[{"ten":"Bài 1: A a","q":[{"c":"Chữ «A» in hoa, viết thường là chữ nào?","a":["o","a","e"],"d":1},{"c":"Chữ «a» viết thường, viết hoa là chữ nào?","a":["O","A","E"],"d":1},{"c":"«Nam và Hà ca hát.» có mấy tiếng?","a":["4","6","5"],"d":2},{"c":"Khi gặp cô giáo, em nói gì?","a":["Em chạy đi chỗ khác","Em chào cô ạ","Em không nói gì"],"d":1}]},{"ten":"Bài 2: B b, dấu huyền","q":[{"c":"Tiếng nào có dấu huyền?","a":["ba","bà"],"d":1},{"c":"Tiếng «ba» gồm những chữ nào ghép lại?","a":["c + a","b + a","b + o"],"d":1},{"c":"Chữ «B» in hoa, viết thường là chữ nào?","a":["h","d","b"],"d":2},{"c":"Mẹ của bố hoặc của mẹ, em gọi là gì?","a":["bà","cô","chú"],"d":0},{"c":"«Bà cho bé búp bê.» có mấy tiếng?","a":["6","4","5"],"d":2},{"c":"«ba ba» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «ba» có dấu thanh nào?","a":["dấu huyền","không có dấu"],"d":1},{"c":"Tiếng «bà» có dấu thanh nào?","a":["dấu huyền","không có dấu"],"d":0}]},{"ten":"Bài 3: C c, dấu sắc","q":[{"c":"Chữ «C» in hoa, viết thường là chữ nào?","a":["c","o","e"],"d":0},{"c":"Tiếng nào có dấu sắc?","a":["ca","cá","cà"],"d":1},{"c":"Con vật nào sống dưới nước?","a":["cá","bà","ba"],"d":0},{"c":"Tiếng nào bắt đầu bằng chữ «c»?","a":["ba","bà","cá"],"d":2},{"c":"Câu «Nam và bố câu cá.» có mấy tiếng?","a":["5","6","7"],"d":0},{"c":"Ghép chữ «c» với «a» được tiếng nào?","a":["cà","cá","ca"],"d":2},{"c":"Tiếng «cà» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":1},{"c":"Ghép chữ «c» với «á» được tiếng nào?","a":["cá","ca","ba"],"d":0},{"c":"Tiếng «ca» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":2},{"c":"Ghép chữ «c» với «à» được tiếng nào?","a":["cà","ca","bà"],"d":0}]},{"ten":"Bài 4: E e, Ê ê","q":[{"c":"Tiếng nào có chữ «e»?","a":["bế","cà","bé"],"d":2},{"c":"Câu «Bé kể mẹ nghe về bạn bè.» có mấy tiếng?","a":["7","8","9"],"d":0},{"c":"Ghép chữ «b» với «é» được tiếng nào?","a":["ca","bé","bè"],"d":1},{"c":"Tiếng «bé» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":0},{"c":"Ghép chữ «b» với «è» được tiếng nào?","a":["bè","cà","ba"],"d":0},{"c":"Tiếng «bè» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":1},{"c":"Tiếng nào có chữ «ê»?","a":["bè","ca","bế"],"d":2},{"c":"Ghép chữ «b» với «ế» được tiếng nào?","a":["cá","bế","ca"],"d":1},{"c":"Tiếng «bế» có dấu thanh nào?","a":["dấu huyền","dấu sắc","không có dấu"],"d":1}]},{"ten":"Bài 5: Ôn tập","q":[{"c":"Tiếng nào bắt đầu bằng chữ «b»?","a":["cà","be","ca"],"d":1},{"c":"«bè cá» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Ghép chữ «c» với «á» được tiếng nào?","a":["bà","cá","cà"],"d":1},{"c":"Tiếng «bế» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu huyền"],"d":1},{"c":"«ba bà» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Ghép chữ «b» với «ế» được tiếng nào?","a":["ca","cà","bế"],"d":2},{"c":"Tiếng «cá» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":0},{"c":"Câu «Bé kể mẹ nghe về bạn bè.» có mấy tiếng?","a":["6","7","8"],"d":1},{"c":"Ghép chữ «b» với «è» được tiếng nào?","a":["ba","cá","bè"],"d":2},{"c":"Tiếng «ba» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu huyền"],"d":0}]},{"ten":"Bài 6: O o, dấu hỏi","q":[{"c":"Tiếng nào có chữ «o»?","a":["cá","có","bè"],"d":1},{"c":"«bò bó» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Ghép chữ «c» với «ó» được tiếng nào?","a":["có","bé","cá"],"d":0},{"c":"Tiếng «bò» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":1},{"c":"«cò có» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Ghép chữ «b» với «ỏ» được tiếng nào?","a":["bỏ","cò","cà"],"d":0},{"c":"Tiếng «cò» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":1},{"c":"Câu «Đàn bò gặm cỏ.» có mấy tiếng?","a":["2","3","4"],"d":2},{"c":"Ghép chữ «b» với «ò» được tiếng nào?","a":["ca","cà","bò"],"d":2},{"c":"Tiếng «cỏ» có dấu thanh nào?","a":["không có dấu","dấu hỏi","dấu huyền"],"d":1}]},{"ten":"Bài 7: Ô ô, dấu nặng","q":[{"c":"Tiếng nào có chữ «ô»?","a":["bộ","bò","bà"],"d":0},{"c":"«cổ cò» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Ghép chữ «b» với «ổ» được tiếng nào?","a":["bò","bổ","bỏ"],"d":1},{"c":"Tiếng «cộ» có dấu thanh nào?","a":["dấu hỏi","dấu nặng","dấu sắc"],"d":1},{"c":"«cô bé» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Ghép chữ «b» với «é» được tiếng nào?","a":["bé","bế","bổ"],"d":0},{"c":"Tiếng «bộ» có dấu thanh nào?","a":["dấu nặng","dấu hỏi","dấu huyền"],"d":0},{"c":"Câu «Bố và Hà đi bộ trên hè phố.» có mấy tiếng?","a":["8","9","10"],"d":0},{"c":"Ghép chữ «c» với «ổ» được tiếng nào?","a":["bè","cổ","cỏ"],"d":1},{"c":"Tiếng «bé» có dấu thanh nào?","a":["dấu nặng","dấu sắc","dấu huyền"],"d":1}]},{"ten":"Bài 8: D d, Đ đ","q":[{"c":"Tiếng nào bắt đầu bằng chữ «d»?","a":["cỏ","bộ","da"],"d":2},{"c":"«đá dế» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «đò» bắt đầu bằng chữ nào?","a":["d","đ","b"],"d":1},{"c":"Ghép chữ «đ» với «ò» được tiếng nào?","a":["cộ","đò","ba"],"d":1},{"c":"Tiếng «đá» có dấu thanh nào?","a":["dấu sắc","dấu huyền","không có dấu"],"d":0},{"c":"«ô đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «đỏ» bắt đầu bằng chữ nào?","a":["b","d","đ"],"d":2},{"c":"Ghép chữ «đ» với «ỏ» được tiếng nào?","a":["đỏ","bè","đá"],"d":0},{"c":"Tiếng «đò» có dấu thanh nào?","a":["dấu hỏi","dấu sắc","dấu huyền"],"d":2},{"c":"Câu «Dưới gốc đa, các bạn chơi dung dăng dung dẻ.» có mấy tiếng?","a":["10","11","12"],"d":0}]},{"ten":"Bài 9: Ơ ơ, dấu ngã","q":[{"c":"Tiếng nào có chữ «ơ»?","a":["ba","bộ","cờ"],"d":2},{"c":"«bờ đê» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «dỡ» bắt đầu bằng chữ nào?","a":["đ","d","c"],"d":1},{"c":"Ghép chữ «d» với «ỡ» được tiếng nào?","a":["ô","dỡ","cờ"],"d":1},{"c":"Tiếng «bờ» có dấu thanh nào?","a":["dấu sắc","dấu ngã","dấu huyền"],"d":2},{"c":"«cá cờ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «cá» bắt đầu bằng chữ nào?","a":["b","d","c"],"d":2},{"c":"Ghép chữ «c» với «á» được tiếng nào?","a":["bố","cá","bế"],"d":1},{"c":"Tiếng «đê» có dấu thanh nào?","a":["dấu sắc","dấu hỏi","không có dấu"],"d":2},{"c":"Câu «Tàu dỡ hàng ở cảng.» có mấy tiếng?","a":["5","6","7"],"d":0}]},{"ten":"Bài 10: Ôn tập","q":[{"c":"Tiếng nào bắt đầu bằng chữ «d»?","a":["bó","bộ","dỗ"],"d":2},{"c":"«cờ đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «bờ» bắt đầu bằng chữ nào?","a":["đ","c","b"],"d":2},{"c":"Ghép chữ «b» với «ờ» được tiếng nào?","a":["có","bờ","đa"],"d":1},{"c":"Tiếng «bé» có dấu thanh nào?","a":["dấu huyền","dấu ngã","dấu sắc"],"d":2},{"c":"Tiếng nào bắt đầu bằng chữ «đ»?","a":["bé","cổ","đỡ"],"d":2},{"c":"«đỗ đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «cá» bắt đầu bằng chữ nào?","a":["đ","c","b"],"d":1},{"c":"Ghép chữ «c» với «á» được tiếng nào?","a":["bở","đỏ","cá"],"d":2},{"c":"Tiếng «dỗ» có dấu thanh nào?","a":["dấu ngã","dấu sắc","dấu huyền"],"d":0}]},{"ten":"Bài 11: I i, K k","q":[{"c":"Tiếng nào bắt đầu bằng chữ «k»?","a":["kĩ","bà","cộ"],"d":0},{"c":"«bí đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «kỉ» bắt đầu bằng chữ nào?","a":["k","b","d"],"d":0},{"c":"Ghép chữ «k» với «ỉ» được tiếng nào?","a":["bỏ","kỉ","be"],"d":1},{"c":"Tiếng «bí» có dấu thanh nào?","a":["dấu ngã","dấu sắc","không có dấu"],"d":1},{"c":"«kẻ ô» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «kĩ» bắt đầu bằng chữ nào?","a":["k","đ","c"],"d":0},{"c":"Ghép chữ «k» với «ĩ» được tiếng nào?","a":["kĩ","da","đỗ"],"d":0},{"c":"Tiếng «ô» có dấu thanh nào?","a":["dấu nặng","không có dấu","dấu hỏi"],"d":1},{"c":"Câu «Nam vẽ kì đà.» có mấy tiếng?","a":["2","3","4"],"d":2}]},{"ten":"Bài 12: H h, L l","q":[{"c":"Tiếng nào bắt đầu bằng chữ «h»?","a":["có","bò","hồ"],"d":2},{"c":"«lá đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «lá» bắt đầu bằng chữ nào?","a":["c","l","k"],"d":1},{"c":"Ghép chữ «l» với «á» được tiếng nào?","a":["đà","lá","cô"],"d":1},{"c":"Tiếng «hé» có dấu thanh nào?","a":["dấu sắc","dấu ngã","dấu hỏi"],"d":0},{"c":"«bờ hồ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «đỏ» bắt đầu bằng chữ nào?","a":["l","h","đ"],"d":2},{"c":"Ghép chữ «đ» với «ỏ» được tiếng nào?","a":["bộ","đỏ","li"],"d":1},{"c":"Tiếng «le» có dấu thanh nào?","a":["không có dấu","dấu ngã","dấu sắc"],"d":0},{"c":"Câu «Le le bơi trên hồ.» có mấy tiếng?","a":["3","4","5"],"d":2}]},{"ten":"Bài 13: U u, Ư ư","q":[{"c":"Tiếng nào có chữ «u»?","a":["đu","hổ","đổ"],"d":0},{"c":"«hổ dữ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «lữ» bắt đầu bằng chữ nào?","a":["l","k","đ"],"d":0},{"c":"Ghép chữ «l» với «ữ» được tiếng nào?","a":["hổ","hồ","lữ"],"d":2},{"c":"Tiếng «hổ» có dấu thanh nào?","a":["không có dấu","dấu nặng","dấu hỏi"],"d":2},{"c":"«đu đủ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «đu» bắt đầu bằng chữ nào?","a":["đ","h","l"],"d":0},{"c":"Ghép chữ «đ» với «u» được tiếng nào?","a":["dự","đu","đổ"],"d":1},{"c":"Tiếng «lữ» có dấu thanh nào?","a":["dấu hỏi","dấu ngã","dấu nặng"],"d":1},{"c":"Câu «Đu đủ chín ngọt lừ.» có mấy tiếng?","a":["3","4","5"],"d":2}]},{"ten":"Bài 14: Ch ch, Kh kh","q":[{"c":"Tiếng nào bắt đầu bằng chữ «ch»?","a":["chè","dù","kỉ"],"d":0},{"c":"«chú khỉ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «chỉ» bắt đầu bằng chữ nào?","a":["đ","h","ch"],"d":2},{"c":"Ghép chữ «ch» với «ỉ» được tiếng nào?","a":["li","chỉ","lừ"],"d":1},{"c":"Tiếng «chú» có dấu thanh nào?","a":["dấu sắc","dấu hỏi","dấu ngã"],"d":0},{"c":"«chợ cá» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «chè» bắt đầu bằng chữ nào?","a":["kh","ch","l"],"d":1},{"c":"Ghép chữ «ch» với «è» được tiếng nào?","a":["cử","chè","dỡ"],"d":1},{"c":"Tiếng «cá» có dấu thanh nào?","a":["dấu ngã","không có dấu","dấu sắc"],"d":2},{"c":"Câu «Mấy chú khỉ ăn chuối.» có mấy tiếng?","a":["3","4","5"],"d":2}]},{"ten":"Bài 15: Ôn tập","q":[{"c":"Tiếng nào bắt đầu bằng chữ «ch»?","a":["chú","đa","dữ"],"d":0},{"c":"«che ô» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «che» bắt đầu bằng chữ nào?","a":["d","b","ch"],"d":2},{"c":"Ghép chữ «ch» với «e» được tiếng nào?","a":["ba","khô","che"],"d":2},{"c":"Tiếng «chú» có dấu thanh nào?","a":["dấu sắc","dấu nặng","dấu ngã"],"d":0},{"c":"«bờ hồ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «hẹ» bắt đầu bằng chữ nào?","a":["k","kh","h"],"d":2},{"c":"Ghép chữ «h» với «ẹ» được tiếng nào?","a":["kẻ","bí","hẹ"],"d":2},{"c":"Tiếng «hồ» có dấu thanh nào?","a":["không có dấu","dấu huyền","dấu ngã"],"d":1},{"c":"Câu «Chị cho bé cá cờ.» có mấy tiếng?","a":["4","5","6"],"d":1}]},{"ten":"Bài 16: M m, N n","q":[{"c":"Tiếng nào bắt đầu bằng chữ «m»?","a":["me","dỗ","dẻ"],"d":0},{"c":"«nơ đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «mỡ» bắt đầu bằng chữ nào?","a":["h","m","l"],"d":1},{"c":"Ghép chữ «m» với «ỡ» được tiếng nào?","a":["hổ","mỡ","bở"],"d":1},{"c":"Tiếng «cá» có dấu thanh nào?","a":["dấu huyền","dấu hỏi","dấu sắc"],"d":2},{"c":"«lá me» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «mè» bắt đầu bằng chữ nào?","a":["d","m","n"],"d":1},{"c":"Ghép chữ «m» với «è» được tiếng nào?","a":["mè","cỡ","mỡ"],"d":0},{"c":"Tiếng «nề» có dấu thanh nào?","a":["dấu ngã","dấu huyền","dấu hỏi"],"d":1},{"c":"Câu «Mẹ mua nơ cho Hà.» có mấy tiếng?","a":["4","5","6"],"d":1}]},{"ten":"Bài 17: G g, Gi gi","q":[{"c":"Tiếng nào bắt đầu bằng chữ «g»?","a":["gụ","lỡ","cử"],"d":0},{"c":"«gà gô» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «gụ» bắt đầu bằng chữ nào?","a":["g","d","b"],"d":0},{"c":"Ghép chữ «g» với «ụ» được tiếng nào?","a":["già","gụ","kì"],"d":1},{"c":"Tiếng «giỗ» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu ngã"],"d":2},{"c":"«cụ già» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «đỗ» bắt đầu bằng chữ nào?","a":["đ","n","c"],"d":0},{"c":"Ghép chữ «đ» với «ỗ» được tiếng nào?","a":["kì","đỗ","li"],"d":1},{"c":"Tiếng «giò» có dấu thanh nào?","a":["không có dấu","dấu ngã","dấu huyền"],"d":2},{"c":"Câu «Hà có giỏ trứng gà.» có mấy tiếng?","a":["3","4","5"],"d":2}]},{"ten":"Bài 18: Gh gh, Nh nh","q":[{"c":"Tiếng nào bắt đầu bằng chữ «gh»?","a":["cò","ghi","khế"],"d":1},{"c":"«ghẹ đỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «ghé» bắt đầu bằng chữ nào?","a":["l","kh","gh"],"d":2},{"c":"Ghép chữ «gh» với «é» được tiếng nào?","a":["bè","có","ghé"],"d":2},{"c":"Tiếng «gỗ» có dấu thanh nào?","a":["không có dấu","dấu ngã","dấu sắc"],"d":1},{"c":"«lá nho» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «nhỏ» bắt đầu bằng chữ nào?","a":["gi","nh","k"],"d":1},{"c":"Ghép chữ «nh» với «ỏ» được tiếng nào?","a":["đò","dỡ","nhỏ"],"d":2},{"c":"Tiếng «ghẹ» có dấu thanh nào?","a":["dấu sắc","dấu huyền","dấu nặng"],"d":2},{"c":"Câu «Nhà bà ở ngõ nhỏ.» có mấy tiếng?","a":["4","5","6"],"d":1}]},{"ten":"Bài 19: Ng ng, Ngh ngh","q":[{"c":"Tiếng nào bắt đầu bằng chữ «ng»?","a":["ba","ngự","bè"],"d":1},{"c":"«nghỉ hè» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «nghĩ» bắt đầu bằng chữ nào?","a":["b","ngh","c"],"d":1},{"c":"Ghép chữ «ngh» với «ĩ» được tiếng nào?","a":["cụ","nghĩ","cờ"],"d":1},{"c":"Tiếng «nghĩ» có dấu thanh nào?","a":["dấu nặng","dấu sắc","dấu ngã"],"d":2},{"c":"«ngã ba» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «củ» bắt đầu bằng chữ nào?","a":["kh","c","m"],"d":1},{"c":"Ghép chữ «c» với «ủ» được tiếng nào?","a":["ho","củ","cô"],"d":1},{"c":"Tiếng «củ» có dấu thanh nào?","a":["dấu sắc","dấu huyền","dấu hỏi"],"d":2},{"c":"Câu «Nghé theo mẹ ra ngõ.» có mấy tiếng?","a":["5","6","7"],"d":0}]},{"ten":"Bài 20: Ôn tập","q":[{"c":"Tiếng nào bắt đầu bằng chữ «ng»?","a":["ngủ","bờ","ga"],"d":0},{"c":"«nhà ga» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «bỡ» bắt đầu bằng chữ nào?","a":["gh","đ","b"],"d":2},{"c":"Ghép chữ «b» với «ỡ» được tiếng nào?","a":["bỡ","ghẹ","dự"],"d":0},{"c":"Tiếng «mơ» có dấu thanh nào?","a":["dấu hỏi","không có dấu","dấu nặng"],"d":1},{"c":"«nghỉ hè» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «giá» bắt đầu bằng chữ nào?","a":["nh","kh","gi"],"d":2},{"c":"Ghép chữ «gi» với «á» được tiếng nào?","a":["lọ","đồ","giá"],"d":2},{"c":"Tiếng «hè» có dấu thanh nào?","a":["dấu nặng","dấu huyền","không có dấu"],"d":1},{"c":"Tiếng nào bắt đầu bằng chữ «ngh»?","a":["chợ","cờ","nghỉ"],"d":2}]},{"ten":"Bài 21: R r, S s","q":[{"c":"Tiếng nào bắt đầu bằng chữ «r»?","a":["nở","rá","bế"],"d":1},{"c":"«su su» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «rạ» bắt đầu bằng chữ nào?","a":["ch","nh","r"],"d":2},{"c":"Ghép chữ «r» với «ạ» được tiếng nào?","a":["ghi","ghế","rạ"],"d":2},{"c":"Tiếng «ra» có dấu thanh nào?","a":["dấu huyền","dấu hỏi","không có dấu"],"d":2},{"c":"«cá rô» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «số» bắt đầu bằng chữ nào?","a":["s","k","b"],"d":0},{"c":"Ghép chữ «s» với «ố» được tiếng nào?","a":["số","củ","bộ"],"d":0},{"c":"Tiếng «rô» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu nặng"],"d":0},{"c":"Câu «Bầy sẻ non ríu ra ríu rít bên mẹ.» có mấy tiếng?","a":["9","10","11"],"d":0}]},{"ten":"Bài 22: T t, Tr tr","q":[{"c":"Tiếng nào bắt đầu bằng chữ «t»?","a":["tá","dữ","ga"],"d":0},{"c":"«ô tô» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «tô» bắt đầu bằng chữ nào?","a":["t","b","k"],"d":0},{"c":"Ghép chữ «t» với «ô» được tiếng nào?","a":["tô","đỡ","dù"],"d":0},{"c":"Tiếng «tô» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu ngã"],"d":0},{"c":"«tre ngà» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «trò» bắt đầu bằng chữ nào?","a":["tr","kh","đ"],"d":0},{"c":"Ghép chữ «tr» với «ò» được tiếng nào?","a":["bò","trò","đi"],"d":1},{"c":"Tiếng «trò» có dấu thanh nào?","a":["dấu ngã","dấu huyền","dấu nặng"],"d":1},{"c":"Câu «Nam tô bức tranh cây tre.» có mấy tiếng?","a":["6","7","8"],"d":0}]},{"ten":"Bài 23: Th th, ia","q":[{"c":"Tiếng nào bắt đầu bằng chữ «th»?","a":["ghẹ","chè","thọ"],"d":2},{"c":"«lá thư» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «thơ» bắt đầu bằng chữ nào?","a":["s","th","kh"],"d":1},{"c":"Ghép chữ «th» với «ơ» được tiếng nào?","a":["thơ","bố","ho"],"d":0},{"c":"Tiếng «thọ» có dấu thanh nào?","a":["dấu hỏi","dấu nặng","dấu ngã"],"d":1},{"c":"«thìa dĩa» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «thẻ» bắt đầu bằng chữ nào?","a":["ngh","th","l"],"d":1},{"c":"Ghép chữ «th» với «ẻ» được tiếng nào?","a":["ngự","ô","thẻ"],"d":2},{"c":"Tiếng «tô» có dấu thanh nào?","a":["dấu hỏi","dấu nặng","không có dấu"],"d":2},{"c":"Câu «Trung thu, bé được chia quà.» có mấy tiếng?","a":["4","5","6"],"d":2}]},{"ten":"Bài 24: ua, ưa","q":[{"c":"Tiếng nào có vần «ua»?","a":["bè","chua","đò"],"d":1},{"c":"Tiếng «rùa» có vần gì?","a":["ia","ưa","ua"],"d":2},{"c":"«cửa sổ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «múa» bắt đầu bằng chữ nào?","a":["gi","m","t"],"d":1},{"c":"Ghép chữ «m» với «úa» được tiếng nào?","a":["múa","nghĩ","chợ"],"d":0},{"c":"Tiếng «nhựa» có dấu thanh nào?","a":["không có dấu","dấu nặng","dấu sắc"],"d":1},{"c":"Tiếng «nhựa» có vần gì?","a":["ua","ưa","ia"],"d":1},{"c":"«cà chua» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «nhựa» bắt đầu bằng chữ nào?","a":["nh","th","kh"],"d":0},{"c":"Ghép chữ «nh» với «ựa» được tiếng nào?","a":["nhựa","bở","thơ"],"d":0}]},{"ten":"Bài 25: Ôn tập","q":[{"c":"Tiếng nào có vần «ua»?","a":["thu","giỗ","chua"],"d":2},{"c":"Tiếng «lưa» có vần gì?","a":["ưa","ia","ua"],"d":0},{"c":"«lá mía» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «khế» bắt đầu bằng chữ nào?","a":["kh","h","gi"],"d":0},{"c":"Ghép chữ «kh» với «ế» được tiếng nào?","a":["khế","khô","thơ"],"d":0},{"c":"Tiếng «mía» có dấu thanh nào?","a":["dấu sắc","dấu hỏi","không có dấu"],"d":0},{"c":"Tiếng «cửa» có vần gì?","a":["ưa","ia","ua"],"d":0},{"c":"«tổ cò» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «lá» bắt đầu bằng chữ nào?","a":["tr","l","c"],"d":1},{"c":"Ghép chữ «l» với «á» được tiếng nào?","a":["lá","đò","thìa"],"d":0}]},{"ten":"Bài 26: Ph ph, Qu qu","q":[{"c":"Tiếng nào bắt đầu bằng chữ «ph»?","a":["đa","tô","phà"],"d":2},{"c":"«phố cổ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «phí» bắt đầu bằng chữ nào?","a":["d","ph","n"],"d":1},{"c":"Ghép chữ «ph» với «í» được tiếng nào?","a":["phí","dứa","ngõ"],"d":0},{"c":"Tiếng «khế» có dấu thanh nào?","a":["dấu hỏi","dấu sắc","không có dấu"],"d":1},{"c":"«quả khế» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «phà» bắt đầu bằng chữ nào?","a":["b","qu","ph"],"d":2},{"c":"Ghép chữ «ph» với «à» được tiếng nào?","a":["tổ","phà","đĩa"],"d":1},{"c":"Tiếng «nhà» có dấu thanh nào?","a":["dấu huyền","dấu sắc","không có dấu"],"d":0},{"c":"Câu «Cả nhà từ phố về thăm quê.» có mấy tiếng?","a":["5","6","7"],"d":2}]},{"ten":"Bài 27: V v, X x","q":[{"c":"Tiếng nào bắt đầu bằng chữ «v»?","a":["khô","khỉ","vua"],"d":2},{"c":"«xe lu» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «vở» bắt đầu bằng chữ nào?","a":["v","ngh","x"],"d":0},{"c":"Ghép chữ «v» với «ở» được tiếng nào?","a":["đưa","xe","vở"],"d":2},{"c":"Tiếng «võ» có dấu thanh nào?","a":["dấu hỏi","dấu ngã","dấu nặng"],"d":1},{"c":"«thị xã» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «xỉa» bắt đầu bằng chữ nào?","a":["qu","x","l"],"d":1},{"c":"Ghép chữ «x» với «ỉa» được tiếng nào?","a":["xỉa","bỏ","nở"],"d":0},{"c":"Tiếng «xã» có dấu thanh nào?","a":["dấu nặng","dấu sắc","dấu ngã"],"d":2},{"c":"Câu «Hà vẽ xe đạp.» có mấy tiếng?","a":["3","4","5"],"d":1}]},{"ten":"Bài 28: Y y","q":[{"c":"Tiếng nào có chữ «y»?","a":["quỳ","hồ","ca"],"d":0},{"c":"«đá quý» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «quy» bắt đầu bằng chữ nào?","a":["qu","th","n"],"d":0},{"c":"Ghép chữ «d» với «ã» được tiếng nào?","a":["dã","cô","đà"],"d":0},{"c":"Tiếng «tá» có dấu thanh nào?","a":["dấu nặng","dấu ngã","dấu sắc"],"d":2},{"c":"«dã quỳ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «dã» bắt đầu bằng chữ nào?","a":["v","c","d"],"d":2},{"c":"Ghép chữ «t» với «á» được tiếng nào?","a":["be","khế","tá"],"d":2},{"c":"Tiếng «quý» có dấu thanh nào?","a":["không có dấu","dấu nặng","dấu sắc"],"d":2},{"c":"Câu «Thời gian quý hơn vàng bạc.» có mấy tiếng?","a":["4","5","6"],"d":2}]},{"ten":"Bài 29: Luyện tập chính tả","q":[{"c":"Điền c hay k: ___ò","a":["k","c"],"d":1},{"c":"Điền c hay k: ___ẻ ô","a":["c","k"],"d":1},{"c":"Điền g hay gh: ___ế gỗ","a":["gh","g"],"d":0},{"c":"Điền g hay gh: ___à gô","a":["gh","g"],"d":1},{"c":"Điền ng hay ngh: ___ủ","a":["ngh","ng"],"d":1},{"c":"Điền ng hay ngh: ___ỉ hè","a":["ngh","ng"],"d":0},{"c":"Các chữ k, gh, ngh chỉ đi với những chữ nào?","a":["ô, ơ, u","a, o, u","i, e, ê"],"d":2},{"c":"Tiếng nào bắt đầu bằng chữ «c»?","a":["hổ","cò","bộ"],"d":1},{"c":"«cá ngừ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «gõ» bắt đầu bằng chữ nào?","a":["m","g","l"],"d":1}]},{"ten":"Bài 30: Ôn tập","q":[{"c":"Tiếng nào bắt đầu bằng chữ «ph»?","a":["cờ","quế","phà"],"d":2},{"c":"«qua phà» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «cổ» bắt đầu bằng chữ nào?","a":["t","c","gi"],"d":1},{"c":"Ghép chữ «c» với «ổ» được tiếng nào?","a":["cọ","cụ","cổ"],"d":2},{"c":"Tiếng «xứ» có dấu thanh nào?","a":["dấu huyền","không có dấu","dấu sắc"],"d":2},{"c":"«đá quý» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «xứ» bắt đầu bằng chữ nào?","a":["kh","x","h"],"d":1},{"c":"Ghép chữ «x» với «ứ» được tiếng nào?","a":["xứ","gù","tô"],"d":0},{"c":"Tiếng «vỉa» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu hỏi"],"d":2},{"c":"Tiếng nào bắt đầu bằng chữ «qu»?","a":["quý","ca","vua"],"d":0}]},{"ten":"Bài 31: an ăn ân","q":[{"c":"Tiếng nào có vần «an»?","a":["nhãn","khô","bờ"],"d":0},{"c":"Tiếng «mận» có vần gì?","a":["ân","ăn","an"],"d":0},{"c":"«khăn rằn» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «rằn» bắt đầu bằng chữ nào?","a":["l","v","r"],"d":2},{"c":"Ghép chữ «r» với «ằn» được tiếng nào?","a":["rằn","bộ","số"],"d":0},{"c":"Tiếng «gần» có dấu thanh nào?","a":["dấu huyền","dấu ngã","dấu nặng"],"d":0},{"c":"Tiếng «gắn» có vần gì?","a":["ăn","an","ân"],"d":0},{"c":"«bạn thân» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «lặn» bắt đầu bằng chữ nào?","a":["l","x","c"],"d":0},{"c":"Ghép chữ «l» với «ặn» được tiếng nào?","a":["mẹ","sả","lặn"],"d":2}]},{"ten":"Bài 32: on ôn ơn","q":[{"c":"Tiếng nào có vần «on»?","a":["thìa","con","lặn"],"d":1},{"c":"Tiếng «ngon» có vần gì?","a":["on","ôn","ơn"],"d":0},{"c":"«con chồn» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «ngon» bắt đầu bằng chữ nào?","a":["k","gi","ng"],"d":2},{"c":"Ghép chữ «ng» với «on» được tiếng nào?","a":["gọn","ngon","bố"],"d":1},{"c":"Tiếng «bốn» có dấu thanh nào?","a":["không có dấu","dấu sắc","dấu huyền"],"d":1},{"c":"Tiếng «giòn» có vần gì?","a":["ôn","on","ơn"],"d":1},{"c":"«sơn ca» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «nón» bắt đầu bằng chữ nào?","a":["h","n","l"],"d":1},{"c":"Ghép chữ «n» với «ón» được tiếng nào?","a":["tạ","thư","nón"],"d":2}]},{"ten":"Bài 33: en ên in un","q":[{"c":"Tiếng nào có vần «en»?","a":["mịn","mèn","che"],"d":1},{"c":"Tiếng «sen» có vần gì?","a":["in","un","en"],"d":2},{"c":"«cún con» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «mèn» bắt đầu bằng chữ nào?","a":["m","k","ch"],"d":0},{"c":"Ghép chữ «m» với «èn» được tiếng nào?","a":["cọ","mèn","sả"],"d":1},{"c":"Tiếng «con» có dấu thanh nào?","a":["dấu hỏi","dấu nặng","không có dấu"],"d":2},{"c":"Tiếng «cún» có vần gì?","a":["en","in","un"],"d":2},{"c":"«đèn pin» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «mịn» bắt đầu bằng chữ nào?","a":["đ","m","ngh"],"d":1},{"c":"Ghép chữ «m» với «ịn» được tiếng nào?","a":["nghề","mịn","nhộn"],"d":1}]},{"ten":"Bài 34: am ăm âm","q":[{"c":"Tiếng nào có vần «am»?","a":["làm","nhãn","mía"],"d":0},{"c":"Tiếng «nhẩm» có vần gì?","a":["am","ăm","âm"],"d":2},{"c":"«tăm tre» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «đậm» bắt đầu bằng chữ nào?","a":["đ","ngh","l"],"d":0},{"c":"Ghép chữ «đ» với «ậm» được tiếng nào?","a":["hé","đậm","hồ"],"d":1},{"c":"Tiếng «cằm» có dấu thanh nào?","a":["dấu huyền","dấu sắc","dấu nặng"],"d":0},{"c":"Tiếng «làm» có vần gì?","a":["ăm","âm","am"],"d":2},{"c":"«quả cam» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «nhẩm» bắt đầu bằng chữ nào?","a":["nh","v","l"],"d":0},{"c":"Ghép chữ «nh» với «ẩm» được tiếng nào?","a":["nhẩm","quả","cổ"],"d":0}]},{"ten":"Bài 35: Ôn tập","q":[{"c":"Tiếng nào có vần «an»?","a":["mận","bàn","khế"],"d":1},{"c":"Tiếng «tấm» có vần gì?","a":["âm","ăm","ơn"],"d":0},{"c":"«ngọn cỏ» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «chăm» bắt đầu bằng chữ nào?","a":["ch","gh","s"],"d":0},{"c":"Ghép chữ «ch» với «ăm» được tiếng nào?","a":["hố","chăm","cằm"],"d":1},{"c":"Tiếng «gỗ» có dấu thanh nào?","a":["dấu sắc","dấu hỏi","dấu ngã"],"d":2},{"c":"Tiếng nào có vần «ăn»?","a":["sắn","cằm","võ"],"d":0},{"c":"Tiếng «trạm» có vần gì?","a":["âm","ăm","am"],"d":2},{"c":"«khôn lớn» có mấy tiếng?","a":["1","2","3"],"d":1},{"c":"Tiếng «sắn» bắt đầu bằng chữ nào?","a":["th","ph","s"],"d":2}]}]},{"mon":"Tự nhiên và Xã hội 1","bai":[{"ten":"Chủ đề: Gia đình","q":[{"c":"Những người sống cùng nhà với em là ai?","a":["Bạn cùng lớp","Các thành viên trong gia đình","Hàng xóm"],"d":1},{"c":"Bố mẹ của bố hoặc của mẹ em được gọi là gì?","a":["Ông bà","Cô chú","Anh chị"],"d":0},{"c":"Em nên làm gì để giúp đỡ bố mẹ?","a":["Xem tivi cả ngày","Vứt đồ bừa bãi","Giúp việc nhà vừa sức"],"d":2},{"c":"Nơi nào trong nhà dùng để nấu ăn?","a":["Nhà vệ sinh","Phòng ngủ","Nhà bếp"],"d":2},{"c":"Ở nhà một mình, có người lạ gõ cửa, em nên làm gì?","a":["Không mở cửa, báo cho người lớn","Cho người lạ vào chơi","Mở cửa ngay"],"d":0},{"c":"Vật nào dưới đây nguy hiểm, em không được tự nghịch?","a":["Quyển sách","Con gấu bông","Ổ cắm điện"],"d":2},{"c":"Gia đình em có bố, mẹ và em. Gia đình em có mấy người?","a":["3 người","4 người","2 người"],"d":0},{"c":"Ông bà đã già, em cần làm gì?","a":["Không nói chuyện với ông bà","Quan tâm, giúp đỡ ông bà","Làm ồn khi ông bà nghỉ"],"d":1}]},{"ten":"Chủ đề: Trường học","q":[{"c":"Người dạy em học ở trường là ai?","a":["Các bạn nhỏ","Bác bảo vệ","Thầy cô giáo"],"d":2},{"c":"Em đến trường để làm gì?","a":["Chơi cả ngày","Học tập","Ngủ"],"d":1},{"c":"Đồ dùng nào dùng để viết chữ?","a":["Cặp sách","Ghế","Bút chì"],"d":2},{"c":"Giờ ra chơi, em nên làm gì?","a":["Trèo lên bàn","Chạy nhảy xô đẩy bạn","Chơi vui vẻ, an toàn"],"d":2},{"c":"Muốn phát biểu, em cần làm gì?","a":["Hét thật to","Giơ tay xin phát biểu","Bỏ ra ngoài"],"d":1},{"c":"Nơi nào ở trường có nhiều sách để em đọc?","a":["Sân trường","Nhà vệ sinh","Thư viện"],"d":2},{"c":"Em nên giữ lớp học như thế nào?","a":["Vứt rác ra sàn","Sạch sẽ, gọn gàng","Bừa bộn"],"d":1},{"c":"Gặp bạn mới ở trường, em nên làm gì?","a":["Chào hỏi, làm quen","Trêu bạn","Quay mặt đi"],"d":0}]},{"ten":"Chủ đề: Cộng đồng địa phương","q":[{"c":"Ai chữa bệnh cho người ốm?","a":["Công an","Bác sĩ","Nông dân"],"d":1},{"c":"Ai trồng lúa, trồng rau?","a":["Bác nông dân","Bác sĩ","Cô giáo"],"d":0},{"c":"Ai giúp giữ trật tự, bảo vệ nhân dân?","a":["Chú công an","Bác nông dân","Cô giáo"],"d":0},{"c":"Muốn mua rau, cá, thịt, em đến đâu?","a":["Trường học","Bệnh viện","Chợ"],"d":2},{"c":"Người đi bộ được qua đường khi đèn tín hiệu màu nào?","a":["Đèn đỏ","Đèn xanh","Đèn vàng"],"d":1},{"c":"Đèn đỏ có nghĩa là gì?","a":["Dừng lại","Đi nhanh lên","Được chạy qua"],"d":0},{"c":"Khi bị ốm, em cần đến đâu để khám bệnh?","a":["Trạm y tế","Siêu thị","Rạp chiếu phim"],"d":0},{"c":"Ngồi sau xe máy, em phải đội gì?","a":["Mũ bảo hiểm","Khăn quàng","Mũ lưỡi trai"],"d":0}]},{"ten":"Chủ đề: Thực vật và động vật","q":[{"c":"Bộ phận nào của cây hút nước từ đất?","a":["Rễ","Hoa","Lá"],"d":0},{"c":"Cây cần gì để sống và lớn lên?","a":["Nước, ánh sáng, không khí","Kẹo","Đồ chơi"],"d":0},{"c":"Con vật nào là vật nuôi trong nhà?","a":["Con sư tử","Con chó","Con hổ"],"d":1},{"c":"Con vật nào có hai chân và biết bay?","a":["Con chó","Con cá","Con chim"],"d":2},{"c":"Con cá sống ở đâu?","a":["Trên cây","Dưới nước","Trên mây"],"d":1},{"c":"Con vật nào cho ta trứng?","a":["Con chó","Con gà","Con cá"],"d":1},{"c":"Khi chăm sóc cây, em cần làm gì?","a":["Tưới nước, nhổ cỏ","Bẻ cành, hái hoa","Dẫm lên cây"],"d":0},{"c":"Thấy con chó lạ ở ngoài đường, em nên làm gì?","a":["Không trêu, đi tránh xa","Lại gần vuốt ve","Cầm gậy đánh"],"d":0}]},{"ten":"Chủ đề: Con người và sức khỏe","q":[{"c":"Em dùng bộ phận nào để nhìn?","a":["Mắt","Mũi","Tai"],"d":0},{"c":"Em dùng bộ phận nào để nghe?","a":["Mắt","Miệng","Tai"],"d":2},{"c":"Em dùng mũi để làm gì?","a":["Ngửi","Nghe","Nhìn"],"d":0},{"c":"Em nên đánh răng vào lúc nào?","a":["Chỉ khi răng đau","Không cần đánh","Buổi sáng và buổi tối"],"d":2},{"c":"Trước khi ăn, em cần làm gì?","a":["Xem tivi","Chạy nhảy","Rửa tay sạch"],"d":2},{"c":"Để cơ thể khỏe mạnh, em nên ăn như thế nào?","a":["Chỉ ăn kẹo","Chỉ ăn bánh","Ăn nhiều loại thức ăn: rau, cá, thịt"],"d":2},{"c":"Để khỏe mạnh, em nên ngủ như thế nào?","a":["Không ngủ","Thức khuya","Ngủ đủ giấc"],"d":2},{"c":"Em có mấy bàn tay?","a":["3","1","2"],"d":2}]},{"ten":"Chủ đề: Trái đất và bầu trời","q":[{"c":"Ban ngày, trên bầu trời có gì chiếu sáng?","a":["Ngôi sao","Mặt trời","Mặt trăng"],"d":1},{"c":"Ban đêm ta thường thấy gì sáng trên bầu trời?","a":["Mặt trăng và các vì sao","Mặt trời","Cầu vồng"],"d":0},{"c":"Trời mưa, ra ngoài em cần mang gì?","a":["Áo mưa hoặc ô","Kính râm","Quạt"],"d":0},{"c":"Trời nắng nóng, em nên làm gì?","a":["Đứng lâu ngoài nắng","Mặc áo dày","Đội mũ, uống nhiều nước"],"d":2},{"c":"Mây đen kéo đến thường báo hiệu điều gì?","a":["Trời nắng đẹp","Trời lạnh giá","Sắp mưa"],"d":2},{"c":"Sau cơn mưa có nắng, trên trời có thể thấy gì?","a":["Mây đen","Sấm","Cầu vồng"],"d":2},{"c":"Một ngày có ban ngày và gì nữa?","a":["Mùa hè","Ban đêm","Mùa đông"],"d":1},{"c":"Bầu trời ban ngày không có mây thường có màu gì?","a":["Đỏ","Xanh","Đen"],"d":1}]}]},{"mon":"Hoạt động trải nghiệm 1","bai":[{"ten":"Chủ đề: Em và trường lớp","q":[{"c":"Đến lớp, em cần mặc quần áo như thế nào?","a":["Gọn gàng, sạch sẽ","Bẩn, nhàu nhĩ","Mặc tùy ý"],"d":0},{"c":"Nghe trống vào lớp, em cần làm gì?","a":["Xếp hàng vào lớp","Chạy chơi tiếp","Ngồi ngoài sân"],"d":0},{"c":"Gặp cô giáo, em chào thế nào?","a":["\"Em chào cô ạ!\"","Không nói gì","La hét"],"d":0},{"c":"Giờ học, em ngồi thế nào cho đúng?","a":["Quay ra sau nói chuyện","Lưng thẳng, mắt nhìn bảng","Nằm gục xuống bàn"],"d":1},{"c":"Sách vở, đồ dùng em nên để ở đâu?","a":["Trong cặp, gọn gàng","Vứt dưới đất","Để lung tung"],"d":0},{"c":"Em làm gì để giữ lớp học sạch?","a":["Dán kẹo cao su lên bàn","Vứt rác ra sàn","Bỏ rác vào thùng"],"d":2},{"c":"Trực nhật là việc gì?","a":["Quét lớp, lau bảng giúp lớp","Đi chơi","Ngủ trong lớp"],"d":0},{"c":"Thời gian biểu giúp em điều gì?","a":["Ngủ nhiều","Quên bài","Làm việc đúng giờ"],"d":2}]},{"ten":"Chủ đề: Em và bạn","q":[{"c":"Bạn làm rơi bút, em nên làm gì?","a":["Giẫm lên bút","Nhặt giúp bạn","Cười chê bạn"],"d":1},{"c":"Bạn mới chuyển đến lớp, em nên làm gì?","a":["Trêu bạn","Làm quen, rủ bạn cùng chơi","Không nói chuyện"],"d":1},{"c":"Bạn đang buồn, em nên làm gì?","a":["Bỏ đi","Chọc bạn","Hỏi thăm, an ủi bạn"],"d":2},{"c":"Muốn mượn đồ của bạn, em nói thế nào?","a":["Lấy trộm","Giật lấy","\"Bạn cho mình mượn nhé!\""],"d":2},{"c":"Lỡ làm bạn đau, em nên làm gì?","a":["Đổ lỗi cho bạn","Xin lỗi bạn","Bỏ chạy"],"d":1},{"c":"Bạn giúp em, em nói gì?","a":["Không nói gì","Cảm ơn bạn","Bỏ đi"],"d":1},{"c":"Chơi cùng bạn, em cần như thế nào?","a":["Đánh bạn","Lấy hết đồ chơi","Nhường nhịn, không tranh giành"],"d":2},{"c":"Thấy bạn bị bắt nạt, em nên làm gì?","a":["Báo với cô giáo","Cổ vũ người bắt nạt","Làm ngơ bỏ đi"],"d":0}]},{"ten":"Chủ đề: Em và gia đình","q":[{"c":"Buổi sáng thức dậy, em nên làm gì trước?","a":["Xem tivi","Đánh răng, rửa mặt","Ăn vặt"],"d":1},{"c":"Việc nào vừa sức em giúp bố mẹ?","a":["Cầm dao thái thịt","Bê nồi nước sôi","Xếp giày dép gọn gàng"],"d":2},{"c":"Bố mẹ đi làm về, em nên làm gì?","a":["Làm ngơ","Trốn đi","Chào bố mẹ"],"d":2},{"c":"Gọi ông bà thế nào cho lễ phép?","a":["Nói trống không","Quát to","\"Dạ, thưa ông bà ạ\""],"d":2},{"c":"Chơi xong, em nên làm gì với đồ chơi?","a":["Vứt khắp nhà","Cất gọn vào chỗ cũ","Giấu đi"],"d":1},{"c":"Ngày sinh nhật bố, em có thể làm gì?","a":["Giận dỗi","Đòi quà","Tặng bố tấm thiệp tự làm"],"d":2},{"c":"Ăn cơm cùng gia đình, em nên làm gì trước?","a":["Mời ông bà, bố mẹ ăn cơm","Vừa ăn vừa chạy","Ăn trước không mời"],"d":0},{"c":"Muốn nhờ bố mẹ giúp, em nói thế nào?","a":["Khóc nhè","Hét to","\"Bố mẹ giúp con với ạ\""],"d":2}]},{"ten":"Chủ đề: Em với thiên nhiên và môi trường","q":[{"c":"Rác thải nên bỏ vào đâu?","a":["Thùng rác","Ra đường","Xuống sông"],"d":0},{"c":"Em chăm sóc cây xanh bằng cách nào?","a":["Dẫm nát","Tưới nước","Bẻ cành"],"d":1},{"c":"Để tiết kiệm nước, em nên làm gì?","a":["Mở vòi chảy mãi","Làm hỏng vòi nước","Khóa vòi nước khi dùng xong"],"d":2},{"c":"Ra khỏi phòng, em nên làm gì với đèn và quạt?","a":["Bật thêm","Tắt đi","Để bật mãi"],"d":1},{"c":"Việc nào giữ sân trường sạch đẹp?","a":["Nhặt rác bỏ vào thùng","Bẻ hoa","Vứt vỏ kẹo"],"d":0},{"c":"Trồng cây giúp ích gì?","a":["Làm cạn nước","Cho bóng mát, không khí trong lành","Làm bẩn đất"],"d":1},{"c":"Đi chơi công viên, em nên làm gì với hoa cỏ?","a":["Giẫm lên cỏ","Hái hoa","Ngắm, không hái"],"d":2},{"c":"Thấy chim non rơi khỏi tổ, em nên làm gì?","a":["Ném đá","Bắt nhốt lại","Nhờ người lớn giúp đưa về tổ"],"d":2}]},{"ten":"Chủ đề: An toàn của em","q":[{"c":"Người lạ rủ em đi cùng, em làm thế nào?","a":["Đi theo ngay","Không đi, báo với người lớn","Đi nếu được cho kẹo"],"d":1},{"c":"Khi bị lạc, em nên làm gì?","a":["Tìm chú bảo vệ hoặc công an nhờ giúp","Chạy ra đường","Đi lung tung"],"d":0},{"c":"Em cần nhớ số điện thoại của ai?","a":["Của bố hoặc mẹ","Của người lạ","Của bạn hàng xóm"],"d":0},{"c":"Em có được chơi gần hồ, ao một mình không?","a":["Có, nếu không ai thấy","Có","Không"],"d":2},{"c":"Em có được nghịch diêm, bật lửa không?","a":["Có, khi ở một mình","Có","Không"],"d":2},{"c":"Thấy có cháy, em cần làm gì?","a":["Kêu to nhờ người lớn, chạy ra nơi an toàn","Đứng lại xem","Tự dập lửa một mình"],"d":0},{"c":"Qua đường, em cần làm gì?","a":["Chạy thật nhanh","Nhắm mắt lại","Nắm tay người lớn, nhìn hai bên"],"d":2},{"c":"Đèn giao thông màu nào báo hiệu phải dừng lại?","a":["Đèn xanh","Đèn trắng","Đèn đỏ"],"d":2}]}]},{"mon":"Đạo đức 1","bai":[{"ten":"Chủ đề: Chào hỏi và cảm ơn, xin lỗi","q":[{"c":"Gặp thầy cô giáo, em nên làm gì?","a":["Chào thầy cô lễ phép","Đi qua không nói","Chạy trốn"],"d":0},{"c":"Được tặng quà, em nói gì?","a":["Chê quà","\"Em cảm ơn ạ\"","Không nói gì"],"d":1},{"c":"Lỡ đụng vào bạn, em nói gì?","a":["\"Xin lỗi bạn\"","Cười lớn","Mặc kệ"],"d":0},{"c":"Ra khỏi nhà đi học, em nói gì với bố mẹ?","a":["Lẳng lặng đi","\"Con đi học ạ\"","Không nói gì"],"d":1},{"c":"Đi học về đến nhà, em nói gì với bố mẹ?","a":["\"Con đã về ạ\"","Im lặng","Quăng cặp rồi đi chơi"],"d":0},{"c":"Lời nói nào là lời nói lễ phép?","a":["\"Không biết\"","\"Kệ tôi\"","\"Dạ, vâng ạ\""],"d":2},{"c":"Nhận đồ của người lớn bằng hai tay là thể hiện điều gì?","a":["Lễ phép","Vội vàng","Tức giận"],"d":0},{"c":"Khi chia tay người lớn, em nên nói gì?","a":["Hét to","Quay lưng đi luôn","\"Con chào bác ạ\""],"d":2}]},{"ten":"Chủ đề: Yêu quý bạn bè","q":[{"c":"Bạn bị ốm nghỉ học, em nên làm gì?","a":["Hỏi thăm, giúp bạn chép bài","Cười bạn","Mặc kệ"],"d":0},{"c":"Chia sẻ đồ chơi với bạn là biểu hiện của gì?","a":["Ích kỷ","Yêu quý bạn","Hơn thua"],"d":1},{"c":"Bạn có lỗi nhỏ, em nên làm gì?","a":["Nhắc nhở nhẹ nhàng","Mách cả lớp để cười bạn","Đánh bạn"],"d":0},{"c":"Bạn được điểm tốt, em nên làm gì?","a":["Ghen tị","Chúc mừng bạn","Chê bạn"],"d":1},{"c":"Bạn gặp khó khăn trong bài, em nên làm gì?","a":["Cười bạn","Giúp bạn hiểu bài","Giấu bài"],"d":1},{"c":"Em và bạn tranh nhau đồ chơi, em nên làm gì?","a":["Nhường nhịn, cùng chơi","Đánh nhau","Giành lấy"],"d":0},{"c":"Bạn có dáng người khác em (cao, thấp), em nên làm gì?","a":["Tôn trọng, không chế giễu","Tránh xa bạn","Chế giễu bạn"],"d":0},{"c":"Đoàn kết với bạn nghĩa là gì?","a":["Mỗi người một nơi","Chia phe đánh nhau","Cùng giúp đỡ nhau"],"d":2}]},{"ten":"Chủ đề: Giữ gìn đồ dùng học tập","q":[{"c":"Sách vở bị rách, em nên làm gì?","a":["Vứt đi","Dán lại cẩn thận","Xé thêm"],"d":1},{"c":"Học xong, em để bút sách ở đâu?","a":["Vứt trên bàn","Cất gọn vào cặp","Quăng xuống sàn"],"d":1},{"c":"Em không nên viết, vẽ bậy lên đâu?","a":["Bàn ghế và tường lớp","Giấy vẽ","Vở nháp"],"d":0},{"c":"Dùng xong thước kẻ, em nên làm gì?","a":["Cất vào hộp bút","Ném đi","Bẻ gãy"],"d":0},{"c":"Bút chì ngắn mà vẫn viết được, em nên làm gì?","a":["Vứt ngay","Dùng tiếp cho hết","Bẻ gãy"],"d":1},{"c":"Cặp sách nên được giữ như thế nào?","a":["Kéo lê dưới đất","Sạch sẽ, gọn gàng","Bẩn thỉu"],"d":1},{"c":"Mượn đồ của bạn, dùng xong em làm gì?","a":["Làm hỏng rồi trả","Trả lại bạn và cảm ơn","Giữ luôn"],"d":1},{"c":"Giữ gìn đồ dùng giúp em điều gì?","a":["Dùng được lâu, tiết kiệm","Mau hỏng","Tốn kém"],"d":0}]},{"ten":"Chủ đề: Trung thực","q":[{"c":"Em lỡ làm vỡ cốc, em nên làm gì?","a":["Giấu đi","Đổ lỗi cho em bé","Thật thà nói với bố mẹ"],"d":2},{"c":"Nhặt được của rơi, em nên làm gì?","a":["Đưa cho cô giáo hoặc người lớn","Tự giữ lấy","Giấu đi"],"d":0},{"c":"Em làm bài sai, em nên làm gì?","a":["Chép bài của bạn","Xé bài đi","Nhận lỗi và sửa lại"],"d":2},{"c":"Trong giờ kiểm tra, em nên làm gì?","a":["Hỏi bạn đáp án","Nhìn bài bạn","Tự làm bài của mình"],"d":2},{"c":"Nói dối là việc như thế nào?","a":["Không tốt","Tốt","Giỏi giang"],"d":0},{"c":"Em quên làm bài tập, em nên nói với cô thế nào?","a":["Nói thật và hứa sẽ làm","Nói là bị ốm","Nói là mất vở"],"d":0},{"c":"Nam nhặt được ví tiền, đưa chú bảo vệ để trả lại. Nam là người như thế nào?","a":["Trung thực","Nói dối","Tham lam"],"d":0},{"c":"Người trung thực được mọi người như thế nào?","a":["Xa lánh","Ghét bỏ","Tin yêu"],"d":2}]},{"ten":"Chủ đề: Nề nếp và nội quy","q":[{"c":"Cô giáo đang giảng bài, em nên làm gì?","a":["Làm việc riêng","Nói chuyện riêng","Chú ý lắng nghe"],"d":2},{"c":"Muốn ra khỏi lớp, em phải làm gì?","a":["Xin phép cô","Tự ý đi ra","Trốn đi"],"d":0},{"c":"Xếp hàng ra vào lớp, em cần làm gì?","a":["Đi trật tự","Xô đẩy","Chạy nhảy"],"d":0},{"c":"Đi học đúng giờ giúp em điều gì?","a":["Chơi nhiều","Không bỏ lỡ bài học","Ngủ nhiều"],"d":1},{"c":"Em giữ vệ sinh chung bằng cách nào?","a":["Vứt rác bừa bãi","Khạc nhổ bừa bãi","Bỏ rác đúng nơi quy định"],"d":2},{"c":"Thực hiện tốt nội quy lớp học để làm gì?","a":["Lớp học lộn xộn","Lớp học nề nếp, vui vẻ","Lớp học ồn ào"],"d":1},{"c":"Khi bạn đang nói, em nên làm gì?","a":["Lắng nghe, không ngắt lời","Cướp lời","Hét to"],"d":0},{"c":"Đi ngoài đường, em nên làm gì?","a":["Đi trên vỉa hè hoặc lề đường, nắm tay người lớn","Chơi đùa trên đường","Chạy giữa đường"],"d":0}]}]}];
+
+</script>
+<script>
+/* ===========================================================================
+   BỘ CÂU HỎI DÙNG CHUNG CHO CÁC TRÒ CHƠI CẢ LỚP
+   - Chọn bộ có sẵn (Toán, Tiếng Việt, TNXH, HĐTN, Đạo đức lớp 1) theo bài/chủ đề
+   - Hoặc chọn "KHÁC": thầy cô lớp nào cũng dán câu hỏi của mình vào
+   Cần nạp trước file cau-hoi-san.js (tạo window.CAUHOI_SAN).
+   Dùng: BoCauHoi.mo({ khiChon: function(dsCau, tenBo){ ... bắt đầu trò chơi ... } })
+   Mỗi câu trả về: { c: "câu hỏi", a: ["đáp án A","B",...], d: vị trí đáp án đúng (0 là A) }
+   =========================================================================== */
+(function () {
+  var NEN_MIN = 8, NEN_MAX = 12, TOI_THIEU = 6, TOI_DA = 30;
+  var KHOA = 'codiep-bo-cau-hoi';
+
+  var MAU_DAN = 'Câu 1: Số liền sau của 7 là số nào?\nA. 6\nB. 8\nC. 9\nĐáp án: B\n\n' +
+                'Câu 2: Từ nào chỉ hoạt động?\nA. xanh\n*B. chạy\nC. bàn\nD. cao\n\n' +
+                'Câu 3: 6 × 7 = ?\nA. 36\nB. 48\nC. 42\nĐáp án: C';
+
+  /* ---- đọc và kiểm tra văn bản dán vào ---- */
+  function phanTich(txt) {
+    var cau = [], loi = [], cur = null, stt = 0;
+    function xong() {
+      if (!cur) return;
+      stt++;
+      var tom = cur.c.length > 36 ? cur.c.slice(0, 36) + '...' : cur.c;
+      if (cur.a.length < 2) loi.push('Câu ' + stt + ' ("' + tom + '"): cần ít nhất 2 đáp án A, B.');
+      else if (cur.a.length > 4) loi.push('Câu ' + stt + ' ("' + tom + '"): có ' + cur.a.length + ' đáp án, chỉ nhận tối đa 4 (A, B, C, D).');
+      else if (cur.d >= cur.a.length) loi.push('Câu ' + stt + ' ("' + tom + '"): đáp án ghi là ' + 'ABCD'[cur.d] + ' nhưng câu chỉ có ' + cur.a.length + ' đáp án.');
+      else if (cur.d < 0) loi.push('Câu ' + stt + ' ("' + tom + '"): chưa ghi đáp án đúng. Thêm dòng "Đáp án: B" hoặc gõ dấu * trước đáp án đúng.');
+      else cau.push({ c: cur.c, a: cur.a, d: cur.d });
+      cur = null;
+    }
+    var dong = String(txt || '').replace(/\r/g, '').replace(/ /g, ' ').split('\n');
+    for (var i = 0; i < dong.length; i++) {
+      var l = dong[i].trim(), m;
+      if (!l) continue;
+      if (cur && (m = l.match(/^(\*?)\s*\(?([A-Ha-h])\s*[.):\-]\s*(.+)$/))) {
+        cur.a.push(m[3].trim());
+        if (m[1]) cur.d = cur.a.length - 1;
+        continue;
+      }
+      if (cur && (m = l.match(/^(?:đáp án|dap an|đ\/a|đ\.a|đa)\s*[:\-]\s*\(?([A-Ha-h])/i))) {
+        cur.d = 'ABCDEFGH'.indexOf(m[1].toUpperCase());
+        continue;
+      }
+      var q = l.replace(/^(câu|cau)\s*\d+\s*[:.)\-]?\s*/i, '').replace(/^\d+\s*[.):]\s*/, '');
+      if (cur && cur.a.length === 0) { cur.c += ' ' + q; continue; }   // câu hỏi viết nhiều dòng
+      xong();
+      cur = { c: q, a: [], d: -1 };
+    }
+    xong();
+    return { cau: cau, loi: loi };
+  }
+
+  function tron(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function doc() { try { return JSON.parse(localStorage.getItem(KHOA)) || {}; } catch (e) { return {}; } }
+  function ghi(o) { try { localStorage.setItem(KHOA, JSON.stringify(o)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  var css = '.bch-ov{position:fixed;inset:0;background:rgba(29,53,87,.6);z-index:50;display:flex;align-items:center;justify-content:center;padding:12px}' +
+    '.bch{background:#fff;color:#1d3557;border-radius:26px;width:min(96vw,760px);max-height:96vh;overflow:auto;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.4);font-family:"Be Vietnam Pro",system-ui,sans-serif}' +
+    '.bch h2{font:800 28px "Baloo 2",sans-serif;color:#e63946;margin-bottom:8px}' +
+    '.bch label{display:block;font-weight:700;font-size:15px;margin:10px 0 4px;color:#5b6b80}' +
+    '.bch select,.bch textarea,.bch input[type=number]{width:100%;width:100%;font:500 17px "Be Vietnam Pro",sans-serif;padding:10px 12px;border:3px solid #cfe3fa;border-radius:14px;background:#fff;color:#1d3557}' +
+    '.bch textarea{min-height:170px;resize:vertical}' +
+    '.bch .hai{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
+    '.bch .huong{background:#fff6d6;border:2px solid #ffd166;border-radius:16px;padding:12px 14px;font-size:15.5px;line-height:1.5;margin-top:10px}' +
+    '.bch .huong b{color:#c2255c}.bch .huong pre{background:#fff;border-radius:10px;padding:8px 10px;margin:8px 0;font:600 14.5px/1.45 "Be Vietnam Pro",monospace;white-space:pre-wrap}' +
+    '.bch .tt{font-weight:700;margin-top:10px;font-size:16px}.bch .ok{color:#2a9d4a}.bch .canh{color:#d9730d}.bch .loi{color:#e63946}' +
+    '.bch ul{margin:6px 0 0 20px;font-size:14.5px;color:#e63946}' +
+    '.bch .nut{font:800 20px "Baloo 2",sans-serif;border:0;border-radius:30px;padding:9px 22px;cursor:pointer;color:#fff;background:#1d7bd8;box-shadow:0 5px 0 rgba(0,0,0,.18);margin:6px 8px 0 0}' +
+    '.bch .nut.bd{background:linear-gradient(90deg,#ff5d8f,#ff9a3c);font-size:26px;padding:11px 34px}' +
+    '.bch .nut.xam{background:#7a8aa0}.bch .nut:disabled{opacity:.45;cursor:not-allowed}' +
+    '@media(max-width:520px){.bch .hai{grid-template-columns:1fr}}';
+
+  function khoang(a, b) { return a === b ? a + ' phút' : a + ' đến ' + b + ' phút'; }
+
+  function chenCss() {
+    if (!document.getElementById('bch-css')) { var st = document.createElement('style'); st.id = 'bch-css'; st.textContent = css; document.head.appendChild(st); }
+  }
+
+  /* ---- khung HƯỚNG DẪN dùng chung: mỗi trò truyền vào {ten, gioiThieu, buoc:[[tiêu đề, mô tả],...], meo:[...]} ---- */
+  var cssHD = '.bch-g{background:#fff;color:#1d3557;border-radius:26px;width:min(96vw,720px);max-height:94vh;overflow:auto;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.45);font-family:"Be Vietnam Pro",system-ui,sans-serif}' +
+    '.bch-g h2{font:800 28px "Baloo 2",sans-serif;color:#e63946;margin-bottom:4px}' +
+    '.bch-g .gt{font-size:17px;line-height:1.5;color:#5b6b80;margin-bottom:12px}' +
+    '.bch-g .b{display:flex;gap:14px;align-items:flex-start;margin:10px 0}' +
+    '.bch-g .so{flex:none;width:44px;height:44px;border-radius:50%;background:#e64980;color:#fff;font:800 24px/44px "Baloo 2",sans-serif;text-align:center}' +
+    '.bch-g .b b{display:block;font:800 20px "Baloo 2",sans-serif;color:#1d3557}' +
+    '.bch-g .b span{font-size:17px;line-height:1.5}' +
+    '.bch-g .meo{background:#fff6d6;border:2px solid #ffd166;border-radius:16px;padding:10px 14px;margin-top:12px;font-size:16px;line-height:1.5}' +
+    '.bch-g .meo b{color:#c2255c}.bch-g .meo div{margin-top:3px}' +
+    '.bch-g .nut{font:800 22px "Baloo 2",sans-serif;border:0;border-radius:30px;padding:9px 28px;cursor:pointer;color:#fff;background:#2a9d4a;box-shadow:0 5px 0 rgba(0,0,0,.18);margin-top:14px}';
+
+  function huongDan(g) {
+    chenCss();
+    if (!document.getElementById('bch-css-hd')) { var st = document.createElement('style'); st.id = 'bch-css-hd'; st.textContent = cssHD; document.head.appendChild(st); }
+    var ov = document.createElement('div'); ov.className = 'bch-ov'; ov.style.zIndex = 60;
+    ov.innerHTML = '<div class="bch-g"><h2>❓ Hướng dẫn: ' + esc(g.ten) + '</h2>' +
+      (g.gioiThieu ? '<div class="gt">' + esc(g.gioiThieu) + '</div>' : '') +
+      (g.buoc || []).map(function (b, i) { return '<div class="b"><div class="so">' + (i + 1) + '</div><div><b>' + esc(b[0]) + '</b><span>' + esc(b[1]) + '</span></div></div>'; }).join('') +
+      ((g.meo && g.meo.length) ? '<div class="meo"><b>Mẹo nhỏ</b>' + g.meo.map(function (m) { return '<div>• ' + esc(m) + '</div>'; }).join('') + '</div>' : '') +
+      '<button class="nut" type="button">Đã hiểu, bắt đầu thôi!</button></div>';
+    ov.onclick = function (e) { if (e.target === ov || e.target.className === 'nut') ov.remove(); };
+    document.body.appendChild(ov);
+  }
+
+  /* ---- NỘI DUNG HƯỚNG DẪN CÁCH CHƠI cho từng trò (viết cho thầy cô, dễ hiểu) ---- */
+  var HD = {
+    non: {
+      ten: 'Chiếc Nón Kì Diệu',
+      gioiThieu: 'Trò chơi cả lớp: quay nón để bốc câu hỏi. Chơi khoảng 10 đến 15 phút, hợp để khởi động hoặc ôn bài cuối tiết.',
+      buoc: [
+        ['Chuẩn bị (1 phút)', 'Chiếu game lên màn hình. Chọn bộ câu hỏi có sẵn, hoặc chọn mục KHÁC rồi dán câu hỏi của cô vào. Chọn thời gian chơi cho hợp tiết học: khởi động 2 phút, luyện tập 4 hoặc 5 phút, hoặc tự gõ số phút. Bấm "Bắt đầu chơi".'],
+        ['Chia đội', 'Chia lớp thành 2 đội hoặc 4 tổ. Mỗi lượt một bạn lên bấm nút "QUAY NÓN".'],
+        ['Nón quay', 'Nón quay rồi dừng ở một số, và hiện ra một câu hỏi.'],
+        ['Trả lời', 'Cả đội bàn nhau, bạn đại diện nói đáp án A, B, C hoặc D (hoặc giơ bảng con). Cô bấm đáp án đội chọn. Đúng ngay lần đầu được 10 điểm. Sai thì được thử lại một lần, đúng thì được 5 điểm.'],
+        ['Kết thúc', 'Hết câu hỏi hoặc HẾT GIỜ là game dừng ngay và hiện điểm, số sao. Đồng hồ ở góc phải màn hình chỉ chạy từ lần quay nón đầu tiên, bấm nút ⏸ để tạm dừng khi cần. Bấm "Chơi lại" để chơi thêm lượt mới.']
+      ],
+      meo: ['Điện thoại không nghe tiếng? Chạm vào màn hình một lần, bấm nút "Âm thanh" để thử. iPhone: gạt nút im lặng bên hông lên (không thấy dải màu cam) và tăng âm lượng.', 'Game có một bảng điểm chung. Muốn thi đua giữa các đội thì cô ghi điểm từng đội lên bảng, hoặc cho mỗi đội chơi một ván riêng rồi so điểm.',
+            'Muốn đổi sang môn khác: bấm nút "Bộ câu hỏi".', 'Lớp ồn thì tắt tiếng bằng nút "Âm thanh".']
+    },
+    trieuphu: {
+      ten: 'Triệu phú nhí',
+      gioiThieu: 'Một bạn ngồi "ghế nóng", trả lời lần lượt các câu từ dễ đến khó, được 3 quyền trợ giúp. Cả lớp cổ vũ. Cô điều khiển trên máy và chiếu lên màn hình. Số câu và tổng thời gian do cô quyết định.',
+      buoc: [
+        ['Chuẩn bị (cô tự đặt kế hoạch)', 'Bấm "Bộ câu hỏi", chọn bộ có sẵn hoặc dán câu hỏi của cô. Chọn SỐ CÂU mỗi bạn phải trả lời (5 đến 15) và TỔNG THỜI GIAN cả buổi chơi (2 phút, 4 phút, 5 phút hoặc tự gõ). Bấm "Danh sách" để nhập tên các bạn, mỗi dòng một tên.'],
+        ['Chọn người chơi', 'Bấm vào tên một bạn ở cột bên trái, hoặc bấm "Chọn bạn may mắn" để game chọn ngẫu nhiên một bạn chưa chơi.'],
+        ['Trả lời câu hỏi', 'Bạn nghe cô đọc (có nút đọc to), chọn A, B, C hoặc D. Đúng thì bạn lên một bậc ở thang bên phải, mỗi bậc được thêm sao. Nếu cô đặt tổng thời gian thì không có giờ riêng từng câu, chỉ có một đồng hồ chung cho cả buổi.'],
+        ['Ba quyền trợ giúp (mỗi quyền dùng một lần)', '50:50 bỏ bớt đáp án sai. Nút 🙋 hỏi ý kiến cả lớp. Nút 📞 nhờ một bạn khác lên giúp.'],
+        ['Mốc an toàn', 'Qua câu 5 và câu 10 là mốc an toàn: nếu sau đó trả lời sai, bạn vẫn giữ số sao của mốc. Bạn có thể bấm "Dừng cuộc chơi" để giữ số sao đang có.'],
+        ['Hết giờ', 'Đồng hồ chung ở góc phải phía dưới, chạy khi bạn đầu tiên bắt đầu (bấm ⏸ để tạm dừng). Hết giờ là trò chơi DỪNG NGAY, bạn đang chơi giữ số sao đang có.'],
+        ['Lượt tiếp theo', 'Chọn bạn khác, những bạn đã chơi được đánh dấu. Muốn bắt đầu buổi mới, vào "Danh sách" rồi bấm "Xóa điểm, chơi buổi mới".']
+      ],
+      meo: ['Với lớp 1, cô có thể đọc to câu hỏi cho cả lớp nghe, bạn chơi chỉ cần chọn.', 'Cô tính trước: tổng thời gian chia cho số bạn sẽ lên chơi, ví dụ 5 phút cho 3 bạn thì mỗi bạn khoảng 5 đến 6 câu ngắn.']
+    },
+    olympia: {
+      ten: 'Đường lên đỉnh tri thức',
+      gioiThieu: '4 tổ thi qua 4 vòng giống chương trình Olympia. Các em trả lời miệng, cô bấm Đúng hoặc Sai. Cô tự đặt số câu từng vòng và tổng thời gian cho vừa tiết học.',
+      buoc: [
+        ['Chuẩn bị (cô tự đặt kế hoạch)', 'Bấm "Bộ câu hỏi", chọn bộ câu hỏi, rồi chọn SỐ CÂU từng vòng (Khởi động, Tăng tốc, Về đích) và TỔNG THỜI GIAN cả trò (ví dụ 15 phút, tự gõ số phút). Game tự báo cần bao nhiêu câu hỏi. Bấm "Soạn Vòng 2" để soạn ô chữ theo bài cô đang dạy. Chia lớp thành 4 tổ, bấm vào tên tổ ở dưới để đổi tên.'],
+        ['Vòng 1: Khởi động', 'Cô chọn tổ rồi bấm "Bắt đầu". Mỗi tổ trả lời số câu cô đã chọn. Đúng bấm "Đúng +10", sai bấm "Sai". Các tổ thi lần lượt.'],
+        ['Vòng 2: Vượt chướng ngại vật', 'Các tổ chọn một hàng ngang, cô bấm vào số hàng để hiện câu hỏi (15 giây). Tổ nào trả lời đúng, cô bấm tên tổ rồi "Chấm điểm", một mảnh tranh được mở. Tổ đoán đúng từ khóa càng sớm thì điểm càng cao.'],
+        ['Vòng 3: Tăng tốc', 'Có số câu cô đã chọn. Cô bấm tên các tổ theo thứ tự trả lời đúng: nhanh nhất +40, rồi +30, +20, +10. Cuối cùng bấm "Chấm điểm".'],
+        ['Vòng 4: Về đích', 'Mỗi tổ chọn số câu cô đã đặt trong các gói 10, 20, 30 điểm. Tổ có thể chọn ⭐ ngôi sao hy vọng: đúng được gấp đôi điểm, sai bị trừ. Tổ trả lời sai thì tổ khác được giành quyền.'],
+        ['Hết giờ và tổng kết', 'Đồng hồ chung ở góc phải phía dưới, chạy khi vào vòng thi đầu tiên (bấm ⏸ để tạm dừng). Hết giờ là trò chơi DỪNG NGAY và hiện bảng tổng kết. Cô cũng có thể bấm "🏆 Tổng kết" bất cứ lúc nào để xem tổ nào về nhất. Có nút + và − để cô sửa điểm nếu bấm nhầm.']
+      ],
+      meo: ['Nếu thời gian ít, cô giảm số câu từng vòng hoặc chỉ chơi vòng 1 và vòng 3 cũng được.', 'Vòng 2 cần cô chuẩn bị trước ô chữ, hãy dùng nút "Soạn Vòng 2" và bấm "Điền mẫu" để xem cách viết.']
+    },
+    tcl: {
+      ten: 'Trò chơi cả lớp (4 trò)',
+      gioiThieu: 'Cô điều khiển trên máy, chiếu lên màn hình, cả lớp cùng chơi bằng câu hỏi của chính cô. Mỗi trò chơi khoảng 10 đến 15 phút.',
+      buoc: [
+        ['Bước 1: Chọn trò chơi', 'Rung chuông vàng: ai trả lời sai thì bị loại, bạn cuối cùng thắng. Mảnh ghép bí ẩn: đúng thì mở một mảnh của bức tranh. Đua thuyền các tổ: tổ đúng thì thuyền tiến lên, tổ nào tới đích trước thắng. Hộp quà bí mật: chọn ô số, trả lời đúng thì nhận quà.'],
+        ['Bước 2: Lấy câu hỏi từ đâu', 'Chọn bộ có sẵn của lớp 1 (Toán, Tiếng Việt, TNXH, HĐTN, Đạo đức) rồi chọn bài. Hoặc chọn mục KHÁC, dán câu hỏi của cô vào (mọi lớp, mọi môn). Dưới ô có dòng báo "Có bao nhiêu câu" và nhắc nếu quá ít hay quá nhiều.'],
+        ['Bước 3: Bắt đầu', 'Chọn "Thời gian cả ván" nếu cô muốn giới hạn (khởi động 2 phút, luyện tập 4 hoặc 5 phút, hoặc tự gõ số phút). Hết giờ game dừng ngay để cô chốt điểm, không bị cháy giáo án. Bấm "Bắt đầu chơi cả lớp". Cô đọc câu hỏi, các em trả lời, cô bấm "Hiện đáp án" rồi bấm tên bạn hoặc tổ để chấm.'],
+        ['Rung chuông vàng', 'Cô bấm "Hiện đáp án", rồi bấm vào tên bạn trả lời sai để loại. Còn một bạn là bạn thắng.'],
+        ['Đua thuyền', 'Mỗi tổ trả lời đúng, cô bấm nút "Tổ ... đúng +1". Tổ nào đủ 8 bước tới đích trước thì thắng. Cô bấm vào tên tổ để sửa tên.'],
+        ['Hộp quà bí mật', 'Học sinh chọn một ô số, câu hỏi hiện ra, đúng thì mở quà và cộng điểm cho cả lớp.']
+      ],
+      meo: ['Câu hỏi nên có 8 đến 12 câu cho một trò (mỗi câu khoảng 1 đến 2 phút).', 'Mảnh ghép dùng tối đa 9 câu, Hộp quà tối đa 16 câu.']
+    }
+  };
+
+  /* ---- ĐỒNG HỒ CẢ VÁN dùng chung: hết giờ thì gọi khiHet để trò chơi DỪNG NGAY ---- */
+  var cssGio = '.bch-gio{position:fixed;bottom:56px;right:12px;z-index:45;background:#1d3557;color:#fff;border-radius:30px;padding:4px 8px 4px 18px;font:800 clamp(30px,5vw,46px) "Baloo 2",sans-serif;display:flex;gap:8px;align-items:center;box-shadow:0 6px 16px rgba(0,0,0,.3)}' +
+    '.bch-gio button{border:0;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer;background:#ffd166}' +
+    '.bch-gio.gap{background:#e63946;animation:bch-nhay .6s infinite}' +
+    '@keyframes bch-nhay{50%{opacity:.55}}';
+  /* ---- MỞ KHÓA ÂM THANH CHO ĐIỆN THOẠI ----
+     Điện thoại chỉ cho phát tiếng sau khi người dùng chạm vào màn hình, và iPhone còn tắt tiếng khi gạt nút im lặng.
+     Hàm này tạo MỘT bộ âm thanh dùng chung, mở khóa ở lần chạm đầu tiên; các trò chơi lấy qua BoCauHoi.ctx(). */
+  var AC = null, ACLOCK = false, ACEL = null;
+  // Tạo một đoạn âm thanh WAV ngay trong trình duyệt (tần số 0 là im lặng). iPhone chỉ chịu "mở khóa" bằng thẻ audio thật.
+  function taoWav(hz, giay) {
+    var sr = 8000, n = Math.floor(sr * giay), buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+    function ch(o, t) { for (var i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); }
+    ch(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); ch(8, 'WAVE'); ch(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); ch(36, 'data'); v.setUint32(40, n * 2, true);
+    for (var i = 0; i < n; i++) v.setInt16(44 + i * 2, hz ? Math.round(Math.sin(2 * Math.PI * hz * i / sr) * 12000 * Math.min(1, (n - i) / 400)) : 0, true);
+    return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+  }
+  function ctx() {
+    try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) {}
+    return AC;
+  }
+  function moKhoaAm() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}      // iPhone: kêu cả khi gạt nút im lặng
+    var c = ctx();
+    try { if (c) { var bf = c.createBuffer(1, 1, 22050), sc = c.createBufferSource(); sc.buffer = bf; sc.connect(c.destination); sc.start(0); } } catch (e) {}
+    try {                                                                                         // thẻ audio im lặng chạy lặp: đưa iPhone sang chế độ "phát nhạc"
+      if (!ACEL) { ACEL = document.createElement('audio'); ACEL.src = taoWav(0, 1); ACEL.loop = true; ACEL.setAttribute('playsinline', ''); ACEL.style.display = 'none'; document.body.appendChild(ACEL); }
+      if (!ACLOCK) { var pr = ACEL.play(); if (pr && pr.then) pr.then(function () { ACLOCK = true; }).catch(function () {}); else ACLOCK = true; }
+    } catch (e) {}
+    if (c && c.state === 'running' && ACLOCK) ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'keydown'].forEach(function (e) { document.removeEventListener(e, moKhoaAm, true); });
+  }
+  ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'keydown'].forEach(function (e) { document.addEventListener(e, moKhoaAm, true); });
+
+  function tick(f) {
+    try { ctx(); var t0 = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'square'; o.frequency.value = f; g.gain.setValueAtTime(.06, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .08); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + .08); } catch (e) {}
+  }
+  var G = { el: null, nd: null, t: null, con: 0, tam: false, cb: null };
+  G.hien = function () {
+    if (!G.el) return;
+    var m = Math.floor(G.con / 60), s = G.con % 60;
+    G.nd.textContent = '⏱ ' + m + ':' + (s < 10 ? '0' : '') + s;
+    G.el.classList.toggle('gap', G.con <= 10 && G.con > 0);
+  };
+  G.huy = function () { clearInterval(G.t); G.t = null; if (G.el) G.el.remove(); G.el = null; G.con = 0; G.tam = false; };
+  G.chuan = function (giay, khiHet) {                    // hiện đồng hồ, CHƯA chạy; trò chơi gọi G.bat() khi bắt đầu thật sự
+    G.huy(); giay = +giay || 0; if (!giay) return;
+    chenCss(); if (!document.getElementById('bch-css-gio')) { var st = document.createElement('style'); st.id = 'bch-css-gio'; st.textContent = cssGio; document.head.appendChild(st); }
+    G.cb = khiHet; G.con = giay;
+    G.el = document.createElement('div'); G.el.className = 'bch-gio';
+    G.nd = document.createElement('span');
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = '⏸'; b.title = 'Tạm dừng hoặc chạy tiếp đồng hồ';
+    b.onclick = function () { if (!G.t) return; G.tam = !G.tam; b.textContent = G.tam ? '▶' : '⏸'; };
+    G.el.appendChild(G.nd); G.el.appendChild(b); document.body.appendChild(G.el); G.hien();
+  };
+  G.bat = function () {
+    if (!G.el || G.t || G.con <= 0) return;
+    G.t = setInterval(function () {
+      if (G.tam) return;
+      G.con--; G.hien();
+      if (G.con <= 10 && G.con > 0) tick(800 + (10 - G.con) * 40);
+      if (G.con <= 0) { clearInterval(G.t); G.t = null; tick(300); var f = G.cb; G.cb = null; if (f) f(); }
+    }, 1000);
+  };
+  G.chay = function () { return !!G.t; };
+
+  function mo(opt) {
+    var KHO = window.CAUHOI_SAN || [];
+    var luu = doc();
+    var H = opt.huong || {};                               // quy định riêng của từng trò chơi
+    var nenMin = H.nenMin || NEN_MIN, nenMax = H.nenMax || NEN_MAX, toiThieu = H.toiThieu || TOI_THIEU, toiDa = H.toiDa || TOI_DA;
+    var cacSo = H.cacSo || [6, 8, 10, 12, 15, 20, 30], soMac = H.soMacDinh || 10;
+    var gioMoiCau = H.phutMoiCau || [1, 2];
+    chenCss();
+    var ov = document.createElement('div'); ov.className = 'bch-ov';
+    ov.innerHTML =
+      '<div class="bch">' + (opt.huongDan ? '<button class="nut xam" id="bch-hd" type="button" style="float:right;font-size:17px;padding:6px 16px;margin:0">❓ Hướng dẫn</button>' : '') + '<h2>📚 Chọn bộ câu hỏi</h2>' +
+      '<label for="bch-nguon">Bộ câu hỏi</label><select id="bch-nguon"></select>' +
+      '<div id="bch-san"><div class="hai"><div><label for="bch-tu">Từ bài / chủ đề</label><select id="bch-tu"></select></div>' +
+      '<div><label for="bch-den">Đến bài / chủ đề</label><select id="bch-den"></select></div></div>' +
+      '<p style="font-size:14px;color:#5b6b80;margin-top:6px">Muốn ôn một bài thì chỉ cần chọn "Từ bài". Muốn ôn nhiều bài thì chọn thêm "Đến bài", câu hỏi các bài sẽ gộp lại. Câu hỏi có sẵn là bản mẫu, cô nên xem lại cho khớp bài đang dạy.</p></div>' +
+      '<div id="bch-khac" style="display:none">' +
+      '<div class="huong"><b>CÁCH DÁN CÂU HỎI CỦA CÔ (dùng cho mọi môn, mọi lớp)</b><br>' +
+      '1. Mỗi câu gồm: <b>câu hỏi</b>, rồi <b>2 đến 4 đáp án</b> bắt đầu bằng A. B. C. D.<br>' +
+      '2. Báo đáp án đúng bằng một dòng <b>Đáp án: B</b> ở cuối câu, hoặc gõ dấu <b>*</b> trước đáp án đúng.<br>' +
+      '3. Dán được thẳng từ Word hoặc Excel. Giữa các câu cách một dòng trống cho dễ nhìn (không bắt buộc).<br>' +
+      '4. <b>Số câu:</b> mỗi câu chơi mất khoảng <b>' + gioMoiCau[0] + ' đến ' + gioMoiCau[1] + ' phút</b>. Nên dán <b>' + (nenMin === nenMax ? 'đúng ' + nenMin : nenMin + ' đến ' + nenMax) + ' câu</b> (chơi khoảng ' + khoang(nenMin * gioMoiCau[0], nenMax * gioMoiCau[1]) + '). Ít nhất ' + toiThieu + ' câu, nhiều nhất ' + toiDa + ' câu.' +
+      (H.ghiChu ? '<br>5. <b>Riêng trò này:</b> ' + H.ghiChu : '') +
+      '<pre>' + esc(MAU_DAN) + '</pre>' +
+      '<button class="nut xam" id="bch-mau" type="button">Điền ví dụ vào ô</button><button class="nut xam" id="bch-xoa" type="button">Xóa ô</button></div>' +
+      '<label for="bch-dan">Dán câu hỏi vào đây</label><textarea id="bch-dan" placeholder="Câu 1: ...&#10;A. ...&#10;B. ...&#10;C. ...&#10;Đáp án: B"></textarea></div>' +
+      '<div class="hai"' + (H.anSoCau ? ' style="display:none"' : '') + '><div><label for="bch-so">' + esc(H.nhanSoCau || 'Số câu chơi') + '</label><select id="bch-so"></select></div><div></div></div>' +
+      ((opt.truong && opt.truong.length) ? '<div class="hai">' + opt.truong.map(function (f) { return '<div><label for="bch-t-' + f.id + '">' + esc(f.nhan) + '</label><select id="bch-t-' + f.id + '">' + f.tuyChon.map(function (v) { return '<option value="' + v + '"' + (v === f.mac ? ' selected' : '') + '>' + v + '</option>'; }).join('') + '</select></div>'; }).join('') + '</div>' : '') +
+      (opt.thoiGian ? '<div class="hai"><div><label for="bch-tg">Thời gian chơi (cô tự chọn cho hợp tiết học)</label><select id="bch-tg"><option value="0">Không giới hạn</option><option value="120">Khởi động: 2 phút</option><option value="240">Luyện tập: 4 phút</option><option value="300">Luyện tập: 5 phút</option><option value="khac">Tự nhập số phút...</option></select></div>' +
+        '<div id="bch-tgx" style="display:none"><label for="bch-ph">Số phút</label><input id="bch-ph" type="number" min="1" max="60" value="3"></div></div>' : '') +
+      '<div class="tt" id="bch-tt"></div><ul id="bch-loi"></ul>' +
+      '<div style="margin-top:8px"><button class="nut bd" id="bch-bd" type="button">Bắt đầu chơi</button>' +
+      '<button class="nut xam" id="bch-dong" type="button" style="display:none">Đóng</button></div></div>';
+    document.body.appendChild(ov);
+    var $ = function (s) { return ov.querySelector(s); };
+
+    var nguon = $('#bch-nguon'), tu = $('#bch-tu'), den = $('#bch-den'), dan = $('#bch-dan'), so = $('#bch-so');
+    nguon.innerHTML = KHO.map(function (m, i) { return '<option value="' + i + '">' + esc(m.mon) + '</option>'; }).join('') +
+      '<option value="khac">KHÁC: dán câu hỏi của cô (mọi môn, mọi lớp)</option>';
+    function dienBai() {
+      var m = KHO[+nguon.value]; if (!m) return;
+      var h = m.bai.map(function (b, i) { return '<option value="' + i + '">' + esc(b.ten) + '</option>'; }).join('');
+      tu.innerHTML = h; den.innerHTML = h;
+    }
+    function layCau() {
+      if (nguon.value === 'khac') return phanTich(dan.value);
+      var m = KHO[+nguon.value]; if (!m) return { cau: [], loi: [] };
+      var a = +tu.value, b = Math.max(a, +den.value), out = [];
+      for (var i = a; i <= b; i++) if (m.bai[i]) m.bai[i].q.forEach(function (q) { out.push({ c: q.c, a: q.a.slice(), d: q.d }); });
+      return { cau: out, loi: [] };
+    }
+    function capNhat() {
+      var khac = nguon.value === 'khac';
+      $('#bch-san').style.display = khac ? 'none' : ''; $('#bch-khac').style.display = khac ? '' : 'none';
+      var r = layCau(), n = r.cau.length, tt = $('#bch-tt');
+      // số câu chơi
+      var capChon = H.chonToiDa || 1e9;
+      var opts = cacSo.filter(function (x) { return x < n && x <= capChon; });
+      if (n <= capChon) opts.push(n);
+      var giay = giayChon(), giu = +so.value, mac = giay && !H.chonToiDa ? n : Math.min(soMac, n, capChon);   // có giới hạn giờ thì mặc định bốc hết câu
+      so.innerHTML = opts.filter(function (x) { return x > 0; }).map(function (x) { return '<option value="' + x + '">' + (x === n ? 'Tất cả (' + n + ' câu)' : x + ' câu') + '</option>'; }).join('');
+      so.value = (giu && opts.indexOf(giu) >= 0) ? giu : String(mac);
+      var ch = +so.value || 0, kq, lop;
+      if (!n) { kq = khac ? 'Chưa có câu hỏi nào. Cô dán câu hỏi vào ô bên trên.' : 'Bộ này chưa có câu hỏi.'; lop = 'loi'; }
+      else if (ch < toiThieu) { kq = 'Có ' + n + ' câu, nhưng trò này cần ít nhất ' + toiThieu + ' câu' + (H.ghiChu ? ' (' + H.ghiChu + ')' : '') + '. Cô thêm câu hỏi nhé.'; lop = H.nenMin ? 'loi' : 'canh'; }
+      else if (ch > toiDa) { kq = 'Chơi ' + ch + ' câu là lâu (khoảng ' + khoang(ch * gioMoiCau[0], ch * gioMoiCau[1]) + '). Nên chọn ' + nenMin + ' đến ' + nenMax + ' câu.'; lop = 'canh'; }
+      else if (ch > nenMax) { kq = 'Có ' + n + ' câu, chơi ' + ch + ' câu: khoảng ' + khoang(ch * gioMoiCau[0], ch * gioMoiCau[1]) + '. Muốn gọn hơn thì chọn ' + nenMin + ' đến ' + nenMax + ' câu.'; lop = 'canh'; }
+      else { kq = 'Có ' + n + ' câu, chơi ' + ch + ' câu (khoảng ' + khoang(ch * gioMoiCau[0], ch * gioMoiCau[1]) + '). Vừa đủ.'; lop = 'ok'; }
+      if (khac && n > toiDa) { kq = 'Có ' + n + ' câu, nhiều hơn mức ' + toiDa + ' câu. Game vẫn chạy, nhưng cô nên chọn số câu chơi ít hơn.'; lop = 'canh'; }
+      if (H.canCau && n) {
+        var can = H.canCau(giaTri()); ch = Math.min(n, can);
+        kq = 'Có ' + n + ' câu. Kế hoạch cô chọn cần khoảng ' + can + ' câu' + (n >= can ? '. Đủ rồi.' : ', thiếu thì game dùng lại câu hỏi.'); lop = n >= can ? 'ok' : 'canh';
+      }
+      if (giay && n) {
+        var pp = Math.ceil(giay / 60), tg = giay % 60 ? Math.floor(giay / 60) + ' phút ' + (giay % 60) + ' giây' : (giay / 60) + ' phút';
+        if (H.moTaGio) { kq = H.moTaGio(tg) + (H.canCau ? ' ' + kq : ' Có ' + n + ' câu, mỗi lượt chơi ' + ch + ' câu.'); lop = H.canCau ? lop : 'ok'; }
+        else { kq = 'Giới hạn ' + tg + ': hết giờ game DỪNG NGAY. Có ' + n + ' câu, nên có khoảng ' + pp + ' đến ' + pp * 2 + ' câu (mỗi câu 30 giây đến 1 phút).'; lop = n >= pp ? 'ok' : 'canh'; }
+      }
+      tt.className = 'tt ' + lop; tt.textContent = (lop === 'ok' ? '✔ ' : lop === 'canh' ? '⚠ ' : '✖ ') + kq;
+      $('#bch-loi').innerHTML = r.loi.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('');
+      if (r.loi.length) tt.textContent += ' Có ' + r.loi.length + ' câu chưa đọc được, xem bên dưới.';
+      $('#bch-bd').disabled = !n || (H.nenMin && ch < toiThieu);
+    }
+    function giaTri() {
+      var o = {}; (opt.truong || []).forEach(function (f) { o[f.id] = +$('#bch-t-' + f.id).value; }); return o;
+    }
+    function giayChon() {
+      if (!opt.thoiGian) return 0;
+      var v = $('#bch-tg').value;
+      if (v === 'khac') return Math.max(1, Math.min(60, +$('#bch-ph').value || 0)) * 60;
+      return +v || 0;
+    }
+    function nho() { ghi({ nguon: nguon.value, tu: tu.value, den: den.value, dan: dan.value, tg: opt.thoiGian ? $('#bch-tg').value : '', ph: opt.thoiGian ? $('#bch-ph').value : '', tr: giaTri() }); }
+
+    nguon.onchange = function () { dienBai(); capNhat(); nho(); };
+    tu.onchange = function () { den.value = tu.value; capNhat(); nho(); };
+    den.onchange = function () { capNhat(); nho(); };
+    dan.oninput = function () { capNhat(); nho(); };
+    so.onchange = capNhat;
+    (opt.truong || []).forEach(function (f) { $('#bch-t-' + f.id).onchange = function () { capNhat(); nho(); }; });
+    if (opt.thoiGian) {
+      $('#bch-tg').onchange = function () { $('#bch-tgx').style.display = this.value === 'khac' ? '' : 'none'; capNhat(); nho(); };
+      $('#bch-ph').oninput = function () { capNhat(); nho(); };
+    }
+    $('#bch-mau').onclick = function () { dan.value = MAU_DAN; capNhat(); nho(); };
+    $('#bch-xoa').onclick = function () { dan.value = ''; capNhat(); nho(); };
+    $('#bch-dong').onclick = function () { ov.remove(); };
+    if (opt.huongDan) $('#bch-hd').onclick = function () { huongDan(opt.huongDan); };
+
+    // khôi phục lựa chọn lần trước
+    if (luu.nguon != null && nguon.querySelector('option[value="' + luu.nguon + '"]')) nguon.value = luu.nguon;
+    dienBai();
+    if (luu.tu != null && nguon.value !== 'khac') { tu.value = luu.tu; den.value = luu.den != null ? luu.den : luu.tu; }
+    if (luu.dan) dan.value = luu.dan;
+    if (opt.thoiGian && luu.tg != null && luu.tg !== '') { $('#bch-tg').value = luu.tg; if (luu.ph) $('#bch-ph').value = luu.ph; $('#bch-tgx').style.display = $('#bch-tg').value === 'khac' ? '' : 'none'; }
+    if (luu.tr) (opt.truong || []).forEach(function (f) { if (luu.tr[f.id] != null && $('#bch-t-' + f.id).querySelector('option[value="' + luu.tr[f.id] + '"]')) $('#bch-t-' + f.id).value = luu.tr[f.id]; });
+    capNhat();
+    if (opt && opt.coThoat) $('#bch-dong').style.display = '';
+
+    $('#bch-bd').onclick = function () {
+      var r = layCau(); if (!r.cau.length) return;
+      var ch = Math.min(+so.value || r.cau.length, r.cau.length);
+      var ten = nguon.value === 'khac' ? 'Bộ câu hỏi của cô' : KHO[+nguon.value].mon;
+      var dsAll = H.giuThuTu && nguon.value === 'khac' ? r.cau : tron(r.cau);
+      var canN = H.canCau ? Math.min(r.cau.length, H.canCau(giaTri())) : ch;
+      var ds = opt.traHetCau ? dsAll : dsAll.slice(0, H.canCau ? canN : ch);
+      ov.remove(); nho();
+      opt.khiChon(ds, ten, giayChon(), H.canCau ? canN : ch, giaTri());
+    };
+    return ov;
+  }
+
+  window.BoCauHoi = { ctx: ctx, taoWav: taoWav, trangThaiAm: function () { return { ctx: AC ? AC.state : 'chưa tạo', khoa: ACLOCK, phien: (navigator.audioSession ? navigator.audioSession.type : 'không hỗ trợ') }; }, mo: mo, huongDan: huongDan, HD: HD, gio: G, phanTich: phanTich, NEN_MIN: NEN_MIN, NEN_MAX: NEN_MAX, TOI_THIEU: TOI_THIEU, TOI_DA: TOI_DA };
+})();
+
+</script>
+<script>
+/* =========================================================
+   CÂU HỎI: chọn trong nút "Bộ câu hỏi" (bộ có sẵn 5 môn lớp 1, hoặc dán câu hỏi của cô ở mục KHÁC).
+   Cô muốn đổi điểm thì sửa hai số dưới đây.
+   ========================================================= */
+var DIEM_DUNG = 10, DIEM_LAN_2 = 5;   // đúng ngay lần đầu / đúng ở lần thử lại
+
+var MAU=["#ef476f","#ffd166","#06d6a0","#118ab2","#8338ec","#ff9a3c"];
+var $=function(i){return document.getElementById(i)};
+var svgNS="http://www.w3.org/2000/svg";
+var gRot=null, rot=0, spinning=false, am=true;
+var ds=[], dung=0, soCau=0, diem=0, cur=null, lanTL=0, ketThuc=false;
+
+/* ---- vẽ chiếc nón (nhìn từ trên xuống) ---- */
+function veNon(){
+  var s=$("wheel"); s.innerHTML="";
+  function el(t,at,p){var e=document.createElementNS(svgNS,t);for(var k in at)e.setAttribute(k,at[k]);(p||s).appendChild(e);return e}
+  el("circle",{r:206,fill:"#c9873a"});                       // vành nón
+  el("circle",{r:200,fill:"#f3d9a0",stroke:"#a9692a","stroke-width":4});
+  gRot=el("g",{});                                           // phần quay
+  for(var i=0;i<6;i++){
+    var a1=(i*60-90)*Math.PI/180,a2=((i+1)*60-90)*Math.PI/180,R=190;
+    el("path",{d:"M0 0 L"+R*Math.cos(a1)+" "+R*Math.sin(a1)+" A"+R+" "+R+" 0 0 1 "+R*Math.cos(a2)+" "+R*Math.sin(a2)+" Z",fill:MAU[i],stroke:"#fff","stroke-width":4},gRot);
+    var am_=(i*60+30-90)*Math.PI/180;
+    var t=el("text",{x:125*Math.cos(am_),y:125*Math.sin(am_),"text-anchor":"middle","dominant-baseline":"central",
+      "font-family":"Baloo 2, sans-serif","font-weight":800,"font-size":64,fill:"#fff",stroke:"rgba(0,0,0,.35)","stroke-width":4,"paint-order":"stroke",
+      transform:"rotate("+(i*60+30)+" "+125*Math.cos(am_)+" "+125*Math.sin(am_)+")"},gRot);
+    t.textContent=i+1;
+  }
+  for(var r=40;r<=190;r+=30) el("circle",{r:r,fill:"none",stroke:"rgba(120,70,20,.28)","stroke-width":3},gRot);  // vòng nan nón lá
+  el("circle",{r:188,fill:"none",stroke:"#a9692a","stroke-width":8,"stroke-dasharray":"2 10"},gRot);
+  el("circle",{r:30,fill:"#c9873a",stroke:"#fff","stroke-width":4},gRot);                                  // chóp nón
+  el("text",{x:0,y:2,"text-anchor":"middle","dominant-baseline":"central","font-size":30},gRot).textContent="👒";
+  setRot(0);
+}
+function setRot(d){rot=d;gRot.setAttribute("transform","rotate("+d+")")}
+
+/* ---- âm thanh (tạo bằng trình duyệt, không cần file) ---- */
+var AC=null;
+function beep(f,dur,type,vol,when){
+  if(!am)return; try{
+    AC=BoCauHoi.ctx();
+    var t0=AC.currentTime+(when||0),o=AC.createOscillator(),g=AC.createGain();
+    o.type=type||"sine";o.frequency.value=f;g.gain.setValueAtTime(vol||.15,t0);g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+    o.connect(g);g.connect(AC.destination);o.start(t0);o.stop(t0+dur);
+  }catch(e){}
+}
+function nhacDung(){[523,659,784,1047].forEach(function(f,i){beep(f,.18,"triangle",.2,i*.1)})}
+function nhacSai(){beep(200,.25,"sawtooth",.15,0);beep(150,.35,"sawtooth",.15,.2)}
+function nhacXong(){[523,659,784,659,784,1047].forEach(function(f,i){beep(f,.2,"triangle",.2,i*.12)})}
+
+/* ---- trộn ngẫu nhiên ---- */
+function tron(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---- ván mới: nhận danh sách câu từ khung "Bộ câu hỏi" ---- */
+var tenBo="",dsGoc=[],gGiay=0,hetGio=false;
+function vanMoi(dsCau,ten,giay){
+  if(ten)tenBo=ten;
+  if(dsCau)dsGoc=dsCau;
+  if(giay!=null)gGiay=giay;
+  hetGio=false;
+  BoCauHoi.gio.chuan(gGiay,khiHetGio);          // hiện đồng hồ, chạy từ lần QUAY NÓN đầu tiên
+  ds=(dsCau||[]).map(function(q,i){
+    var dapan=q.a.map(function(t,k){return{t:t,dung:k===q.d}});
+    return{o:(i%6)+1,c:q.c,a:tron(dapan),xong:false};           // chia đều các số 1-6 cho các câu
+  });
+  soCau=0;diem=0;dung=0;cur=null;ketThuc=false;
+  $("diem").textContent=0;$("cau").textContent=0;$("tong").textContent=ds.length;
+  $("hint").textContent=ds.length?(tenBo+(gGiay?' ('+(gGiay/60)+' phút): bấm "QUAY NÓN", đồng hồ chạy từ lần quay đầu!':': bấm "QUAY NÓN" để bắt đầu!')):'Bấm "Bộ câu hỏi" để chọn câu hỏi.';
+  $("quay").disabled=!ds.length;
+}
+function chonBo(thoat){
+  BoCauHoi.mo({coThoat:thoat,thoiGian:true,huongDan:BoCauHoi.HD.non,khiChon:function(dsCau,ten,giay){vanMoi(dsCau,ten,giay)}});
+}
+
+/* ---- quay nón ---- */
+function quay(){
+  if(spinning||ketThuc)return;
+  var con=ds.filter(function(q){return!q.xong});
+  if(!con.length){hienKetQua();return}
+  BoCauHoi.gio.bat();
+  spinning=true;$("quay").disabled=true;$("hint").textContent="Nón đang quay...";
+  var kq=Math.floor(Math.random()*6);                       // ô số ngẫu nhiên: 0..5 ~ số 1..6
+  var dich=rot+360*(4+Math.floor(Math.random()*3))+((360-(kq*60+30))-(rot%360)+360)%360+(Math.random()*30-15);
+  var t0=performance.now(),D=4200,d0=rot,lastTick=Math.floor(d0/60);
+  function buoc(now){
+    var p=Math.min(1,(now-t0)/D),e=1-Math.pow(1-p,3.2),d=d0+(dich-d0)*e;
+    setRot(d);
+    var tk=Math.floor(d/60);if(tk!==lastTick){lastTick=tk;beep(700+Math.random()*120,.05,"square",.06)}
+    if(ketThuc){spinning=false;return}
+    if(p<1)requestAnimationFrame(buoc);else{rot=dich;spinning=false;lamCau(kq+1)}
+  }
+  requestAnimationFrame(buoc);
+}
+
+/* ---- chọn câu theo số trên nón ---- */
+function lamCau(so){
+  var con=ds.filter(function(q){return!q.xong});
+  var nhom=con.filter(function(q){return q.o===so});
+  var chon=nhom.length?nhom:con;           // hết câu của số này thì lấy câu còn lại
+  cur=chon[Math.floor(Math.random()*chon.length)];
+  lanTL=0;soCau++;$("cau").textContent=soCau;
+  $("hint").textContent="Nón dừng ở số "+so+"!";
+  beep(880,.12,"triangle",.18);
+  $("qtag").textContent="Số "+so;
+  $("qtext").textContent=cur.c;
+  $("msg").textContent="";$("msg").className="msg";$("tiep").style.display="none";
+  var h=$("opts");h.innerHTML="";
+  cur.a.forEach(function(o,i){
+    var b=document.createElement("button");b.className="opt";b.type="button";
+    b.innerHTML="<i>"+"ABCD"[i]+"</i><span></span>";b.lastChild.textContent=o.t;
+    b.onclick=function(){traLoi(i,b)};h.appendChild(b);
+  });
+  $("ovq").classList.add("on");
+}
+
+/* ---- trả lời ---- */
+function traLoi(i,btn){
+  if(cur.xong)return;
+  var o=cur.a[i];
+  if(o.dung){
+    var d=lanTL===0?DIEM_DUNG:DIEM_LAN_2;diem+=d;dung++;cur.xong=true;
+    btn.classList.add("ok");$("diem").textContent=diem;
+    $("msg").textContent="Chính xác! +"+d+" điểm";$("msg").className="msg good";
+    nhacDung();phao();khoa();hienTiep();
+  }else{
+    lanTL++;btn.classList.add("no");btn.disabled=true;nhacSai();
+    if(lanTL>=2){                                             // sai 2 lần: hiện đáp án đúng
+      cur.xong=true;
+      [].forEach.call($("opts").children,function(b,k){if(cur.a[k].dung)b.classList.add("ok")});
+      $("msg").textContent="Chưa chính xác. Đáp án đúng đã được tô xanh.";$("msg").className="msg bad";
+      khoa();hienTiep();
+    }else{
+      $("msg").textContent="Chưa chính xác, hãy thử lại!";$("msg").className="msg bad";
+    }
+  }
+}
+function khoa(){[].forEach.call($("opts").children,function(b){b.disabled=true})}
+function hienTiep(){
+  var het=ds.every(function(q){return q.xong});
+  var b=$("tiep");b.style.display="";b.textContent=het?"Xem kết quả ▶":"Câu hỏi tiếp theo ▶";
+}
+function tiepTheo(){
+  $("ovq").classList.remove("on");
+  if(ds.every(function(q){return q.xong})){ketThuc=true;hienKetQua();return}
+  $("quay").disabled=false;$("hint").textContent='Bấm "QUAY NÓN" để quay tiếp!';
+}
+
+/* ---- kết quả ---- */
+function hienKetQua(){
+  var tong=ds.length*DIEM_DUNG,pt=tong?diem/tong:0;
+  $("rdiem").textContent=diem+" điểm";
+  var sao=pt>=.9?3:pt>=.6?2:pt>0?1:0;
+  $("rsao").textContent=("⭐".repeat(sao)+"☆".repeat(3-sao));
+  $("rchu").textContent="Trả lời đúng "+dung+"/"+ds.length+" câu"+(soCau<ds.length?" (mới chơi "+soCau+" câu)":"")+". "+
+    (pt>=.9?"Giỏi quá, xuất sắc!":pt>=.6?"Khá lắm, cố gắng thêm nhé!":"Cố lên, chơi lại để đạt điểm cao hơn nhé!");
+  $("dong").style.display=ketThuc?"none":"";
+  document.querySelector("#ovr .tag").textContent=hetGio?"⏰ HẾT GIỜ":"KẾT QUẢ";
+  $("ovr").classList.add("on");
+  if(ketThuc){BoCauHoi.gio.huy();nhacXong();phao()}
+}
+function phao(){
+  var e=["🎉","⭐","🎈","🌟","🎊"];
+  for(var i=0;i<22;i++){var s=document.createElement("div");s.className="confetti";s.textContent=e[i%5];
+    s.style.left=Math.random()*100+"vw";s.style.animationDelay=Math.random()*.6+"s";s.style.fontSize=(20+Math.random()*20)+"px";
+    document.body.appendChild(s);setTimeout(function(x){x.remove()},3200,s)}
+}
+
+$("quay").onclick=quay;
+$("tiep").onclick=tiepTheo;
+$("xem").onclick=hienKetQua;
+$("dong").onclick=function(){$("ovr").classList.remove("on")};
+function choiLai(){$("ovq").classList.remove("on");$("ovr").classList.remove("on");vanMoi(dsGoc,tenBo,gGiay)}
+/* HẾT GIỜ: dừng ngay, đóng câu hỏi đang mở, chốt điểm */
+function khiHetGio(){
+  if(ketThuc)return;
+  hetGio=true;ketThuc=true;
+  $("ovq").classList.remove("on");
+  $("quay").disabled=true;
+  $("hint").textContent="Hết giờ!";
+  hienKetQua();
+}
+$("lai").onclick=choiLai;$("lai2").onclick=choiLai;
+$("hd").onclick=function(){BoCauHoi.huongDan(BoCauHoi.HD.non)};
+$("bo").onclick=function(){$("ovq").classList.remove("on");$("ovr").classList.remove("on");chonBo(true)};
+$("tat").onclick=function(){am=!am;this.textContent=am?"🔊 Âm thanh":"🔇 Đã tắt";if(am)nhacDung()};   // bật lại thì kêu thử một tiếng
+
+veNon();vanMoi([],"");chonBo(false);
+</script></body></html>
