@@ -104,14 +104,11 @@ TUAN.forEach(r=>DS.push({k:'tuan',url:'trochoi/'+r[0]+'.html',ten:r[1],bai:0,mo:
 [
 ['trochoi/keoco.html','Kéo co vần',0,'Thi đua 2 đội, cô bấm chấm','🪢','lop'],
 ['trochoi/ngngh.html','Hai ngôi nhà ng/ngh, g/gh',0,'Có giọng đọc thuyết minh','🏠','lop'],
-['tro-choi-ca-lop.html','Trò chơi cả lớp',0,'Rung chuông vàng, Đua thuyền, Hộp quà...','🏆','lop'],
 ['chiec-non-ki-dieu.html','Chiếc Nón Kì Diệu',0,'Quay nón, trả lời câu hỏi','🎩','lop'],
-['lop-hoc.html','Công cụ lớp học',0,'Bốc thăm, chia nhóm, đồng hồ','👩‍🏫','lop'],
-['vuon-chu-cai.html','Vườn chữ cái',0,'4 trò nhận mặt chữ, viết chữ','🌱','chu']
 ].forEach(r=>DS.push({k:r[5],url:r[0],ten:r[1],bai:r[2],mo:r[3],ic:r[4]}));
 
-const NHAN={luyen:'Luyện vần',kd:'Khởi động',tuan:'Ôn cuối tuần',lop:'Cả lớp',chu:'Chữ cái'};
-const TABS=[['all','Tất cả'],['luyen','Luyện vần'],['kd','Khởi động'],['tuan','Ôn cuối tuần'],['lop','Cả lớp, thi đua'],['chu','Chữ cái']];
+const NHAN={luyen:'Luyện vần',kd:'Khởi động',tuan:'Ôn cuối tuần',lop:'Cả lớp'};
+const TABS=[['all','Tất cả'],['luyen','Luyện vần'],['kd','Khởi động'],['tuan','Ôn cuối tuần'],['lop','Cả lớp, thi đua']];
 let tab='all',bai=0,tu='';
 const $=id=>document.getElementById(id);
 const bo=s=>(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d');
