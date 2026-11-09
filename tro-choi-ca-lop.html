@@ -258,9 +258,10 @@ function chuong(){
   const dem2 = () => { $('tb').textContent = 'Còn ' + (ds.length - out.size) + '/' + ds.length + ' bạn'; };
   const hien = () => {
     daDap = false; const c = QS[qi];
-    $('khung').innerHTML = cauHtml(c, qi + 1, QS.length).replace('</div></div>', '</div></div>') + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, false) + '<div class="dh" id="dh" style="margin-top:8px"></div></div>'
+    $('khung').innerHTML = cauHtml(c, qi + 1, QS.length).replace('</div></div>', '</div></div>') + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, true) + '<div class="dh" id="dh" style="margin-top:8px"></div></div>'
       + '<div class="dk"><button class="nutl luc" id="hd">Hiện đáp án</button><button class="nutl xanh an" id="tiep">Câu tiếp</button></div>';
     $('hd').onclick = () => { clearInterval(hen); hienDap(c); daDap = true; $('hd').classList.add('an'); $('tiep').classList.remove('an'); $('tb').textContent = 'Bấm vào tên bạn trả lời sai để loại. ' ; dem2(); bip(true); };
+    $('dap').onclick = e => { const b = e.target.closest('button'); if (!b || daDap) return; $('hd').click(); if (+b.dataset.k !== c.d) b.classList.add('sai'); $('dap').classList.remove('bam'); };
     $('tiep').onclick = () => { if (ds.length - out.size <= 1 || qi + 1 >= QS.length) return ketThuc(); qi++; hien(); };
     dem(tg, s => { if ($('dh')){ $('dh').textContent = tg ? s : ''; $('dh').classList.toggle('het', tg && s <= 5); } }, () => {});
     if (!tg) $('dh').textContent = '';
@@ -302,9 +303,10 @@ function thuyen(){
   const veSong = () => { $('song').innerHTML = ten.map((t, i) => '<div class="lan"><span class="nh" contenteditable="true" spellcheck="false" data-i="' + i + '">' + esc(t) + '</span><span class="th" style="left:calc(' + (diem[i] / DICH * 82) + '% + 6px)">' + TH[i] + '</span><span class="dich">🏁</span></div>').join('');
     $('song').querySelectorAll('.nh').forEach(e => e.oninput = () => ten[+e.dataset.i] = e.textContent.trim() || 'Tổ ' + (+e.dataset.i + 1)); };
   const hien = () => {
-    const c = QS[qi % QS.length]; $('khung').innerHTML = cauHtml(c, qi + 1, QS.length) + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, false) + '<div class="dh" id="dh" style="margin-top:8px"></div></div><div class="doi" id="doi"></div><div class="dk"><button class="nutl luc" id="hd">Hiện đáp án</button><button class="nutl xanh" id="tiep">Câu tiếp</button></div>';
+    const c = QS[qi % QS.length]; $('khung').innerHTML = cauHtml(c, qi + 1, QS.length) + '<div class="cauhoi" style="margin-top:12px;padding:12px">' + dapHtml(c, true) + '<div class="dh" id="dh" style="margin-top:8px"></div></div><div class="doi" id="doi"></div><div class="dk"><button class="nutl luc" id="hd">Hiện đáp án</button><button class="nutl xanh" id="tiep">Câu tiếp</button></div>';
     ten.forEach((t, i) => { const b = document.createElement('button'); b.style.background = MAUT[i]; b.textContent = t + ' đúng +1'; b.onclick = () => { if (thang >= 0) return; diem[i]++; veSong(); bip(true); if (diem[i] >= DICH){ thang = i; ketThuc(); } }; $('doi').appendChild(b); });
-    $('hd').onclick = () => { clearInterval(hen); hienDap(c); bip(true); };
+    $('dap').onclick = e => { const b = e.target.closest('button'); if (!b || $('dap').dataset.xong) return; $('dap').dataset.xong = 1; const dung = +b.dataset.k === c.d; clearInterval(hen); hienDap(c); if (!dung) b.classList.add('sai'); $('dap').classList.remove('bam'); bip(dung); };
+    $('hd').onclick = () => { clearInterval(hen); hienDap(c); $('dap').dataset.xong = 1; $('dap').classList.remove('bam'); bip(true); };
     $('tiep').onclick = () => { qi++; hien(); };
     dem(tg, s => { if ($('dh')){ $('dh').textContent = tg ? s : ''; $('dh').classList.toggle('het', tg && s <= 5); } });
     if (!tg) $('dh').textContent = '';

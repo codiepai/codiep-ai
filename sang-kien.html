@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trợ lý viết sáng kiến - CÔ ĐIỆP AI</title>
+<meta name="description" content="Công cụ giúp thầy cô viết sáng kiến kinh nghiệm bằng số liệu thật của lớp: 8 bước, tự tính tỉ lệ, vẽ biểu đồ, kiểm tra lặp ý, xuất file Word chuẩn.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<style>
+:root{--ink:#1d3557;--red:#e63946;--cam:#f77f00;--vang:#ffd166;--blue:#1d7bd8;--ok:#2a9d4a;--phu:#5b6b80;--vien:#d3e6f8;--nen:#eaf5ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#d8efff,#fff6e0);min-height:100vh}
+.bia{background:linear-gradient(135deg,#0b3a73,#1d7bd8);color:#fff;padding:16px 16px 54px}
+.rong{max-width:1060px;margin:0 auto}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(26px,5vw,38px)/1.1 "Baloo 2",sans-serif;margin:8px 0 6px}.bia h1 b{color:var(--vang)}
+.bia p{margin:0;opacity:.95;max-width:680px;font-size:15px}
+.dai{display:inline-block;background:linear-gradient(90deg,#ff5d8f,#ff9a3c);color:#fff;border-radius:40px;padding:5px 16px;font:700 14px "Baloo 2",sans-serif;margin-top:10px}
+main{max-width:1060px;margin:-34px auto 0;padding:0 12px 40px;display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+.buoc{background:#fff;border-radius:20px;box-shadow:0 8px 20px rgba(29,53,87,.12);padding:10px;position:sticky;top:8px}
+.b{display:flex;gap:8px;align-items:center;padding:9px 10px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;color:var(--ink)}
+.b i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--vien);color:var(--blue);display:grid;place-items:center;font:800 14px "Baloo 2";flex:none}
+.b.on{background:var(--nen);box-shadow:inset 0 0 0 2px #9fd4ff}.b.on i{background:var(--blue);color:#fff}
+.b.xong i{background:var(--ok);color:#fff}
+.nhom{border-top:1px dashed var(--vien);margin-top:8px;padding-top:8px}
+.the{background:#fff;border-radius:22px;box-shadow:0 8px 20px rgba(29,53,87,.12);padding:20px;margin-bottom:14px;border:6px solid #fff}
+h2{font:800 23px "Baloo 2",sans-serif;margin:0 0 4px;color:var(--ink)}
+h3{font:700 17px "Baloo 2",sans-serif;margin:14px 0 6px;color:var(--blue)}
+.mota{color:var(--phu);font-size:14px;margin:0 0 14px}
+label{display:block;font-weight:600;font-size:13.5px;margin:10px 0 4px}
+input,select,textarea{width:100%;font:500 15px "Be Vietnam Pro",sans-serif;padding:9px 11px;border:2px solid var(--vien);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+.luoi{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0 12px}
+.ghi{color:var(--phu);font-size:12.5px;margin:3px 0 0}
+.nut{border:0;border-radius:14px;padding:10px 16px;font:700 15px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 4px 0 #b86200;cursor:pointer;margin:4px 6px 4px 0}
+.nut:active{transform:translateY(2px);box-shadow:0 2px 0 #b86200}
+.nut.xanh{background:linear-gradient(180deg,#3d9bf0,#1d7bd8);box-shadow:0 4px 0 #0b4f96}
+.nut.luc{background:linear-gradient(180deg,#34c97a,#2a9d4a);box-shadow:0 4px 0 #1b6f33}
+.nut.xam{background:#fff;color:var(--blue);border:2px solid var(--vien);box-shadow:0 3px 0 var(--vien)}
+.nut.nho{padding:6px 11px;font-size:13px}
+.chan{display:flex;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+.hop{background:var(--nen);border-radius:14px;padding:11px 13px;font-size:13.5px;margin:10px 0}
+.hop.v{background:#fff6e0}.hop.d{background:#ffe9eb}
+table.bg{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}
+table.bg th,table.bg td{border:1px solid var(--vien);padding:5px 7px;text-align:center}
+table.bg th{background:var(--nen)}table.bg td.l{text-align:left}
+table.bg input{padding:6px 7px;border-width:1px}
+.ky{text-align:center;color:#5b7aa0;font-size:12.5px;padding:6px 0 26px}
+.dong{display:grid;grid-template-columns:1fr 150px 70px 28px 28px 28px;gap:5px;margin-bottom:5px;align-items:center}
+.dong.c2{padding-left:18px}
+.dong button{border:0;background:var(--nen);border-radius:8px;cursor:pointer;height:34px;color:var(--ink)}
+.pm{display:grid;grid-template-columns:260px 1fr;gap:14px}
+.dsm{max-height:560px;overflow:auto;border:2px solid var(--vien);border-radius:14px;padding:6px}
+.m{padding:7px 8px;border-radius:10px;cursor:pointer;font-size:13.5px;display:flex;gap:7px;align-items:flex-start}
+.m.c2{padding-left:20px}.m.on{background:var(--nen)}
+.cham{width:10px;height:10px;border-radius:50%;background:#c9d4e0;flex:none;margin-top:5px}
+.cham.x{background:var(--ok)}.cham.v{background:var(--vang)}
+.thu{display:flex;gap:8px;flex-wrap:wrap}
+.thu .a{width:150px;border:2px solid var(--vien);border-radius:12px;padding:5px;font-size:12px}
+.thu img{width:100%;border-radius:8px;display:block}
+.ok{color:var(--ok);font-weight:700}.canh{color:var(--cam);font-weight:700}.sai{color:var(--red);font-weight:700}
+.kt{display:flex;gap:8px;padding:6px 0;border-bottom:1px dashed var(--vien);font-size:14.5px}
+canvas{max-width:100%;border:1px solid var(--vien);border-radius:10px;margin:6px 0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.hien{opacity:1}
+@media(max-width:820px){main{grid-template-columns:1fr}.buoc{position:static;display:flex;overflow:auto;gap:4px}.b{white-space:nowrap}.nhom{border:0;margin:0;padding:0;display:flex}.pm{grid-template-columns:1fr}.dong{grid-template-columns:1fr 1fr 60px 26px 26px 26px}}
+</style>
+</head>
+<body>
+<div class="bia"><div class="rong">
+  <a href="index.html">← CÔ ĐIỆP AI</a>
+  <h1>Trợ lý viết <b>sáng kiến</b></h1>
+  <p>Số liệu thật của lớp mình, tự tính tỉ lệ, tự vẽ biểu đồ, xuất Word chuẩn. 8 bước, bài lưu ngay trên máy thầy cô.</p>
+  <span class="dai">Số liệu là của thầy cô. Công cụ không tự nghĩ ra số.</span>
+</div></div>
+<main>
+  <nav class="buoc" id="nav"></nav>
+  <section id="pan"></section>
+</main>
+<div class="ky">Cô Hồng Điệp - TH Kim Đồng</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DỮ LIỆU ============ */
+const KHOA = 'skkn_codiep_v1';
+const BUOC = ['Thông tin', 'Đề tài', 'Khung sáng kiến', 'Số liệu', 'Viết nội dung', 'Hình và ảnh', 'Kiểm tra', 'Xuất Word'];
+const LOAI = { tieu_de: 'Tiêu đề phần', nhom: 'Tiêu đề mục', noi_dung: 'Nội dung', giai_phap: 'Giải pháp', bang_truoc: 'Bảng khảo sát đầu năm', bang_sosanh: 'Bảng so sánh trước sau', cam_doan: 'Lời cam đoan', tai_lieu: 'Tài liệu tham khảo' };
+const TU_MOI_TRANG = 320;
+let uid = 1;
+let S = macDinh();
+let IMG = {};          // ảnh: khóa -> dataURL (lưu IndexedDB)
+let buoc = 0, mucChon = 0;
+
+function macDinh() {
+  return {
+    info: { cap: 'Tiểu học', mon: '', lop: '', siso: 0, namhoc: '2026 - 2027', mucdich: 'Công nhận sáng kiến cấp cơ sở', vande: '', boicanh: '', sonam: '', chuyenthat: '', tacgia: '', chucvu: 'Giáo viên', truong: '', coquan: '', diadanh: '', thangnam: '' },
+    detai: '', sogp: 3, gp: ['', '', '', ''],
+    mau: 'mau3', khung: [],
+    solieu: { muc: ['Đạt yêu cầu', 'Chưa đạt yêu cầu'], nguon: 'Quan sát, phiếu khảo sát, sản phẩm học sinh', tc: [] },
+    doichieu: [],
+    anh: {}
+  };
+}
+function luu() { try { localStorage.setItem(KHOA, JSON.stringify(S)); } catch (e) {} }
+function tai() { try { const t = localStorage.getItem(KHOA); if (t) S = Object.assign(macDinh(), JSON.parse(t)); } catch (e) {} uid = 1 + Math.max(0, ...S.khung.map(k => k.id || 0)); }
+
+/* ảnh trong IndexedDB */
+function idb() { return new Promise((ok, no) => { const r = indexedDB.open('skkn_anh', 1); r.onupgradeneeded = () => r.result.createObjectStore('a'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); }); }
+async function idbPut(k, v) { try { const d = await idb(); d.transaction('a', 'readwrite').objectStore('a').put(v, k); } catch (e) {} }
+async function idbDel(k) { try { const d = await idb(); d.transaction('a', 'readwrite').objectStore('a').delete(k); } catch (e) {} }
+async function idbTatCa() { try { const d = await idb(); return await new Promise(ok => { const o = {}; const c = d.transaction('a').objectStore('a').openCursor(); c.onsuccess = () => { const x = c.result; if (x) { o[x.key] = x.value; x.continue(); } else ok(o); }; c.onerror = () => ok(o); }); } catch (e) { return {}; } }
+
+/* ============ TIỆN ÍCH ============ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const san = t => String(t || '').replace(/[—–]/g, '-');
+function bao(t) { const e = $('toast'); e.textContent = t; e.classList.add('hien'); clearTimeout(bao.t); bao.t = setTimeout(() => e.classList.remove('hien'), 2200); }
+function chep(t) {
+  const xong = () => bao('Đã chép. Dán vào ChatGPT hoặc Gemini nhé.');
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(xong, () => dự(t)); else dự(t);
+  function dự(t) { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); xong(); } catch (e) { bao('Không chép được, hãy bôi đen rồi Ctrl+C'); } a.remove(); }
+}
+function datPath(o, p, v) { const k = p.split('.'); for (let i = 0; i < k.length - 1; i++) o = o[k[i]]; o[k[k.length - 1]] = v; }
+function pct(n, tong) { if (!tong) return '0%'; const v = Math.round(n * 1000 / tong) / 10; const s = String(v).replace('.', ','); return s + '%'; }
+function pnum(n, tong) { return tong ? Math.round(n * 1000 / tong) / 10 : 0; }
+function soTu(t) { return (String(t || '').trim().match(/\S+/g) || []).length; }
+function coNhap(v) { return v !== null && v !== undefined && v !== '' && !isNaN(v); }
+
+/* ============ KHUNG MẪU ============ */
+function dong(cap, ten, loai, trang) { return { id: uid++, cap, ten, loai, trang, text: '', chuyen: '' }; }
+function dungKhung(kieu) {
+  const gp = [];
+  for (let i = 0; i < S.sogp; i++) gp.push(dong(2, `2.${i + 1}. Giải pháp ${i + 1}: ${S.gp[i] || '[cần bổ sung: tên giải pháp]'}`, 'giai_phap', 2.5));
+  let k;
+  if (kieu === 'mauMD') {
+    k = [dong(1, 'PHẦN I. MỞ ĐẦU', 'tieu_de', 0), dong(1, '1. Lý do chọn đề tài', 'noi_dung', 1.5), dong(1, '2. Mục đích nghiên cứu', 'noi_dung', 0.7), dong(1, '3. Đối tượng và phạm vi nghiên cứu', 'noi_dung', 0.7), dong(1, '4. Phương pháp nghiên cứu', 'noi_dung', 0.7),
+      dong(1, 'PHẦN II. NỘI DUNG', 'tieu_de', 0), dong(1, '1. Cơ sở lý luận', 'noi_dung', 1.5), dong(1, '2. Cơ sở thực tiễn và khảo sát đầu năm', 'bang_truoc', 1), dong(1, '3. Các giải pháp thực hiện', 'nhom', 0), ...gp, dong(1, '4. Hiệu quả sau khi áp dụng', 'bang_sosanh', 1),
+      dong(1, 'PHẦN III. KẾT LUẬN VÀ KIẾN NGHỊ', 'tieu_de', 0), dong(1, '1. Kết luận', 'noi_dung', 0.6), dong(1, '2. Kiến nghị', 'noi_dung', 0.6),
+      dong(1, 'LỜI CAM ĐOAN VÀ XÁC NHẬN', 'cam_doan', 0), dong(1, 'TÀI LIỆU THAM KHẢO', 'tai_lieu', 0)];
+  } else {
+    k = [dong(1, 'PHẦN I. ĐẶT VẤN ĐỀ', 'tieu_de', 0), dong(1, '1. Tính cấp thiết phải tiến hành sáng kiến', 'noi_dung', 1.5), dong(1, '2. Mục đích của đề tài', 'noi_dung', 0.7),
+      dong(1, '3. Thời gian, đối tượng, phạm vi nghiên cứu', 'nhom', 0), dong(2, '3.1. Thời gian nghiên cứu', 'noi_dung', 0.4), dong(2, '3.2. Đối tượng nghiên cứu', 'noi_dung', 0.4), dong(2, '3.3. Phạm vi nghiên cứu', 'noi_dung', 0.4),
+      dong(1, 'PHẦN II. NỘI DUNG SÁNG KIẾN', 'tieu_de', 0), dong(1, '1. Hiện trạng của vấn đề', 'nhom', 0), dong(2, '1.1. Thuận lợi', 'noi_dung', 0.6), dong(2, '1.2. Khó khăn', 'noi_dung', 0.7), dong(2, '1.3. Khảo sát đầu năm', 'bang_truoc', 0.5),
+      dong(1, '2. Các biện pháp thực hiện', 'nhom', 0), ...gp,
+      dong(1, '3. Kết quả sau khi áp dụng', 'bang_sosanh', 1), dong(1, '4. Hiệu quả áp dụng của sáng kiến', 'nhom', 0), dong(2, '4.1. Hiệu quả về khoa học', 'noi_dung', 0.6), dong(2, '4.2. Hiệu quả về kinh tế', 'noi_dung', 0.4), dong(2, '4.3. Hiệu quả về xã hội', 'noi_dung', 0.5),
+      dong(1, '5. Tính khả thi và khả năng nhân rộng', 'noi_dung', 0.5),
+      dong(1, 'PHẦN III. KIẾN NGHỊ VÀ ĐỀ XUẤT', 'tieu_de', 0), dong(1, '1. Kiến nghị và đề xuất', 'noi_dung', 0.6), dong(1, 'LỜI CAM ĐOAN VÀ XÁC NHẬN', 'cam_doan', 0), dong(1, 'TÀI LIỆU THAM KHẢO', 'tai_lieu', 0)];
+  }
+  return k;
+}
+function phanTichMau(text) {
+  const ds = text.split('\n').map(x => x.trim()).filter(Boolean).map(t => {
+    let cap = 1, loai = 'noi_dung', trang = 0.8;
+    if (/^(PHẦN|CHƯƠNG|[IVX]+[.)])\s/i.test(t)) { loai = 'tieu_de'; trang = 0; }
+    else if (/^\d+\.\d+/.test(t)) cap = 2;
+    if (/cam đoan/i.test(t)) { loai = 'cam_doan'; trang = 0; }
+    else if (/tài liệu tham khảo/i.test(t)) { loai = 'tai_lieu'; trang = 0; }
+    else if (/giải pháp|biện pháp/i.test(t) && cap === 2) { loai = 'giai_phap'; trang = 2.5; }
+    else if (/khảo sát đầu năm|thực trạng/i.test(t) && /\d/.test(t[0])) loai = 'bang_truoc';
+    else if (/so sánh|kết quả sau/i.test(t)) loai = 'bang_sosanh';
+    return dong(cap, t, loai, trang);
+  });
+  ds.forEach((d, i) => { if (d.loai === 'noi_dung' && d.cap === 1 && ds[i + 1] && ds[i + 1].cap === 2) { d.loai = 'nhom'; d.trang = 0; } });
+  return ds;
+}
+
+/* ============ CÂU LỆNH CHO AI ============ */
+const LUAT = `Quy tắc viết:
+- Viết ngôi thứ nhất (tôi), giọng giáo viên đứng lớp, đời thường, câu ngắn đến vừa, có chi tiết cụ thể của lớp.
+- Tuyệt đối KHÔNG bịa số liệu, tên người, tên trường, tên sách, ngày tháng. Chỗ nào chưa có dữ kiện thì ghi đúng dạng [cần bổ sung: ...].
+- Không ghi họ tên học sinh.
+- Không dùng gạch dài (— hoặc –), không dùng các cụm sáo rỗng như "góp phần quan trọng", "trong bối cảnh", "hành trình", "đóng vai trò then chốt", "không chỉ... mà còn".
+- Không viết lại tiêu đề, chỉ viết phần nội dung. Không dùng ký hiệu markdown (#, **).`;
+function nguCanh() {
+  const i = S.info;
+  return `THÔNG TIN THẬT CỦA GIÁO VIÊN:
+- Cấp học: ${i.cap}. Môn/lĩnh vực: ${i.mon || '[chưa nhập]'}. Lớp: ${i.lop || '[chưa nhập]'}. Sĩ số: ${i.siso || '[chưa nhập]'}. Năm học: ${i.namhoc}.
+- Số năm đứng lớp: ${i.sonam || '[chưa nhập]'}.
+- Vấn đề đang gặp ở lớp: ${i.vande || '[chưa nhập]'}
+- Bối cảnh, điều kiện dạy học: ${i.boicanh || '[chưa nhập]'}
+- Chuyện thật, cách làm riêng của giáo viên: ${i.chuyenthat || '[chưa nhập]'}
+- Đề tài sáng kiến: ${S.detai || '[chưa chọn]'}`;
+}
+function textSoLieu() {
+  const si = S.info.siso, [m1, m2] = S.solieu.muc;
+  return S.solieu.tc.filter(t => t.ten).map((t, i) => {
+    let s = `${i + 1}. ${t.ten}: đầu năm ${m1} ${t.t[0] ?? '?'} em (${coNhap(t.t[0]) ? pct(t.t[0], si) : '?'}), ${m2} ${t.t[1] ?? '?'} em (${coNhap(t.t[1]) ? pct(t.t[1], si) : '?'})`;
+    if (coNhap(t.s[0])) s += `; cuối năm ${m1} ${t.s[0]} em (${pct(t.s[0], si)}), ${m2} ${t.s[1] ?? '?'} em (${coNhap(t.s[1]) ? pct(t.s[1], si) : '?'})`;
+    return s;
+  }).join('\n');
+}
+function khungText() { return S.khung.map(k => (k.cap === 2 ? '    ' : '') + k.ten).join('\n'); }
+function lenhDeTai() {
+  return `${nguCanh()}\n\nHãy gợi ý 5 đề tài sáng kiến kinh nghiệm bám sát đúng vấn đề thật ở trên, không chung chung, hợp chương trình GDPT 2018. Với mỗi đề tài ghi: tên đề tài; điểm nổi bật; hướng triển khai; minh chứng có thể thu được ở lớp; 3 giải pháp ngắn gọn. Không bịa số liệu.`;
+}
+function lenhGiaiPhap() {
+  return `${nguCanh()}\n\nĐề tài đã chọn: ${S.detai}\nHãy đề xuất ${S.sogp} tên giải pháp (mỗi tên một dòng, ngắn gọn, làm được ở lớp thật, không trùng ý nhau). Chỉ trả lời danh sách tên.`;
+}
+function lenhMuc(m) {
+  const trang = m.trang || 0.7, tu = Math.round(trang * TU_MOI_TRANG);
+  let yc = `Hãy viết mục "${m.ten}" của sáng kiến. Độ dài khoảng ${tu} từ.`;
+  if (m.loai === 'giai_phap') yc = `Hãy viết giải pháp "${m.ten}". Độ dài khoảng ${tu} từ. Viết đủ 6 phần, mỗi phần mở bằng một nhãn ở đầu đoạn: "Mục tiêu." "Nội dung." "Cách thực hiện." (nêu rõ các bước 1, 2, 3) "Ví dụ minh họa." (một tình huống thật ở lớp, lấy từ chuyện thật của giáo viên) "Điều kiện áp dụng." "Hiệu quả và tính mới."`;
+  if (m.loai === 'bang_truoc') yc = `Hãy viết 1 đến 2 đoạn (khoảng ${tu} từ) dẫn vào và nhận xét bảng khảo sát đầu năm. KHÔNG tạo bảng, bảng sẽ tự chèn sau. Chỉ dùng đúng các số sau:\n${textSoLieu() || '[chưa có số liệu, hãy ghi: [cần bổ sung: số liệu khảo sát đầu năm]]'}`;
+  if (m.loai === 'bang_sosanh') yc = `Hãy viết 1 đến 2 đoạn (khoảng ${tu} từ) nhận xét kết quả trước và sau khi áp dụng. KHÔNG tạo bảng. Chỉ dùng đúng các số sau, không thêm số khác:\n${textSoLieu() || '[chưa có số liệu]'}\nNếu chưa có số liệu cuối năm thì ghi: [cần bổ sung: số liệu cuối năm].`;
+  if (m.loai === 'cam_doan') yc = 'Mục này đã có văn bản mẫu, không cần viết.';
+  if (m.loai === 'tai_lieu') yc = 'Liệt kê tài liệu tham khảo THẬT mà giáo viên cung cấp. Nếu chưa có thì ghi [cần bổ sung: tài liệu tham khảo]. Không bịa tên sách hay số văn bản.';
+  return `${nguCanh()}\n\nCÁC MỤC CỦA SÁNG KIẾN:\n${khungText()}\n\n${m.chuyen ? 'CHUYỆN THẬT RIÊNG CHO MỤC NÀY: ' + m.chuyen + '\n\n' : ''}${yc}\n\n${LUAT}`;
+}
+function lenhViet(m, kieu) {
+  const nhan = { gian: 'Viết lại đoạn sau cho tự nhiên như giáo viên thật nói chuyện: bỏ giọng sách vở, thêm chi tiết đời thường, đổi độ dài câu cho không đều nhau. Giữ nguyên mọi số liệu và ý.', dai: 'Viết dài và sâu hơn đoạn sau, thêm chi tiết cụ thể và ví dụ ở lớp, giữ nguyên mọi số liệu. Không bịa thêm số.', mach: 'Biên tập đoạn sau cho liền mạch, nối ý trơn tru, giữ nguyên số liệu và ý chính.' }[kieu];
+  return `${nhan}\n\n${LUAT}\n\nĐOẠN CẦN SỬA:\n${m.text}`;
+}
+function lenhAnh(m) {
+  return `Flat vector illustration, warm and bright color palette, a friendly Vietnamese primary school classroom. Scene: a teacher and young students doing this activity: "${m.ten.replace(/^[\d.]+\s*/, '')}". Students in white shirts and red scarves, smiling and engaged. Clean lines, cozy and optimistic atmosphere, no text, no letters, no logos, 16:9 aspect ratio.`;
+}
+
+/* ============ GIAO DIỆN CHUNG ============ */
+function veNav() {
+  const xong = [S.info.mon && S.info.lop && S.info.vande, S.detai, S.khung.length, S.solieu.tc.length, S.khung.some(k => k.text), true, true, true];
+  $('nav').innerHTML = BUOC.map((t, i) => `<div class="b ${i === buoc ? 'on' : ''} ${xong[i] && i < buoc ? 'xong' : ''}" data-act="buoc:${i}"><i>${xong[i] && i < buoc ? '✓' : i + 1}</i>${t}</div>`).join('');
+}
+function chan(truoc, sau) {
+  return `<div class="chan"><button class="nut xam" data-act="buoc:${truoc}" ${truoc < 0 ? 'style="visibility:hidden"' : ''}>← Quay lại</button><button class="nut xanh" data-act="buoc:${sau}" ${sau > 7 ? 'style="visibility:hidden"' : ''}>Tiếp tục →</button></div>`;
+}
+function vao(p, v, extra = '') { return `<input data-p="${p}" value="${esc(v)}" ${extra}>`; }
+function ve() {
+  veNav();
+  const f = [v1, v2, v3, v4, v5, v6, v7, v8][buoc];
+  $('pan').innerHTML = f();
+  const sau = { 3: dungBang, 7: () => {} }[buoc]; if (sau) sau();
+  window.scrollTo({ top: 0 });
+}
+
+/* ---- Bước 1 ---- */
+function v1() {
+  const i = S.info;
+  return `<div class="the"><h2>1. Thông tin thầy cô và lớp học</h2><p class="mota">Càng cụ thể, càng là chuyện thật của lớp mình thì bài càng sát và càng khó trùng. Không ghi họ tên học sinh.</p>
+  <div class="luoi"><div><label>Cấp học</label><select data-p="info.cap">${['Mầm non', 'Tiểu học', 'THCS', 'THPT', 'Giáo dục thường xuyên', 'Khác'].map(x => `<option ${x === i.cap ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
+  <div><label>Môn hoặc lĩnh vực *</label>${vao('info.mon', i.mon, 'placeholder="VD: Tiếng Việt"')}</div>
+  <div><label>Lớp, khối *</label>${vao('info.lop', i.lop, 'placeholder="VD: Lớp 1A"')}</div>
+  <div><label>Sĩ số *</label><input type="number" data-n="1" data-p="info.siso" value="${i.siso || ''}" placeholder="VD: 40"></div>
+  <div><label>Năm học</label>${vao('info.namhoc', i.namhoc)}</div>
+  <div><label>Số năm đứng lớp</label>${vao('info.sonam', i.sonam, 'placeholder="VD: 15"')}</div></div>
+  <label>Mục đích viết</label><select data-p="info.mucdich">${['Công nhận sáng kiến cấp cơ sở', 'Thi đua, khen thưởng', 'Nâng chuẩn, xét danh hiệu', 'Khác'].map(x => `<option ${x === i.mucdich ? 'selected' : ''}>${x}</option>`).join('')}</select>
+  <label>Vấn đề thầy cô đang gặp ở lớp *</label><textarea data-p="info.vande" placeholder="VD: Nhiều em đọc còn chậm, vẫn phải đánh vần, đọc xong không trả lời được câu hỏi về bài.">${esc(i.vande)}</textarea>
+  <label>Bối cảnh, điều kiện dạy học</label><textarea data-p="info.boicanh" placeholder="VD: Trường vùng nông thôn, nhiều phụ huynh đi làm xa, các con ở với ông bà.">${esc(i.boicanh)}</textarea>
+  <label>Chuyện thật, cách làm riêng của thầy cô (rất quan trọng để bài không trùng)</label><textarea data-p="info.chuyenthat" placeholder="VD: Tôi hay cho các em viết nhật ký 3 dòng cuối buổi. Lớp có góc đọc sách cuối lớp. Có em A hay rụt rè, đến tuần 5 mới dám xung phong.">${esc(i.chuyenthat)}</textarea>
+  <h3>Thông tin ghi ở trang bìa</h3><div class="luoi">
+  <div><label>Họ và tên tác giả</label>${vao('info.tacgia', i.tacgia)}</div><div><label>Chức vụ</label>${vao('info.chucvu', i.chucvu)}</div>
+  <div><label>Đơn vị công tác (tên trường)</label>${vao('info.truong', i.truong)}</div><div><label>Cơ quan quản lý cấp trên</label>${vao('info.coquan', i.coquan, 'placeholder="VD: Phòng Giáo dục, Phường..."')}</div>
+  <div><label>Địa danh cuối bìa</label>${vao('info.diadanh', i.diadanh)}</div><div><label>Tháng năm ghi bìa</label>${vao('info.thangnam', i.thangnam, 'placeholder="VD: tháng 4 năm 2027"')}</div></div>
+  ${chan(-1, 1)}</div>`;
+}
+/* ---- Bước 2 ---- */
+function v2() {
+  let ds = ''; for (let i = 0; i < S.sogp; i++) ds += `<label>Giải pháp ${i + 1}</label>${vao('gp.' + i, S.gp[i] || '', 'placeholder="Tên giải pháp ' + (i + 1) + '"')}`;
+  return `<div class="the"><h2>2. Đề tài và giải pháp</h2><p class="mota">Đã có đề tài thì gõ vào. Chưa có thì bấm chép câu lệnh, dán vào ChatGPT hoặc Gemini để lấy 5 gợi ý bám vấn đề thật của lớp.</p>
+  <button class="nut xanh" data-act="chep:detai">Chép câu lệnh gợi ý 5 đề tài</button>
+  <label>Tên đề tài</label><textarea data-p="detai" placeholder="VD: Một số biện pháp rèn kỹ năng đọc hiểu cho học sinh lớp 2 thông qua sơ đồ tư duy">${esc(S.detai)}</textarea>
+  <label>Số giải pháp</label><select data-p="sogp" data-n="1" data-act2="doisogp">${[2, 3, 4].map(n => `<option ${n === S.sogp ? 'selected' : ''}>${n}</option>`).join('')}</select>
+  <button class="nut xanh" data-act="chep:giaiphap">Chép câu lệnh gợi ý tên giải pháp</button>${ds}
+  ${chan(0, 2)}</div>`;
+}
+/* ---- Bước 3 ---- */
+function v3() {
+  if (!S.khung.length) S.khung = dungKhung(S.mau);
+  const hang = S.khung.map((k, i) => `<div class="dong ${k.cap === 2 ? 'c2' : ''}"><input data-p="khung.${i}.ten" value="${esc(k.ten)}"><select data-p="khung.${i}.loai" data-act2="dongloai">${Object.keys(LOAI).map(x => `<option value="${x}" ${x === k.loai ? 'selected' : ''}>${LOAI[x]}</option>`).join('')}</select><input type="number" step="0.1" min="0" data-n="1" data-p="khung.${i}.trang" value="${k.trang}" title="Số trang"><button data-act="len:${i}">↑</button><button data-act="xuong:${i}">↓</button><button data-act="xoa:${i}">✕</button></div>`).join('');
+  const tong = S.khung.reduce((a, k) => a + (+k.trang || 0), 0);
+  return `<div class="the"><h2>3. Khung sáng kiến</h2><p class="mota">Chọn mẫu có sẵn hoặc dán các tiêu đề mẫu của trường. Sửa tên mục, loại mục, số trang trực tiếp. Mục "Giải pháp" sẽ được viết đủ 6 phần.</p>
+  <button class="nut ${S.mau === 'mau3' ? '' : 'xam'}" data-act="mau:mau3">Mẫu 3 phần</button><button class="nut ${S.mau === 'mauMD' ? '' : 'xam'}" data-act="mau:mauMD">Mở đầu - Nội dung - Kết luận</button><button class="nut xam" data-act="mauTruong">Dán mẫu của trường</button>
+  <div id="hopmau" style="display:none"><label>Dán các tiêu đề mẫu của trường, mỗi dòng một mục</label><textarea id="mautruong" placeholder="PHẦN I. ĐẶT VẤN ĐỀ&#10;1. Lý do chọn đề tài&#10;..."></textarea><button class="nut luc" data-act="dungMauTruong">Dựng khung từ mẫu này</button></div>
+  <h3>Các mục (${S.khung.length} mục, khoảng ${Math.round(tong)} trang)</h3>${hang}
+  <button class="nut xam nho" data-act="them">+ Thêm mục</button>
+  <div class="hop v">Muốn đổi tên giải pháp trong khung: sửa ở bước 2 rồi bấm "Dựng lại khung" (sẽ xóa nội dung đã viết ở khung cũ).<br><button class="nut xam nho" data-act="mau:${S.mau}">Dựng lại khung theo mẫu</button></div>
+  ${chan(1, 3)}</div>`;
+}
+/* ---- Bước 4 ---- */
+function v4() {
+  const s = S.solieu, [m1, m2] = s.muc;
+  const hang = s.tc.map((t, i) => `<tr><td>${i + 1}</td><td class="l"><input data-p="solieu.tc.${i}.ten" value="${esc(t.ten)}"></td>${[['t', 0], ['t', 1], ['s', 0], ['s', 1]].map(([a, b]) => `<td><input type="number" min="0" data-n="1" data-after="dungBang" data-p="solieu.tc.${i}.${a}.${b}" value="${t[a][b] ?? ''}" placeholder="${a === 's' ? 'trống' : ''}"></td>`).join('')}<td><button class="nut xam nho" data-act="xoatc:${i}">✕</button></td></tr>`).join('');
+  return `<div class="the"><h2>4. Số liệu khảo sát thật</h2><div class="hop d">Đây là chỗ giữ cho sáng kiến <b>trung thực</b>. Công cụ chỉ dùng đúng các con số thầy cô nhập, tự tính tỉ lệ %, tự dựng bảng và biểu đồ. Chưa khảo sát cuối năm thì để trống các ô cuối năm, bài sẽ ghi [cần bổ sung] thay vì bịa số.</div>
+  <div class="luoi"><div><label>Sĩ số</label><input type="number" data-n="1" data-p="info.siso" data-after="dungBang" value="${S.info.siso || ''}"></div><div><label>Mức 1</label>${vao('solieu.muc.0', m1, 'data-after="dungBang"')}</div><div><label>Mức 2</label>${vao('solieu.muc.1', m2, 'data-after="dungBang"')}</div></div>
+  <label>Nguồn số liệu</label>${vao('solieu.nguon', s.nguon)}
+  <table class="bg"><tr><th rowspan="2">#</th><th rowspan="2">Tiêu chí khảo sát</th><th colspan="2">ĐẦU NĂM (số học sinh)</th><th colspan="2">CUỐI NĂM (số học sinh)</th><th rowspan="2"></th></tr><tr><th>${esc(m1)}</th><th>${esc(m2)}</th><th>${esc(m1)}</th><th>${esc(m2)}</th></tr>${hang}</table>
+  <button class="nut xam nho" data-act="themtc">+ Thêm tiêu chí</button><button class="nut xam nho" data-act="chep:tieuchi">Chép câu lệnh gợi ý tiêu chí (không gợi ý số)</button>
+  <div id="ketqua4"></div>${chan(2, 4)}</div>`;
+}
+function dungBang() {
+  const e = $('ketqua4'); if (!e) return;
+  const si = S.info.siso, [m1, m2] = S.solieu.muc, tc = S.solieu.tc.filter(t => t.ten && coNhap(t.t[0]) && coNhap(t.t[1]));
+  let h = '';
+  S.solieu.tc.forEach(t => { if (coNhap(t.t[0]) && coNhap(t.t[1]) && t.t[0] + t.t[1] !== si) h += `<div class="sai">Tiêu chí "${esc(t.ten)}": đầu năm ${t.t[0]} + ${t.t[1]} khác sĩ số ${si}</div>`; if (coNhap(t.s[0]) && coNhap(t.s[1]) && t.s[0] + t.s[1] !== si) h += `<div class="sai">Tiêu chí "${esc(t.ten)}": cuối năm ${t.s[0]} + ${t.s[1]} khác sĩ số ${si}</div>`; });
+  if (!tc.length) { e.innerHTML = h + '<p class="ghi">Nhập sĩ số và ít nhất một tiêu chí (đủ 2 ô đầu năm) để xem bảng và biểu đồ.</p>'; return; }
+  h += `<h3>Bảng 1. Khảo sát đầu năm</h3><table class="bg"><tr><th rowspan="2">STT</th><th rowspan="2">Nội dung</th><th colspan="2">${esc(m1)}</th><th colspan="2">${esc(m2)}</th></tr><tr><th>SL</th><th>TL</th><th>SL</th><th>TL</th></tr>${tc.map((t, i) => `<tr><td>${i + 1}</td><td class="l">${esc(t.ten)}</td><td>${t.t[0]}</td><td>${pct(t.t[0], si)}</td><td>${t.t[1]}</td><td>${pct(t.t[1], si)}</td></tr>`).join('')}</table><canvas id="cv1" width="1600" height="900" style="width:100%;max-width:720px"></canvas>`;
+  const ss = tc.filter(t => coNhap(t.s[0]));
+  if (ss.length) h += `<h3>Bảng 2. So sánh trước và sau (mức "${esc(m1)}")</h3><table class="bg"><tr><th rowspan="2">STT</th><th rowspan="2">Nội dung</th><th colspan="2">Trước</th><th colspan="2">Sau</th><th rowspan="2">Tăng/giảm</th></tr><tr><th>SL</th><th>TL</th><th>SL</th><th>TL</th></tr>${ss.map((t, i) => `<tr><td>${i + 1}</td><td class="l">${esc(t.ten)}</td><td>${t.t[0]}</td><td>${pct(t.t[0], si)}</td><td>${t.s[0]}</td><td>${pct(t.s[0], si)}</td><td>${tangGiam(t, si)}</td></tr>`).join('')}</table><canvas id="cv2" width="1600" height="900" style="width:100%;max-width:720px"></canvas>`;
+  e.innerHTML = h;
+  if ($('cv1')) vecot($('cv1'), 'Biểu đồ 1: Thực trạng đầu năm (tỉ lệ % học sinh)', tc.map(t => t.ten), [tc.map(t => pnum(t.t[0], si)), tc.map(t => pnum(t.t[1], si))], ['#1d7bd8', '#ffd166'], [m1, m2]);
+  if ($('cv2')) vecot($('cv2'), `Biểu đồ 2: So sánh trước và sau khi áp dụng (mức "${m1}")`, ss.map(t => t.ten), [ss.map(t => pnum(t.t[0], si)), ss.map(t => pnum(t.s[0], si))], ['#9bb8e8', '#2a9d4a'], ['Đầu năm', 'Cuối năm']);
+}
+function tangGiam(t, si) { const d = Math.round((pnum(t.s[0], si) - pnum(t.t[0], si)) * 10) / 10; return (d >= 0 ? '+' : '') + String(d).replace('.', ',') + ' điểm %'; }
+function vecot(cv, tieude, nhan, chuoi, mau, ten) {
+  const g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.fillStyle = '#000'; g.textAlign = 'center'; g.font = 'bold 34px Arial'; g.fillText(tieude, W / 2, 52);
+  const x0 = 120, y0 = 110, x1 = W - 60, y1 = H - 250; g.font = '22px Arial';
+  for (let v = 0; v <= 100; v += 20) { const y = y1 - (y1 - y0) * v / 100; g.strokeStyle = '#ddd'; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); g.fillStyle = '#444'; g.textAlign = 'right'; g.fillText(v + '%', x0 - 12, y + 7); }
+  const n = nhan.length, k = chuoi.length, slot = (x1 - x0) / n, bw = Math.min(70, slot / (k + 1.2));
+  for (let i = 0; i < n; i++) {
+    const cx = x0 + slot * (i + .5);
+    for (let j = 0; j < k; j++) { const v = chuoi[j][i], bx = cx + (j - (k - 1) / 2) * (bw + 6), top = y1 - (y1 - y0) * v / 100; g.fillStyle = mau[j]; g.fillRect(bx - bw / 2, top, bw, y1 - top); g.fillStyle = '#000'; g.textAlign = 'center'; g.font = '20px Arial'; g.fillText(String(v).replace('.', ',') + '%', bx, top - 7); }
+    let cur = '', dongs = []; nhan[i].split(' ').forEach(w => { if ((cur + ' ' + w).trim().length > 16) { dongs.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); }); dongs.push(cur);
+    g.font = '20px Arial'; g.fillStyle = '#000'; g.textAlign = 'center'; dongs.slice(0, 4).forEach((l, li) => g.fillText(l, cx, y1 + 34 + li * 26));
+  }
+  g.strokeStyle = '#000'; g.lineWidth = 2; g.beginPath(); g.moveTo(x0, y1); g.lineTo(x1, y1); g.stroke(); g.lineWidth = 1;
+  let lx = x0; ten.forEach((t, j) => { g.fillStyle = mau[j]; g.fillRect(lx, H - 62, 28, 28); g.fillStyle = '#000'; g.textAlign = 'left'; g.font = '22px Arial'; g.fillText(t, lx + 38, H - 40); lx += 420; });
+}
+/* ---- Bước 5 ---- */
+function v5() {
+  if (!S.khung.length) S.khung = dungKhung(S.mau);
+  if (mucChon >= S.khung.length) mucChon = 0;
+  const ds = S.khung.map((k, i) => `<div class="m ${k.cap === 2 ? 'c2' : ''} ${i === mucChon ? 'on' : ''}" data-act="muc:${i}"><span class="cham ${tinhMuc(k)}"></span>${esc(k.ten)}</div>`).join('');
+  return `<div class="the"><h2>5. Viết nội dung</h2><p class="mota">Với mỗi mục: ghi vài dòng chuyện thật, bấm "Chép câu lệnh", dán vào ChatGPT hoặc Gemini, rồi dán chữ AI viết về ô bên dưới. Chấm xanh: đã có chữ. Chấm vàng: còn chỗ [cần bổ sung]. Chấm xám: chưa viết.</p>
+  <div class="pm"><div class="dsm">${ds}</div><div id="chitiet">${chiTietMuc()}</div></div>${chan(3, 5)}</div>`;
+}
+function tinhMuc(k) { if (k.loai === 'tieu_de' || k.loai === 'nhom' || k.loai === 'cam_doan') return 'x'; if (!k.text) return ''; return /\[cần bổ sung/i.test(k.text) ? 'v' : 'x'; }
+function chiTietMuc() {
+  const k = S.khung[mucChon], i = mucChon;
+  if (k.loai === 'tieu_de' || k.loai === 'nhom') return `<h3>${esc(k.ten)}</h3><p class="ghi">Đây là tiêu đề, không cần viết nội dung. Chọn mục tiếp theo bên trái.</p>`;
+  if (k.loai === 'cam_doan') return `<h3>${esc(k.ten)}</h3><p class="ghi">Mục này có văn bản mẫu tự điền khi xuất Word. Thầy cô muốn đổi thì gõ vào ô dưới.</p><textarea data-p="khung.${i}.text" data-after="capnhatcham" style="min-height:120px" placeholder="Để trống để dùng văn bản mẫu.">${esc(k.text)}</textarea>`;
+  const tu = soTu(k.text);
+  return `<h3>${esc(k.ten)}</h3>
+  <label>Chuyện thật cho mục này (không bắt buộc, nên có)</label><textarea data-p="khung.${i}.chuyen" style="min-height:70px" placeholder="VD: Tuần 3, em A đọc xong còn không nhớ nhân vật là ai.">${esc(k.chuyen)}</textarea>
+  <button class="nut xanh" data-act="lenh:${i}">Chép câu lệnh viết mục này</button>
+  <label>Dán nội dung AI viết vào đây (hoặc tự gõ) <span class="ghi" id="dem">${tu} từ, khoảng ${(tu / TU_MOI_TRANG).toFixed(1)} trang, mục tiêu ${k.trang} trang</span></label>
+  <textarea data-p="khung.${i}.text" data-after="capnhatcham" style="min-height:260px">${esc(k.text)}</textarea>
+  ${k.loai === 'tai_lieu' ? '<p class="ghi">Mỗi dòng một tài liệu thật.</p>' : `<button class="nut xam nho" data-act="viet:gian:${i}">Chép lệnh khử giọng AI</button><button class="nut xam nho" data-act="viet:dai:${i}">Chép lệnh viết dài, sâu hơn</button><button class="nut xam nho" data-act="viet:mach:${i}">Chép lệnh biên tập liền mạch</button>`}
+  ${(k.loai === 'bang_truoc' || k.loai === 'bang_sosanh') ? '<p class="ghi">Bảng và biểu đồ tự chèn sau đoạn này từ số liệu ở bước 4.</p>' : ''}`;
+}
+/* ---- Bước 6 ---- */
+function mucGP() { return S.khung.map((k, i) => ({ k, i })).filter(x => x.k.loai === 'giai_phap'); }
+function v6() {
+  const gp = mucGP();
+  const h = gp.map(({ k }) => {
+    const ds = S.anh[k.id] || [];
+    const mh = ds.filter(a => a.loai === 'mh'), mc = ds.filter(a => a.loai === 'mc');
+    const th = a => `<div class="a"><img src="${IMG[a.k] || ''}"><input data-p-anh="${a.k}" value="${esc(a.ct)}" style="padding:4px;font-size:12px"><button class="nut xam nho" data-act="xoaanh:${k.id}:${a.k}">Xóa</button></div>`;
+    return `<div class="hop"><b>${esc(k.ten)}</b>
+      <h3>Ảnh minh họa (vẽ bằng ChatGPT, không bắt buộc)</h3><button class="nut xam nho" data-act="chep:anh:${k.id}">Chép câu lệnh vẽ ảnh</button><button class="nut xanh nho" data-act="up:${k.id}:mh">Tải ảnh đã vẽ lên</button><div class="thu">${mh.map(th).join('')}</div>
+      <h3>Ảnh minh chứng thật (BẮT BUỘC, chụp ở lớp)</h3><p class="ghi">Chụp học sinh đang làm, sản phẩm, phiếu. Che mặt hoặc tên học sinh nếu cần. Không dùng ảnh AI làm minh chứng.</p><button class="nut xanh nho" data-act="up:${k.id}:mc">Tải ảnh chụp thật</button><div class="thu">${mc.map(th).join('')}</div></div>`;
+  }).join('');
+  return `<div class="the"><h2>6. Hình và ảnh</h2><p class="mota">Biểu đồ số liệu đã tự có ở bước 4 và sẽ tự chèn vào bài. Ở đây thầy cô thêm ảnh cho từng giải pháp.</p>
+  ${h || '<p class="ghi">Chưa có mục "Giải pháp" trong khung. Quay lại bước 3 để thêm.</p>'}
+  <input type="file" id="tep" accept="image/*" style="display:none" multiple>${chan(4, 6)}</div>`;
+}
+/* ---- Bước 7 ---- */
+function tachTu(t) { return (String(t).toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').match(/\S+/g) || []); }
+function lapY() {
+  const K = 8, map = new Map(), toks = [];
+  S.khung.forEach((k, mi) => { const w = tachTu(k.text); toks.push(w); for (let p = 0; p + K <= w.length; p++) { const s = w.slice(p, p + K).join(' '); if (!map.has(s)) map.set(s, []); map.get(s).push([mi, p]); } });
+  const tong = toks.reduce((a, w) => a + w.length, 0), phu = toks.map(w => new Uint8Array(w.length)); const mucLap = {};
+  map.forEach(v => { if (v.length > 1) v.forEach(([mi, p]) => { for (let q = 0; q < K; q++) phu[mi][p + q] = 1; mucLap[mi] = 1; }); });
+  const lap = phu.reduce((a, u) => a + u.reduce((x, y) => x + y, 0), 0);
+  return { tong, ti: tong ? lap * 100 / tong : 0, muc: Object.keys(mucLap).map(i => S.khung[i].ten) };
+}
+function trungDoiChieu() {
+  const K = 8, tap = new Set(); S.doichieu.forEach(d => { const w = tachTu(d.noidung); for (let p = 0; p + K <= w.length; p++) tap.add(w.slice(p, p + K).join(' ')); });
+  if (!tap.size) return null;
+  let tong = 0, trung = 0; const ten = [];
+  S.khung.forEach(k => { const w = tachTu(k.text); tong += w.length; const phu = new Uint8Array(w.length); for (let p = 0; p + K <= w.length; p++) if (tap.has(w.slice(p, p + K).join(' '))) for (let q = 0; q < K; q++) phu[p + q] = 1; const c = phu.reduce((a, b) => a + b, 0); trung += c; if (c > 0) ten.push(k.ten); });
+  return { ti: tong ? trung * 100 / tong : 0, muc: ten };
+}
+const SAO_RONG = ['góp phần quan trọng', 'đóng vai trò', 'trong bối cảnh', 'hành trình', 'không chỉ', 'then chốt', 'vô cùng', 'tóm lại', 'đặc biệt quan trọng', 'ngày càng', 'một cách hiệu quả', 'mang lại hiệu quả'];
+function v7() {
+  const l = lapY(), td = trungDoiChieu(), toanVan = S.khung.map(k => k.text).join('\n').toLowerCase();
+  const sr = SAO_RONG.map(c => [c, toanVan.split(c).length - 1]).filter(x => x[1] > 0);
+  const gach = (toanVan.match(/[—–]/g) || []).length;
+  const dc = S.doichieu.map((d, i) => `<div class="hop"><b>${esc(d.ten || 'Tài liệu ' + (i + 1))}</b> <button class="nut xam nho" data-act="xoadc:${i}">Xóa</button></div>`).join('');
+  return `<div class="the"><h2>7. Kiểm tra lặp ý và trùng lặp</h2><p class="mota">Kiểm tra chạy ngay trên máy thầy cô, không gửi bài đi đâu. Kết quả là số đo thật so với các tài liệu thầy cô dán vào, không phải điểm "chống đạo văn" của phần mềm nhà trường. Trước khi nộp nên kiểm thêm bằng công cụ của trường hoặc Sở.</p>
+  <div class="hop ${l.ti < 5 ? '' : 'v'}"><b>Lặp ý trong bài:</b> ${l.ti.toFixed(1).replace('.', ',')}% (${l.tong} từ). Đo các đoạn từ 8 chữ liên tiếp lặp lại giữa các mục. ${l.muc.length ? '<br>Mục có đoạn lặp: ' + l.muc.map(esc).join('; ') : ''}</div>
+  <div class="hop ${td && td.ti > 15 ? 'd' : ''}"><b>Trùng với tài liệu đối chiếu:</b> ${td ? td.ti.toFixed(1).replace('.', ',') + '%' + (td.muc.length ? '<br>Mục có đoạn trùng: ' + td.muc.map(esc).join('; ') : '') : 'chưa có tài liệu đối chiếu để so'}. Mục tiêu nên dưới 15%.</div>
+  <div class="hop ${sr.length > 3 ? 'v' : ''}"><b>Cụm từ nghe giọng AI/sáo rỗng:</b> ${sr.length ? sr.map(x => `"${x[0]}" (${x[1]} lần)`).join(', ') : 'không thấy'}.${gach ? `<br><span class="canh">Có ${gach} gạch dài (— hoặc –). Khi xuất Word công cụ sẽ tự đổi thành gạch nối.</span>` : ''}<br><span class="ghi">Nên dùng "Chép lệnh khử giọng AI" ở bước 5 cho các mục dính nhiều cụm này.</span></div>
+  <h3>Tài liệu đối chiếu</h3><p class="ghi">Dán sáng kiến mẫu của trường, bài của đồng nghiệp, bài trên mạng mà thầy cô đã đọc tham khảo. Công cụ so từng chuỗi 8 chữ liên tiếp.</p>${dc}
+  <label>Tên tài liệu</label><input id="dcten" placeholder="VD: Sáng kiến mẫu của trường"><label>Nội dung</label><textarea id="dcnd" placeholder="Dán nội dung vào đây..."></textarea>
+  <button class="nut luc" data-act="themdc">+ Thêm tài liệu đối chiếu</button>${chan(5, 7)}</div>`;
+}
+/* ---- Bước 8 ---- */
+function kiemTra() {
+  const i = S.info, r = [], si = i.siso;
+  const bia = [['tên tác giả', i.tacgia], ['tên trường', i.truong], ['cơ quan quản lý cấp trên', i.coquan], ['địa danh', i.diadanh], ['đề tài', S.detai]].filter(x => !x[1]).map(x => x[0]);
+  r.push([bia.length === 0, 'Trang bìa đủ thông tin' + (bia.length ? ' (thiếu: ' + bia.join(', ') + ')' : '')]);
+  const trong = S.khung.filter(k => !['tieu_de', 'nhom', 'cam_doan'].includes(k.loai) && !k.text && !['bang_truoc', 'bang_sosanh'].includes(k.loai));
+  r.push([trong.length === 0, trong.length ? `Còn ${trong.length} mục chưa có nội dung: ${trong.slice(0, 3).map(k => k.ten).join('; ')}${trong.length > 3 ? '...' : ''}` : 'Tất cả các mục đã có nội dung']);
+  let sai = 0; S.solieu.tc.forEach(t => { if (coNhap(t.t[0]) && coNhap(t.t[1]) && t.t[0] + t.t[1] !== si) sai++; if (coNhap(t.s[0]) && coNhap(t.s[1]) && t.s[0] + t.s[1] !== si) sai++; });
+  r.push([S.solieu.tc.length > 0 && sai === 0, S.solieu.tc.length ? (sai ? `Có ${sai} dòng số liệu không khớp sĩ số ${si}` : 'Số liệu khớp sĩ số ở mọi dòng') : 'Chưa nhập số liệu khảo sát']);
+  const coSau = S.solieu.tc.some(t => coNhap(t.s[0]));
+  r.push([coSau, coSau ? 'Đã có số liệu cuối năm' : 'Chưa có số liệu cuối năm, bảng so sánh sẽ ghi [cần bổ sung]']);
+  const nph = (S.khung.map(k => k.text).join('\n').match(/\[cần bổ sung[^\]]*\]/gi) || []).length;
+  r.push([nph === 0, nph ? `Còn ${nph} chỗ [cần bổ sung] (sẽ tô vàng trong Word)` : 'Không còn chỗ [cần bổ sung]']);
+  const thieu = mucGP().filter(({ k }) => !(S.anh[k.id] || []).some(a => a.loai === 'mc')).map(x => x.k.ten);
+  r.push([thieu.length === 0, thieu.length ? `Thiếu ảnh minh chứng thật cho ${thieu.length} giải pháp` : 'Mọi giải pháp có ảnh minh chứng thật']);
+  const tu = S.khung.reduce((a, k) => a + soTu(k.text), 0);
+  r.push([true, `Độ dài ước tính: khoảng ${Math.round(tu / TU_MOI_TRANG)} trang nội dung (chưa tính bìa, bảng, hình)`]);
+  return r;
+}
+function v8() {
+  const r = kiemTra();
+  return `<div class="the"><h2>8. Kiểm tra và xuất Word</h2><p class="mota">Xử lý hết các mục chưa đạt rồi tải file Word. Bài vẫn tải được khi còn chỗ thiếu, chỗ đó được tô vàng để thầy cô điền.</p>
+  ${r.map(([ok, t]) => `<div class="kt"><span class="${ok ? 'ok' : 'canh'}">${ok ? '✓' : '!'}</span><span>${esc(t)}</span></div>`).join('')}
+  <div class="luoi" style="margin-top:12px"><div><label>Giãn dòng</label><select id="giandong"><option>1.15</option><option selected>1.3</option><option>1.5</option></select></div><div><label>Trang bìa</label><select id="vienbia"><option value="1">Có viền đôi</option><option value="0">Không viền</option></select></div><div><label>Mục lục</label><select id="mucluc"><option value="1">Có mục lục</option><option value="0">Không</option></select></div></div>
+  <p class="ghi">Chữ Times New Roman cỡ 14. Mở file Word, nếu Word hỏi cập nhật trường thì bấm Yes để hiện số trang trong mục lục.</p>
+  <button class="nut luc" data-act="xuat">⬇ Tải file Word (.docx)</button><button class="nut xam" data-act="saoluu">Tải bản sao lưu (.json)</button><button class="nut xam" data-act="mo">Mở bản sao lưu</button><input type="file" id="tepjson" accept=".json" style="display:none">
+  <div class="hop v">Số liệu, nội dung và ảnh minh chứng là của thầy cô, thầy cô đọc kỹ bản cuối và chịu trách nhiệm khi nộp.</div>
+  ${chan(6, 8)}</div>`;
+}
+
+/* ============ XUẤT WORD ============ */
+function dataUrlToU8(u) { const b = atob(u.split(',')[1]), a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+function kichAnh(u) { return new Promise(ok => { const im = new Image(); im.onload = () => ok([im.width, im.height]); im.onerror = () => ok([4, 3]); im.src = u; }); }
+async function dungDocx(opt) {
+  const D = window.docx; if (!D) throw new Error('Chưa tải được thư viện xuất Word. Kiểm tra mạng rồi thử lại.');
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, ImageRun, Footer, PageNumber, TableOfContents, HeadingLevel, BorderStyle, ShadingType, SectionType, PageBorderDisplay, PageBorderOffsetFrom, PageBreak } = D;
+  const FONT = 'Times New Roman', C = 28, line = Math.round(opt.giandong * 240);
+  const si = S.info.siso, [m1, m2] = S.solieu.muc, tc = S.solieu.tc.filter(t => t.ten && coNhap(t.t[0]) && coNhap(t.t[1])), ss = tc.filter(t => coNhap(t.s[0]));
+  const runs = (t, o = {}) => san(t).split(/(\[cần bổ sung[^\]]*\])/i).filter(Boolean).map(p => new TextRun({ text: p, font: FONT, size: o.size || C, bold: o.bold, italics: o.italics, highlight: /^\[cần bổ sung/i.test(p) ? 'yellow' : undefined }));
+  const P = (t, o = {}) => new Paragraph({ children: runs(t, o), alignment: o.align || AlignmentType.JUSTIFIED, spacing: { line: o.line || line, after: o.after ?? 80, before: o.before || 0 }, indent: o.indent === false ? undefined : { firstLine: 567 }, keepNext: o.keepNext });
+  const giua = (t, o = {}) => new Paragraph({ children: runs(t, o), alignment: AlignmentType.CENTER, spacing: { before: o.before || 0, after: o.after ?? 120 } });
+  const hoa = t => /cần bổ sung/.test(t) ? t : t.toUpperCase();
+  const i = S.info;
+  const bia = [giua(hoa(i.coquan || '[cần bổ sung: cơ quan quản lý cấp trên]'), { bold: true, after: 0 }), giua(hoa(i.truong || '[cần bổ sung: tên trường]'), { bold: true, after: 0 }), giua('-----------', { after: 1200 }),
+    giua('SÁNG KIẾN', { bold: true, size: 52, before: 600, after: 300 }), giua('ĐỀ TÀI:', { bold: true, after: 100 }), giua(hoa(S.detai || '[cần bổ sung: đề tài]'), { bold: true, size: 32, after: 1100 })];
+  [['Lĩnh vực', [i.cap, i.mon].filter(Boolean).join(' - ')], ['Tác giả', i.tacgia], ['Chức vụ', i.chucvu], ['Đơn vị công tác', i.truong], ['Năm học', i.namhoc]].forEach(([k, v]) => bia.push(new Paragraph({ indent: { left: 2268 }, spacing: { after: 40 }, children: [...runs(k + ': ', { bold: true }), ...runs(v || `[cần bổ sung: ${k.toLowerCase()}]`)] })));
+  bia.push(giua(`${i.diadanh || '[cần bổ sung: địa danh]'}, ${i.thangnam || 'tháng ...... năm 20......'}`, { bold: true, before: 1600 }));
+
+  const cell = (t, o = {}) => new TableCell({ columnSpan: o.span, rowSpan: o.rspan, shading: o.head ? { type: ShadingType.CLEAR, fill: 'E7E6E6', color: 'auto' } : undefined, verticalAlign: 'center', margins: { top: 40, bottom: 40, left: 70, right: 70 }, children: [new Paragraph({ alignment: o.left ? AlignmentType.LEFT : AlignmentType.CENTER, spacing: { after: 0 }, children: [new TextRun({ text: san(String(t)), font: FONT, size: 26, bold: !!o.head })] })] });
+  const bangDau = () => new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+    new TableRow({ tableHeader: true, children: [cell('STT', { head: 1, rspan: 2 }), cell('Nội dung khảo sát', { head: 1, rspan: 2 }), cell(m1, { head: 1, span: 2 }), cell(m2, { head: 1, span: 2 })] }),
+    new TableRow({ tableHeader: true, children: ['SL', 'TL', 'SL', 'TL'].map(x => cell(x, { head: 1 })) }),
+    ...tc.map((t, n) => new TableRow({ children: [cell(n + 1), cell(t.ten, { left: 1 }), cell(t.t[0]), cell(pct(t.t[0], si)), cell(t.t[1]), cell(pct(t.t[1], si))] }))] });
+  const bangSS = () => new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+    new TableRow({ tableHeader: true, children: [cell('STT', { head: 1, rspan: 2 }), cell('Nội dung đánh giá', { head: 1, rspan: 2 }), cell('Trước khi áp dụng', { head: 1, span: 2 }), cell('Sau khi áp dụng', { head: 1, span: 2 }), cell('Tăng/giảm', { head: 1, rspan: 2 })] }),
+    new TableRow({ tableHeader: true, children: ['SL', 'TL', 'SL', 'TL'].map(x => cell(x, { head: 1 })) }),
+    ...ss.map((t, n) => new TableRow({ children: [cell(n + 1), cell(t.ten, { left: 1 }), cell(t.t[0]), cell(pct(t.t[0], si)), cell(t.s[0]), cell(pct(t.s[0], si)), cell(tangGiam(t, si))] }))] });
+  const capBang = t => giua(t, { bold: true, italics: true, size: 26, before: 120, after: 80 });
+  const hinh = [0], bang = [0];
+  async function anhRun(u, ct) {
+    const [w, h] = await kichAnh(u), W = Math.min(560, w), Hh = Math.round(W * h / w), sc = Hh > 400 ? 400 / Hh : 1;
+    hinh[0]++;
+    return [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 80, after: 40 }, children: [new ImageRun({ data: dataUrlToU8(u), transformation: { width: Math.round(W * sc), height: Math.round(Hh * sc) } })] }), giua(`Hình ${hinh[0]}. ${ct}`, { italics: true, size: 24 })];
+  }
+  const nd = [];
+  for (const k of S.khung) {
+    if (k.loai === 'tieu_de') nd.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: AlignmentType.CENTER, spacing: { before: 240, after: 120 }, children: runs(k.ten, { bold: true }) }));
+    else if (k.cap === 1) nd.push(new Paragraph({ heading: HeadingLevel.HEADING_1, spacing: { before: 200, after: 100 }, children: runs(k.ten, { bold: true }) }));
+    else nd.push(new Paragraph({ heading: HeadingLevel.HEADING_2, spacing: { before: 120, after: 80 }, children: runs(k.ten, { bold: true, italics: true }) }));
+    let text = k.text || '';
+    if (k.loai === 'cam_doan' && !text) text = 'Tôi xin cam đoan đây là sáng kiến do tôi thực hiện. Các số liệu nêu trong sáng kiến là trung thực, được thu thập từ thực tế giảng dạy, không sao chép của người khác. Nếu sai tôi xin hoàn toàn chịu trách nhiệm.';
+    if (k.loai === 'tai_lieu') { (text ? text.split('\n').filter(x => x.trim()) : ['[cần bổ sung: tài liệu tham khảo]']).forEach((l, n) => nd.push(P(`${n + 1}. ${l.replace(/^\s*\d+[.)]\s*/, '')}`, { indent: false, align: AlignmentType.LEFT }))); continue; }
+    if (k.loai !== 'tieu_de' && k.loai !== 'nhom') {
+      if (!text && !['bang_truoc', 'bang_sosanh'].includes(k.loai)) text = '[cần bổ sung: nội dung mục này]';
+      text.split(/\n\s*\n/).filter(x => x.trim()).forEach(pp => nd.push(P(pp.trim().replace(/\n/g, ' '))));
+    }
+    if (k.loai === 'bang_truoc') {
+      if (tc.length) { bang[0]++; nd.push(capBang(`Bảng ${bang[0]}. Khảo sát đầu năm (trước khi áp dụng)`), bangDau(), new Paragraph({ spacing: { after: 80 } })); const c1 = $('cvTam1'); if (c1) nd.push(...await anhRun(c1.toDataURL('image/png'), 'Biểu đồ thực trạng đầu năm')); }
+      else nd.push(P('[cần bổ sung: số liệu khảo sát đầu năm]'));
+    }
+    if (k.loai === 'bang_sosanh') {
+      if (ss.length) { bang[0]++; nd.push(capBang(`Bảng ${bang[0]}. So sánh kết quả trước và sau khi áp dụng sáng kiến (mức "${m1}")`), bangSS(), new Paragraph({ spacing: { after: 80 } })); const c2 = $('cvTam2'); if (c2) nd.push(...await anhRun(c2.toDataURL('image/png'), 'Biểu đồ so sánh trước và sau')); }
+      else nd.push(P('[cần bổ sung: số liệu khảo sát cuối năm]'));
+    }
+    for (const a of (S.anh[k.id] || [])) if (IMG[a.k]) nd.push(...await anhRun(IMG[a.k], a.ct));
+    if (k.loai === 'giai_phap' && !(S.anh[k.id] || []).some(a => a.loai === 'mc')) nd.push(P(`[cần bổ sung: ảnh minh chứng cho giải pháp "${k.ten.replace(/^[\d.]+\s*/, '')}"]`, { indent: false }));
+  }
+  const trang = { size: { width: 11906, height: 16838 }, margin: { top: 1134, bottom: 1134, left: 1701, right: 1134 } };
+  const vien = { style: BorderStyle.DOUBLE, size: 8, color: '000000', space: 24 };
+  const pageBia = opt.vien ? { ...trang, borders: { pageBorders: { display: PageBorderDisplay.ALL_PAGES, offsetFrom: PageBorderOffsetFrom.PAGE }, pageBorderTop: vien, pageBorderRight: vien, pageBorderBottom: vien, pageBorderLeft: vien } } : trang;
+  const dau = [];
+  if (opt.mucluc) dau.push(giua('MỤC LỤC', { bold: true, after: 160 }), new TableOfContents('Mục lục', { hyperlink: true, headingStyleRange: '1-2' }), new Paragraph({ children: [new PageBreak()] }));
+  const hd = (id, name, it) => ({ id, name, basedOn: 'Normal', next: 'Normal', quickFormat: true, run: { font: FONT, size: C, bold: true, italics: it, color: '000000' } });
+  const doc = new Document({
+    features: { updateFields: true },
+    styles: { default: { document: { run: { font: FONT, size: C } } }, paragraphStyles: [hd('Heading1', 'Heading 1', false), hd('Heading2', 'Heading 2', true)] },
+    sections: [{ properties: { page: pageBia }, children: bia }, { properties: { type: SectionType.NEXT_PAGE, page: trang }, footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 26 })] })] }) }, children: [...dau, ...nd] }]
+  });
+  return Packer.toBlob(doc);
+}
+async function xuatWord() {
+  if (!S.khung.length) return bao('Chưa có khung sáng kiến');
+  const opt = { giandong: +$('giandong').value, vien: $('vienbia').value === '1', mucluc: $('mucluc').value === '1' };
+  bao('Đang tạo file Word...');
+  try {
+    // biểu đồ ẩn để chèn vào Word
+    const tam = document.createElement('div'); tam.style.cssText = 'position:fixed;left:-9999px'; document.body.appendChild(tam);
+    const si = S.info.siso, [m1, m2] = S.solieu.muc, tc = S.solieu.tc.filter(t => t.ten && coNhap(t.t[0]) && coNhap(t.t[1])), ss = tc.filter(t => coNhap(t.s[0]));
+    const mk = (id, ...a) => { const c = document.createElement('canvas'); c.id = id; c.width = 1600; c.height = 900; tam.appendChild(c); vecot(c, ...a); };
+    if (tc.length) mk('cvTam1', 'Biểu đồ 1: Thực trạng đầu năm (tỉ lệ % học sinh)', tc.map(t => t.ten), [tc.map(t => pnum(t.t[0], si)), tc.map(t => pnum(t.t[1], si))], ['#1d7bd8', '#ffd166'], [m1, m2]);
+    if (ss.length) mk('cvTam2', `Biểu đồ 2: So sánh trước và sau khi áp dụng (mức "${m1}")`, ss.map(t => t.ten), [ss.map(t => pnum(t.t[0], si)), ss.map(t => pnum(t.s[0], si))], ['#9bb8e8', '#2a9d4a'], ['Đầu năm', 'Cuối năm']);
+    const blob = await dungDocx(opt); tam.remove();
+    window.__lastBlob = blob;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Sang-kien-' + (S.info.tacgia || 'bai-viet').replace(/\s+/g, '-') + '.docx'; document.body.appendChild(a); a.click(); a.remove();
+    bao('Đã tải file Word');
+  } catch (e) { console.error(e); bao('Lỗi: ' + e.message); }
+}
+
+/* ============ SỰ KIỆN ============ */
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.pAnh) { for (const l of Object.values(S.anh)) l.forEach(a => { if (a.k === t.dataset.pAnh) a.ct = t.value; }); return luu(); }
+  const p = t.dataset.p; if (!p) return;
+  let v = t.value; if (t.dataset.n) v = v === '' ? null : +v;
+  datPath(S, p, v); luu();
+  if (t.dataset.after === 'dungBang') dungBang();
+  if (t.dataset.after === 'capnhatcham') { veNav(); const m = S.khung[mucChon]; const d = $('dem'); if (d) { const tu = soTu(m.text); d.textContent = `${tu} từ, khoảng ${(tu / TU_MOI_TRANG).toFixed(1)} trang, mục tiêu ${m.trang} trang`; } const dm = document.querySelectorAll('.dsm .m')[mucChon]; if (dm) dm.querySelector('.cham').className = 'cham ' + tinhMuc(m); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.act2 === 'doisogp') { while (S.gp.length < S.sogp) S.gp.push(''); ve(); }
+  if (t.dataset.act2 === 'dongloai') { ve(); }
+  if (t.id === 'tep') nhanAnh(t);
+  if (t.id === 'tepjson') docSaoLuu(t.files[0]);
+});
+let anhDich = null;
+function nhanAnh(inp) {
+  const [id, loai] = anhDich; const files = [...inp.files]; inp.value = '';
+  files.forEach(f => {
+    const r = new FileReader();
+    r.onload = () => { const im = new Image(); im.onload = () => {
+      const M = 1400, s = Math.min(1, M / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+      const u = c.toDataURL('image/jpeg', .85), k = 'a' + Date.now() + Math.floor(Math.random() * 1000), m = S.khung.find(x => x.id == id);
+      IMG[k] = u; idbPut(k, u); (S.anh[id] = S.anh[id] || []).push({ k, loai, ct: loai === 'mh' ? 'Hình minh họa: ' + m.ten.replace(/^[\d.]+\s*/, '') : 'Minh chứng: ' + m.ten.replace(/^[\d.]+\s*/, '') }); luu(); ve();
+    }; im.src = r.result; };
+    r.readAsDataURL(f);
+  });
+}
+function docSaoLuu(f) {
+  if (!f) return; const r = new FileReader();
+  r.onload = () => { try { const o = JSON.parse(r.result); S = Object.assign(macDinh(), o.S); IMG = o.IMG || {}; Object.keys(IMG).forEach(k => idbPut(k, IMG[k])); uid = 1 + Math.max(0, ...S.khung.map(k => k.id || 0)); luu(); buoc = 0; ve(); bao('Đã mở bản sao lưu'); } catch (e) { bao('File không đúng định dạng'); } };
+  r.readAsText(f);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const [a, x, y] = t.dataset.act.split(':');
+  const chanTruoc = () => { };
+  if (a === 'buoc') { buoc = +x; return ve(); }
+  if (a === 'chep') { if (x === 'detai') return chep(lenhDeTai()); if (x === 'giaiphap') return chep(lenhGiaiPhap()); if (x === 'tieuchi') return chep(`${nguCanh()}\n\nHãy gợi ý 6 tiêu chí khảo sát (đo được bằng quan sát hoặc bài kiểm tra ngắn) để so sánh đầu năm và cuối năm cho đề tài này. Mỗi tiêu chí ghi một dòng, chia 2 mức: ${S.solieu.muc.join(' / ')}. Chỉ gợi ý tiêu chí, KHÔNG đưa ra bất kỳ con số nào.`); if (x === 'anh') return chep(lenhAnh(S.khung.find(k => k.id == y))); }
+  if (a === 'mau') { if (S.khung.some(k => k.text) && !confirm('Dựng lại khung sẽ xóa nội dung đã viết. Tiếp tục?')) return; S.mau = x; S.khung = dungKhung(x); luu(); return ve(); }
+  if (a === 'mauTruong') { const h = $('hopmau'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; return; }
+  if (a === 'dungMauTruong') { const v = $('mautruong').value; if (!v.trim()) return bao('Dán các tiêu đề vào ô trước'); if (S.khung.some(k => k.text) && !confirm('Dựng lại khung sẽ xóa nội dung đã viết. Tiếp tục?')) return; S.khung = phanTichMau(v); luu(); return ve(); }
+  if (a === 'them') { S.khung.push(dong(1, 'Mục mới', 'noi_dung', 0.7)); luu(); return ve(); }
+  if (a === 'len' && +x > 0) { const k = S.khung; [k[x - 1], k[x]] = [k[x], k[x - 1]]; luu(); return ve(); }
+  if (a === 'xuong' && +x < S.khung.length - 1) { const k = S.khung; [k[+x + 1], k[x]] = [k[x], k[+x + 1]]; luu(); return ve(); }
+  if (a === 'xoa') { S.khung.splice(+x, 1); luu(); return ve(); }
+  if (a === 'themtc') { S.solieu.tc.push({ ten: '', t: [null, null], s: [null, null] }); luu(); return ve(); }
+  if (a === 'xoatc') { S.solieu.tc.splice(+x, 1); luu(); return ve(); }
+  if (a === 'muc') { mucChon = +x; return ve(); }
+  if (a === 'lenh') return chep(lenhMuc(S.khung[+x]));
+  if (a === 'viet') { const m = S.khung[+y]; if (!m.text) return bao('Mục này chưa có chữ để sửa'); return chep(lenhViet(m, x)); }
+  if (a === 'up') { anhDich = [x, y]; $('tep').click(); return; }
+  if (a === 'xoaanh') { S.anh[x] = (S.anh[x] || []).filter(i => i.k !== y); delete IMG[y]; idbDel(y); luu(); return ve(); }
+  if (a === 'themdc') { const n = $('dcnd').value.trim(); if (!n) return bao('Dán nội dung tài liệu vào ô trước'); S.doichieu.push({ ten: $('dcten').value, noidung: n }); luu(); return ve(); }
+  if (a === 'xoadc') { S.doichieu.splice(+x, 1); luu(); return ve(); }
+  if (a === 'xuat') return xuatWord();
+  if (a === 'saoluu') { const b = new Blob([JSON.stringify({ S, IMG })], { type: 'application/json' }), l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'sao-luu-sang-kien.json'; l.click(); return; }
+  if (a === 'mo') return $('tepjson').click();
+});
+
+/* ============ KHỞI ĐỘNG ============ */
+tai();
+idbTatCa().then(o => { IMG = o; ve(); });
+ve();
+</script>
+</body>
+</html>

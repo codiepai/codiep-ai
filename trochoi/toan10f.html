@@ -145,6 +145,24 @@
 <div class="phu" id="phu" hidden><div class="the" id="the"></div></div>
 <div id="phao"></div>
 
+<script>/*GG-TTS-SHIM: máy không có giọng Việt thì đọc bằng giọng Google*/
+(function(){var S=window.speechSynthesis;if(!S||window.__ggTTS)return;window.__ggTTS=1;
+var fake={name:'Google Tiếng Việt',lang:'vi-VN',voiceURI:'gg-vi',localService:false,default:false,__gg:1};
+var RealU=window.SpeechSynthesisUtterance,gv=S.getVoices.bind(S),sp=S.speak.bind(S),ca=S.cancel.bind(S);
+var ds=[],tt=0;
+function dung(){tt++;ds.forEach(function(a){try{a.pause()}catch(e){}});ds=[]}
+function chia(t){var r=[],c=String(t).replace(/\s+/g,' ').trim().split(/(?<=[.!?,;:])\s+/),cur='';c.forEach(function(x){if((cur+' '+x).length>180){if(cur)r.push(cur);cur=x}else cur=(cur?cur+' ':'')+x});if(cur)r.push(cur);return r}
+function Utt(t){this.text=t===undefined?'':t;this.voice=null;this.lang='';this.rate=1;this.pitch=1;this.volume=1}
+window.SpeechSynthesisUtterance=Utt;
+S.getVoices=function(){var v=gv(),coVi=false;for(var i=0;i<v.length;i++)if(/^vi/i.test(v[i].lang))coVi=true;return coVi?v:Array.prototype.slice.call(v).concat([fake])};
+S.cancel=function(){dung();ca()};
+S.speak=function(u){
+ if(u.voice&&u.voice.__gg){dung();var my=tt,p=chia(u.text);
+  (function tiep(i){if(i>=p.length||my!==tt)return;var a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=vi&q='+encodeURIComponent(p[i]));a.playbackRate=Math.min(1,(u.rate||1)+0.1);ds.push(a);a.onended=function(){tiep(i+1)};a.onerror=function(){tiep(i+1)};var r=a.play();if(r&&r.catch)r.catch(function(){})})(0);
+  return}
+ var r=new RealU(u.text);if(u.voice)r.voice=u.voice;r.lang=u.lang||(u.voice&&u.voice.lang)||'';r.rate=u.rate;sp(r)};
+})();
+</script>
 <script>
 // nếu máy nào báo lỗi, hiện lỗi lên màn hình để chụp gửi cô
 window.onerror = (m, f, d) => {
@@ -189,10 +207,10 @@ const taoHai = (dichs, max, min = 1) => () => dichs.map(dich => {
 const bangCong = (cot, an) => `<table style="border-collapse:collapse;font-size:max(22px, calc(var(--u)*5.2));text-align:center">
   <tr><td rowspan="2" style="background:#ffe8a3;border:3px solid #74c0fc;padding:0 .5em;color:#e8590c">+</td>${cot.map(([a]) => `<td style="background:#ffe8a3;border:3px solid #74c0fc;padding:2px .55em">${a}</td>`).join('')}</tr>
   <tr>${cot.map(([, b]) => `<td style="background:#ffe8a3;border:3px solid #74c0fc;padding:2px .55em">${b}</td>`).join('')}</tr>
-  <tr><td style="border:3px solid #74c0fc"></td>${cot.map(([a, b], j) => `<td style="border:3px solid #74c0fc;padding:2px .55em;${j === an ? 'color:#e03131;background:#fff5f5;border:4px dashed #e03131' : 'color:#adb5bd'}">${j === an ? '?' : a + b}</td>`).join('')}</tr></table>`;
+  <tr><td style="border:3px solid #74c0fc"></td>${cot.map(([a, b], j) => `<td style="border:3px solid #74c0fc;padding:2px .55em;${j === an ? 'color:#e03131;background:#fff5f5;border:4px dashed #e03131' : 'color:#adb5bd'}">${j === an ? '?' : j === 0 ? a + b : ''}</td>`).join('')}</tr></table>`;
 const taoBang = (tongs, so) => () => { const daHoi = new Set(); return tron(Array.from({ length: so }, (_, k) => tongs[k % tongs.length])).map(s => {
   const cot = []; for (let a = Math.min(9, s); a >= Math.max(0, s - 9) && cot.length < 6; a--) cot.push([a, s - a]);
-  let an; do { an = Math.floor(Math.random() * cot.length); } while (daHoi.has(s + '-' + an) && daHoi.size < cot.length); daHoi.add(s + '-' + an);
+  let an; const dau = cot.length > 1 ? 1 : 0; do { an = dau + Math.floor(Math.random() * (cot.length - dau)); } while (daHoi.has(s + '-' + an) && daHoi.size < cot.length - dau); daHoi.add(s + '-' + an);
   const [a, b] = cot[an];
   return { hoi: `Bảng cộng: ${a} + ${b} = ?`, noi: `${a} cộng ${b} bằng mấy?`,
     tranh: `<div style="flex:1;display:flex;align-items:center;justify-content:center;max-width:100%;overflow:auto">${bangCong(cot, an)}</div>`,

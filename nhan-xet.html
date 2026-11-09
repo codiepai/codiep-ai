@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trợ lý viết nhận xét - CÔ ĐIỆP AI</title>
+<meta name="description" content="Tải file Excel đánh giá từ hệ thống, công cụ viết nhận xét từng học sinh theo mức đạt được, ghi lại đúng ô và giữ nguyên định dạng file. Xử lý ngay trên máy thầy cô.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+:root{--ink:#1d3557;--red:#e63946;--cam:#f77f00;--vang:#ffd166;--blue:#1d7bd8;--ok:#2a9d4a;--phu:#5b6b80;--vien:#d3e6f8;--nen:#eaf5ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#d8efff,#fff6e0);min-height:100vh}
+.bia{background:linear-gradient(135deg,#0b3a73,#1d7bd8);color:#fff;padding:16px 16px 54px}
+.rong{max-width:1100px;margin:0 auto}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(26px,5vw,38px)/1.1 "Baloo 2",sans-serif;margin:8px 0 6px}.bia h1 b{color:var(--vang)}
+.bia p{margin:0;opacity:.95;max-width:700px;font-size:15px}
+.dai{display:inline-block;background:linear-gradient(90deg,#ff5d8f,#ff9a3c);color:#fff;border-radius:40px;padding:5px 16px;font:700 14px "Baloo 2",sans-serif;margin-top:10px}
+main{max-width:1100px;margin:-34px auto 0;padding:0 12px 30px}
+.the{background:#fff;border-radius:22px;box-shadow:0 8px 20px rgba(29,53,87,.12);padding:20px;margin-bottom:14px;border:6px solid #fff}
+h2{font:800 22px "Baloo 2",sans-serif;margin:0 0 4px}
+h3{font:700 16px "Baloo 2",sans-serif;margin:12px 0 6px;color:var(--blue)}
+.mota{color:var(--phu);font-size:14px;margin:0 0 12px}
+label{display:block;font-weight:600;font-size:13.5px;margin:8px 0 4px}
+input,select,textarea{width:100%;font:500 14.5px "Be Vietnam Pro",sans-serif;padding:8px 10px;border:2px solid var(--vien);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:80px;resize:vertical;line-height:1.45}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+input[type=checkbox]{width:auto;margin-right:6px}
+.cb{display:flex;align-items:center;font-weight:500;margin:6px 0;font-size:14px}
+.luoi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px}
+.ghi{color:var(--phu);font-size:12.5px;margin:3px 0 0}
+.nut{border:0;border-radius:14px;padding:10px 16px;font:700 15px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 4px 0 #b86200;cursor:pointer;margin:4px 6px 4px 0}
+.nut:active{transform:translateY(2px);box-shadow:0 2px 0 #b86200}
+.nut.xanh{background:linear-gradient(180deg,#3d9bf0,#1d7bd8);box-shadow:0 4px 0 #0b4f96}
+.nut.luc{background:linear-gradient(180deg,#34c97a,#2a9d4a);box-shadow:0 4px 0 #1b6f33}
+.nut.xam{background:#fff;color:var(--blue);border:2px solid var(--vien);box-shadow:0 3px 0 var(--vien)}
+.nut.nho{padding:5px 10px;font-size:13px;margin:0}
+.nut[disabled]{opacity:.5;cursor:not-allowed}
+.tha{border:3px dashed #9fd4ff;border-radius:18px;padding:22px;text-align:center;background:var(--nen);cursor:pointer}
+.tha.keo{background:#d8efff}
+.hop{background:var(--nen);border-radius:14px;padding:10px 13px;font-size:13.5px;margin:10px 0}
+.hop.v{background:#fff6e0}.hop.d{background:#ffe9eb}
+.bang{overflow:auto;max-height:70vh;border:2px solid var(--vien);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--vien);padding:6px 7px;vertical-align:top;text-align:left}
+th{background:var(--nen);position:sticky;top:0;z-index:2;font-size:12.5px}
+td.c{text-align:center;white-space:nowrap}
+td textarea{min-height:70px;font-size:13.5px;padding:6px 8px;border-width:1px}
+td input{padding:5px 7px;font-size:13px;border-width:1px;min-width:120px}
+.m{display:inline-block;min-width:26px;padding:2px 7px;border-radius:9px;font-weight:700;text-align:center;font-size:13px}
+.m.T{background:#d9f3e1;color:#1b6f33}.m.H{background:#fff0cc;color:#8a5a00}.m.C{background:#ffe0e3;color:#b3202a}.m.Đ{background:#e2ecff;color:#1d4fa0}.m.x{background:#eee;color:#888}
+.m.suy{outline:2px dashed var(--cam)}
+.ok{color:var(--ok);font-weight:700}.canh{color:var(--cam);font-weight:700}.sai{color:var(--red);font-weight:700}
+details{background:#f7fbff;border-radius:14px;padding:8px 12px;margin:10px 0}
+summary{cursor:pointer;font-weight:700}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.hien{opacity:1}
+.ky{text-align:center;color:#5b7aa0;font-size:12.5px;padding:6px 0 26px}
+</style>
+</head>
+<body>
+<div class="bia"><div class="rong">
+  <a href="index.html">← CÔ ĐIỆP AI</a>
+  <h1>Trợ lý viết <b>nhận xét</b></h1>
+  <p>Tải file Excel đánh giá xuất từ hệ thống. Công cụ viết nhận xét từng em theo mức đạt được, ghi đúng ô Nội dung và giữ nguyên định dạng file.</p>
+  <span class="dai">Tên và điểm của học sinh chỉ xử lý trong máy thầy cô, không gửi đi đâu.</span>
+</div></div>
+<main>
+  <div class="the">
+    <h2>1. Tải file Excel</h2>
+    <p class="mota">Chọn file đánh giá định kỳ môn học hoặc file năng lực phẩm chất (.xlsx) đã xuất từ hệ thống, sau khi đã Ghi mức cho học sinh.</p>
+    <div class="tha" id="tha">Bấm vào đây hoặc kéo file .xlsx thả vào<br><span class="ghi">Mỗi lần một file</span></div>
+    <input type="file" id="tep" accept=".xlsx" style="display:none">
+    <div id="tomtat"></div>
+  </div>
+  <div class="the" id="khoiNhanXet" style="display:none">
+    <h2>2. Nhận xét từng em</h2>
+    <p class="mota">Công cụ chọn câu theo mức, theo môn và ghép khác nhau cho từng em. Ghi chú riêng của cô được thêm vào cuối. Em xếp loại C nên có ghi chú riêng. Nhận xét nào cô sửa tay thì giữ nguyên.</p>
+    <div class="luoi">
+      <div><label>Kì</label><select id="chonKi"></select></div>
+      <div id="chonSheetBox"><label>Bảng tính</label><select id="chonSheet"></select></div>
+      <div><label>Môn</label><select id="chonMon"></select></div>
+    </div>
+    <label class="cb"><input type="checkbox" id="ghiDe">Viết lại cả những nhận xét đã có trong file</label>
+    <label class="cb"><input type="checkbox" id="chiGhiChu">Em có ghi chú riêng thì chỉ dùng ghi chú, bỏ câu mẫu</label>
+    <button class="nut xanh" id="vietCaLop">Viết nhận xét cho cả lớp</button>
+    <details><summary>Xem và sửa ngân hàng câu của môn này</summary><div id="nganHang"></div></details>
+    <div id="thongKe"></div>
+    <div class="bang"><table id="bang"></table></div>
+  </div>
+  <div class="the" id="khoiTai" style="display:none">
+    <h2>3. Tải file đã điền</h2>
+    <p class="mota">File mới giữ nguyên định dạng, chỉ thêm nhận xét vào cột Nội dung. Mức và điểm không bị đổi. Chị mở file kiểm tra rồi mới nhập lên hệ thống.</p>
+    <button class="nut luc" id="taiXuong">⬇ Tải file Excel đã điền nhận xét</button>
+    <div id="ketQuaTai"></div>
+  </div>
+</main>
+<div class="ky">Cô Hồng Điệp - TH Kim Đồng</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= NGÂN HÀNG CÂU MẶC ĐỊNH =================
+   manh: câu khen (mức T)   nhung: câu mở đầu cho mức H   can: câu "Cần..."   kho: câu cho mức C
+   Dòng có dạng "doc|..." hoặc "viet|..." chỉ dùng khi biết mức đọc hoặc viết (Tiếng Việt). */
+const BANK0 = {
+  'Toán': {
+    manh: ['Em đếm, đọc, viết đúng các số trong phạm vi 10.', 'Em so sánh được các số trong phạm vi 10 nhanh và chính xác.', 'Em biết tách, gộp số (mấy và mấy) và nói được kết quả rõ ràng.', 'Em nhận biết đúng hình vuông, hình tròn, hình tam giác, hình chữ nhật.', 'Em ghép được các hình để tạo thành hình mới theo yêu cầu.', 'Em xác định đúng vị trí trên, dưới, trái, phải, trước, sau.', 'Em chăm phát biểu, tính nhẩm nhanh trong giờ Toán.', 'Em trình bày bài sạch sẽ, viết số ngay hàng, thẳng cột.', 'Em hiểu bài và làm đúng các yêu cầu bài luyện tập.', 'Em tích cực hợp tác cùng bạn khi làm bài theo cặp, theo nhóm.'],
+    nhung: ['Em đọc, viết được các số trong phạm vi 10 nhưng đôi khi còn nhầm số 6 và số 9.', 'Em biết so sánh các số trong phạm vi 10 nhưng còn chậm.', 'Em nhận biết được các hình đã học nhưng đôi lúc còn nhầm hình chữ nhật với hình vuông.', 'Em biết tách, gộp số nhưng chưa thật vững các cặp số trong phạm vi 10.', 'Em làm được bài theo mẫu nhưng cần cô nhắc khi gặp dạng bài mới.', 'Em hiểu bài nhưng viết số còn chưa đều, chưa ngay hàng.', 'Em biết ghép hình nhưng còn lúng túng khi tự tìm cách ghép.'],
+    can: ['Cần luyện đếm và viết số mỗi ngày ở nhà.', 'Cần ôn lại các cặp số tách, gộp trong phạm vi 10.', 'Cần tập so sánh số và nói kết quả to, rõ ràng.', 'Cần chú ý quan sát kĩ hình trước khi gọi tên.', 'Cần viết số đúng cỡ, ngay ô li hơn.', 'Cần tập trung hơn khi làm bài và kiểm tra lại bài trước khi nộp.', 'Cần mạnh dạn phát biểu và nêu cách làm của mình.'],
+    kho: ['Em còn lúng túng khi đếm, đọc, viết các số trong phạm vi 10.', 'Em chưa nhớ chắc các số và cách so sánh số trong phạm vi 10.', 'Em còn nhầm khi gọi tên các hình đã học.']
+  },
+  'Tiếng Việt': {
+    manh: ['doc|Em đọc to, rõ ràng, trôi chảy các âm, vần, tiếng đã học.', 'doc|Em đọc trơn được các từ, câu ngắn, ngắt nghỉ đúng chỗ.', 'doc|Em đọc thầm tập trung và trả lời đúng câu hỏi về bài đọc.', 'doc|Em nhận biết nhanh các âm, vần mới và ghép vần đúng.', 'viet|Em viết đúng chữ, đều nét, đúng cỡ chữ.', 'viet|Em viết đúng chính tả các từ, câu ngắn đã học.', 'viet|Em trình bày vở sạch sẽ, cầm bút và ngồi viết đúng tư thế.', 'viet|Em điền đúng âm, vần vào chỗ trống.', 'Em chăm phát biểu xây dựng bài, chú ý nghe giảng.', 'Em hiểu và làm đúng các yêu cầu bài luyện tập.'],
+    nhung: ['doc|Em đọc được các âm, vần đã học nhưng còn chậm.', 'doc|Em đọc được tiếng, từ ngắn nhưng đôi lúc còn phải đánh vần.', 'doc|Em đọc đúng nhưng chưa ngắt nghỉ đúng chỗ.', 'viet|Em viết được các chữ đã học nhưng nét chữ chưa đều.', 'viet|Em viết đúng nhưng còn chậm, chưa đúng cỡ chữ.', 'viet|Em điền được âm, vần nhưng còn nhầm một số âm, vần gần giống nhau.'],
+    can: ['doc|Cần luyện đọc to mỗi ngày để đọc trôi chảy hơn.', 'doc|Cần rèn đọc nhiều hơn, chú ý ngắt nghỉ đúng chỗ.', 'viet|Cần rèn viết đúng cỡ chữ, nét chữ đều và đẹp hơn.', 'viet|Cần rèn điền âm, vần chính xác hơn.', 'viet|Cần viết trả lời câu hỏi tròn ý hơn.', 'Cần chú ý nghe giảng và chủ động phát biểu hơn.'],
+    kho: ['doc|Em còn đánh vần chậm, chưa nhớ chắc các âm, vần đã học.', 'viet|Em viết chữ còn chậm, thiếu nét, chưa đúng cỡ chữ.']
+  },
+  'Đạo đức': {
+    manh: ['Em biết giữ vệ sinh thân thể, quần áo gọn gàng, sạch sẽ.', 'Em lễ phép, vâng lời ông bà, cha mẹ.', 'Em thực hiện tốt việc giữ sạch đôi tay, răng miệng.', 'Em biết quan tâm, chăm sóc ông bà bằng những việc làm vừa sức.', 'Em biết chào hỏi lễ phép với thầy cô và người lớn.', 'Em biết yêu thương, nhường nhịn và giúp đỡ bạn.', 'Em biết giữ gìn đồ dùng học tập và sách vở.', 'Em biết xin lỗi, cảm ơn đúng lúc.', 'Em thực hiện đúng nội quy lớp học.'],
+    nhung: ['Em biết giữ vệ sinh cá nhân nhưng đôi lúc cần nhắc nhở.', 'Em biết chào hỏi, vâng lời người lớn.', 'Em biết chào hỏi thầy cô nhưng còn nhỏ giọng.', 'Em biết giữ gìn đồ dùng học tập nhưng đôi lúc còn để lộn xộn.', 'Em biết nhường nhịn bạn nhưng chưa thường xuyên.'],
+    can: ['Em cần chủ động hơn trong việc rửa tay, đánh răng.', 'Cần thực hiện thường xuyên hơn nữa nhé.', 'Cần chào hỏi to, rõ ràng, tự tin hơn.', 'Cần giữ gìn đồ dùng học tập gọn gàng hơn.', 'Cần mạnh dạn xin lỗi, cảm ơn khi cần.'],
+    kho: ['Em chưa thực hiện thường xuyên các việc làm tốt đã học.', 'Em còn hay quên nội quy lớp học.']
+  },
+  'Hoạt động trải nghiệm': {
+    manh: ['Em hòa đồng, vui vẻ làm quen với các bạn.', 'Em thực hiện tốt những việc nên làm trong giờ học, giờ chơi.', 'Em biết nhận ra và nói được cảm xúc của mình.', 'Em biết thể hiện tình yêu thương với mọi người xung quanh.', 'Em tích cực tham gia các hoạt động của lớp.', 'Em tự tin giới thiệu bản thân trước lớp.', 'Em biết giữ gìn trường lớp sạch đẹp.', 'Em biết hợp tác cùng bạn trong nhóm.'],
+    nhung: ['Em tham gia hoạt động cùng các bạn nhưng còn rụt rè.', 'Em biết một số việc nên làm trong giờ học, giờ chơi nhưng chưa thường xuyên thực hiện.', 'Em tham gia hoạt động nhưng còn ít trao đổi với bạn.', 'Em biết nói cảm xúc của mình nhưng chưa mạnh dạn.'],
+    can: ['Cần mạnh dạn, tự tin hơn.', 'Cần cố gắng hơn.', 'Cần chủ động tham gia và trao đổi với bạn nhiều hơn.', 'Cần thực hiện đúng các việc nên làm trong giờ học, giờ chơi.'],
+    kho: ['Em còn ngại tham gia các hoạt động cùng lớp.']
+  },
+  'Tự nhiên và Xã hội': {
+    manh: ['Em kể được về các thành viên trong gia đình mình.', 'Em biết cách sử dụng đồ dùng trong nhà an toàn.', 'Em nhận biết được lớp học và các khu vực trong trường.', 'Em tích cực tham gia khi khám phá trường học.', 'Em biết giữ an toàn khi ở nhà và ở trường.', 'Em kể được tên và việc làm của một số người thân trong gia đình.', 'Em biết giữ gìn vệ sinh lớp học.', 'Em quan sát tốt và trả lời đúng câu hỏi của cô.'],
+    nhung: ['Em biết một số đồ dùng trong nhà và cách giữ an toàn nhưng chưa nhớ hết.', 'Em kể được một vài điều về gia đình mình.', 'Em kể được về gia đình nhưng còn thiếu ý.', 'Em nhận biết được các khu vực trong trường nhưng còn nhầm một vài nơi.'],
+    can: ['Cần nói rõ ràng, đầy đủ hơn.', 'Cần ôn lại thêm.', 'Cần chú ý ghi nhớ các quy tắc an toàn ở nhà và ở trường.', 'Cần mạnh dạn phát biểu khi cô hỏi.'],
+    kho: ['Em chưa nhớ được các nội dung đã học về gia đình và trường học.']
+  },
+  'Nghệ thuật': {
+    manh: ['Em biết sử dụng chấm và nét để tạo hình sản phẩm cân đối.', 'Sản phẩm của em có sáng tạo.', 'Em nhận biết đúng các màu và tô màu đều, đẹp.', 'Em vẽ được các hình cơ bản cân đối, bố cục rõ ràng.', 'Em hoàn thành sản phẩm đúng thời gian.', 'Em giữ gìn đồ dùng và vệ sinh sau giờ học.'],
+    nhung: ['Em nhận biết được các màu và biết vẽ một số hình cơ bản nhưng còn chưa cân đối.', 'Em biết sử dụng nét để vẽ một số hình cơ bản nhưng màu tô còn lem.', 'Em đã biết vẽ một số hình cơ bản nhưng tô màu còn chưa đều, mịn.', 'Em vẽ được hình nhưng còn nhỏ, chưa kín khổ giấy.', 'Em tô màu đẹp nhưng còn chậm.'],
+    can: ['Cần tô màu đều, mịn và gọn hơn.', 'Cần chú ý bố cục, vẽ hình to và cân đối hơn.', 'Cần hoàn thành sản phẩm đúng thời gian.'],
+    kho: ['Em còn lúng túng khi dùng nét để vẽ hình.']
+  },
+  'Giáo dục thể chất': {
+    manh: ['Em nhớ và thực hiện chính xác khẩu lệnh, động tác đứng nghiêm, đứng nghỉ, tập hợp hàng dọc, dóng hàng thẳng và điểm số rõ ràng.', 'Em thực hiện đúng các tư thế đứng nghiêm, đứng nghỉ.', 'Em nhanh nhẹn, tích cực tham gia trò chơi vận động.', 'Em tập đúng, đều các động tác khởi động.', 'Em biết giữ vệ sinh sân tập và phối hợp tốt với bạn.'],
+    nhung: ['Em biết giữ vệ sinh sân tập và bước đầu biết phối hợp với bạn trong giờ học.', 'Em thực hiện được các tư thế đứng nghiêm, đứng nghỉ, tập hợp hàng dọc và dóng hàng.', 'Em tập được các động tác nhưng còn chưa đều, chưa đúng nhịp.', 'Em tham gia trò chơi nhưng còn chậm.'],
+    can: ['Cần tập trung, thực hiện đúng khẩu lệnh hơn.', 'Cần mạnh dạn, nhanh nhẹn hơn trong giờ học.'],
+    kho: ['Em còn lúng túng khi thực hiện các động tác.']
+  },
+  'Môn khác': {
+    manh: ['Em chú ý nghe giảng, tích cực phát biểu xây dựng bài.', 'Em hoàn thành tốt các yêu cầu của bài học.', 'Em hợp tác tốt với bạn trong học tập.'],
+    nhung: ['Em hoàn thành được các yêu cầu cơ bản của bài học nhưng còn chậm.', 'Em chú ý nghe giảng nhưng chưa mạnh dạn phát biểu.'],
+    can: ['Cần chú ý hơn khi làm bài.', 'Cần mạnh dạn phát biểu hơn.'],
+    kho: ['Em còn lúng túng khi thực hiện các yêu cầu của bài học.']
+  }
+};
+const CUOI_C = 'Em cần được cô và gia đình kèm thêm, luyện tập mỗi ngày.';
+/* Năng lực, phẩm chất: tên | câu khi tốt | câu khi cần cố gắng */
+const NL0 = {
+  chung: `Tự chủ và tự học | Em tự giác chuẩn bị đồ dùng và hoàn thành nhiệm vụ học tập. | Em cần chủ động hơn trong việc chuẩn bị bài và hoàn thành nhiệm vụ.
+Giao tiếp và hợp tác | Em mạnh dạn trao đổi và hợp tác tốt với bạn trong học tập. | Em cần mạnh dạn hơn khi trao đổi với bạn và thầy cô.
+Giải quyết vấn đề và sáng tạo | Em biết tìm cách giải quyết những tình huống đơn giản trong học tập. | Em cần suy nghĩ thêm cách giải quyết khi gặp khó khăn.`,
+  dacthu: `Ngôn ngữ | Em nghe, nói, đọc, viết tốt theo yêu cầu của lớp 1. | Em cần rèn đọc, viết thêm.
+Tính toán | Em đếm, so sánh số trong phạm vi 10 đúng và nhanh. | Em cần luyện thêm cách đếm và so sánh số.
+Khoa học | Em quan sát, kể được một số điều về gia đình và trường học. | Em cần mạnh dạn nói điều mình biết về gia đình, trường học.
+Công nghệ | Em biết giữ gìn đồ dùng, thiết bị trong lớp. | Em cần giữ gìn đồ dùng, thiết bị cẩn thận hơn.
+Tin học | Em biết giữ gìn đồ dùng, thiết bị trong lớp. | Em cần giữ gìn đồ dùng, thiết bị cẩn thận hơn.
+Thẩm mĩ | Em cảm nhận được cái đẹp, tô vẽ gọn gàng. | Em cần tô vẽ cẩn thận hơn.
+Thể chất | Em thực hiện tốt các động tác, tham gia tích cực trò chơi vận động. | Em cần nhanh nhẹn, chú ý hơn khi tập.`,
+  phamchat: `Yêu nước | Em yêu quý trường lớp, kính trọng thầy cô. | Em cần thể hiện sự kính trọng thầy cô rõ hơn.
+Nhân ái | Em lễ phép, biết yêu thương, giúp đỡ bạn. | Em cần quan tâm, giúp đỡ bạn nhiều hơn.
+Chăm chỉ | Em chăm học, chăm làm những việc vừa sức. | Em cần chăm chỉ hơn, hoàn thành bài đúng giờ.
+Trung thực | Em thật thà, biết nhận lỗi khi mắc lỗi. | Em cần mạnh dạn nhận lỗi và nói thật.
+Trách nhiệm | Em giữ gìn đồ dùng, thực hiện đúng nội quy lớp. | Em cần giữ gìn đồ dùng và thực hiện nội quy tốt hơn.`
+};
+
+/* ================= TIỆN ÍCH ================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function bao(t) { const e = $('toast'); e.textContent = t; e.classList.add('hien'); clearTimeout(bao.t); bao.t = setTimeout(() => e.classList.remove('hien'), 2400); }
+const luuTru = { doc(k, mac) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : mac; } catch (e) { return mac; } }, ghi(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+let BANK = luuTru.doc('nx_bank_v1', null) || JSON.parse(JSON.stringify(BANK0));
+let NL = luuTru.doc('nx_nl_v1', null) || JSON.parse(JSON.stringify(NL0));
+Object.keys(BANK0).forEach(m => { if (!BANK[m]) BANK[m] = JSON.parse(JSON.stringify(BANK0[m])); });
+
+function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function chonNgauNhien(ds, r, n = 1, tru = []) { const a = ds.filter(x => !tru.includes(x)); const kq = []; while (kq.length < n && a.length) kq.push(a.splice(Math.floor(r() * a.length), 1)[0]); return kq; }
+const hoa = s => s.charAt(0).toUpperCase() + s.slice(1);
+function theGhiChu(g) { g = g.trim().replace(/\s+/g, ' '); if (!g) return ''; g = hoa(g); return /[.!?]$/.test(g) ? g : g + '.'; }
+
+/* ================= ĐỌC / GHI XLSX ================= */
+let F = null;   // file đang mở
+const cotChu = n => { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+const cotSo = s => { let n = 0; for (const ch of s) n = n * 26 + ch.charCodeAt(0) - 64; return n; };
+const tachRef = ref => { const m = /^([A-Z]+)(\d+)$/.exec(ref); return [+m[2], cotSo(m[1])]; };
+const chuanHoa = s => String(s || '').normalize('NFC').trim();
+
+async function napFile(buf, ten) {
+  const zip = await JSZip.loadAsync(buf);
+  const wbx = new DOMParser().parseFromString(await zip.file('xl/workbook.xml').async('string'), 'application/xml');
+  const rels = new DOMParser().parseFromString(await zip.file('xl/_rels/workbook.xml.rels').async('string'), 'application/xml');
+  const relMap = {}; [...rels.getElementsByTagName('Relationship')].forEach(r => relMap[r.getAttribute('Id')] = r.getAttribute('Target'));
+  const sheets = [...wbx.getElementsByTagName('sheet')].map(s => { let t = relMap[s.getAttribute('r:id')] || ''; t = t.replace(/^\/?(xl\/)?/, ''); return { ten: s.getAttribute('name'), path: 'xl/' + t }; });
+  let sst = [];
+  const sf = zip.file('xl/sharedStrings.xml');
+  if (sf) { const d = new DOMParser().parseFromString(await sf.async('string'), 'application/xml'); sst = [...d.getElementsByTagName('si')].map(si => [...si.getElementsByTagName('t')].map(t => t.textContent).join('')); }
+  F = { ten, zip, sheets, sst, docs: {}, dau: 0 };
+  return F;
+}
+async function moSheet(i) {
+  const sh = F.sheets[i];
+  if (!F.docs[sh.path]) F.docs[sh.path] = new DOMParser().parseFromString(await F.zip.file(sh.path).async('string'), 'application/xml');
+  const doc = F.docs[sh.path], cells = {};
+  [...doc.getElementsByTagName('c')].forEach(c => {
+    const [r, col] = tachRef(c.getAttribute('r')), t = c.getAttribute('t'); let v = '';
+    if (t === 's') { const x = c.getElementsByTagName('v')[0]; v = x ? F.sst[+x.textContent] || '' : ''; }
+    else if (t === 'inlineStr') v = [...c.getElementsByTagName('t')].map(x => x.textContent).join('');
+    else { const x = c.getElementsByTagName('v')[0]; v = x ? x.textContent : ''; }
+    if (v !== '') (cells[r] = cells[r] || {})[col] = chuanHoa(v);
+  });
+  return { doc, cells };
+}
+function datO(doc, ref, text) {
+  const ns = doc.documentElement.namespaceURI, [r, col] = tachRef(ref);
+  const sd = doc.getElementsByTagName('sheetData')[0];
+  let row = [...sd.getElementsByTagName('row')].find(x => +x.getAttribute('r') === r);
+  if (!row) { row = doc.createElementNS(ns, 'row'); row.setAttribute('r', r); const sau = [...sd.getElementsByTagName('row')].find(x => +x.getAttribute('r') > r); sd.insertBefore(row, sau || null); }
+  let c = [...row.getElementsByTagName('c')].find(x => x.getAttribute('r') === ref);
+  if (!c) {
+    c = doc.createElementNS(ns, 'c'); c.setAttribute('r', ref);
+    const truoc = [...row.getElementsByTagName('c')].find(x => tachRef(x.getAttribute('r'))[1] > col);
+    const ke = [...row.getElementsByTagName('c')].filter(x => tachRef(x.getAttribute('r'))[1] < col).pop();
+    if (ke && ke.getAttribute('s')) c.setAttribute('s', ke.getAttribute('s'));
+    row.insertBefore(c, truoc || null);
+  }
+  while (c.firstChild) c.removeChild(c.firstChild);
+  c.setAttribute('t', 'inlineStr');
+  const is = doc.createElementNS(ns, 'is'), t = doc.createElementNS(ns, 't'); t.setAttribute('xml:space', 'preserve'); t.textContent = text; is.appendChild(t); c.appendChild(is);
+}
+
+/* ================= PHÂN TÍCH BẢNG ================= */
+function tenMonTuTieuDe(ct) {
+  const t = ct.toUpperCase();
+  if (t.includes('NĂNG LỰC') && t.includes('PHẨM CHẤT')) return 'NLPC';
+  const m = /MÔN HỌC\s+(.+)/.exec(t); if (!m) return null;
+  const x = m[1];
+  if (x.startsWith('TOÁN')) return 'Toán'; if (x.startsWith('TIẾNG VIỆT')) return 'Tiếng Việt'; if (x.startsWith('ĐẠO ĐỨC')) return 'Đạo đức';
+  if (x.startsWith('HOẠT ĐỘNG TRẢI')) return 'Hoạt động trải nghiệm'; if (x.startsWith('TỰ NHIÊN')) return 'Tự nhiên và Xã hội';
+  if (x.startsWith('NGHỆ THUẬT') || x.includes('MĨ THUẬT') || x.includes('ÂM NHẠC')) return 'Nghệ thuật'; if (x.startsWith('GIÁO DỤC THỂ')) return 'Giáo dục thể chất';
+  return 'Môn khác';
+}
+function phanTichBang(cells) {
+  let loai = null; const dau = [];
+  for (let r = 1; r <= 6; r++) for (const c of Object.values(cells[r] || {})) { const m = tenMonTuTieuDe(c); if (m) { loai = m; } }
+  if (!loai) return null;
+  const tim = (r, ds, tu, den) => { for (const [c, v] of Object.entries(cells[r] || {})) { if (+c >= tu && +c <= den && ds.some(d => v.toUpperCase().startsWith(d.toUpperCase()))) return +c; } return null; };
+  // dòng dữ liệu: cột A là số, cột B có tên
+  const hang = []; const rs = Object.keys(cells).map(Number).sort((a, b) => a - b);
+  rs.forEach(r => { const a = (cells[r] || {})[1], b = (cells[r] || {})[2]; if (a && /^\d+$/.test(a) && b && r > 6) hang.push(r); });
+  if (loai === 'NLPC') {
+    const hr = rs.find(r => Object.values(cells[r] || {}).includes('Tự chủ và tự học'));
+    const mucCol = {}; Object.entries(cells[hr]).forEach(([c, v]) => { mucCol[v] = +c; });
+    const nd = Object.entries(cells[hr]).filter(([c, v]) => v === 'Nội dung').map(([c]) => +c).sort((a, b) => a - b);
+    return { loai, hang, mucCol, nd, hr };
+  }
+  // môn học: các khối kì
+  const r7 = cells[7] || {}; const ki = Object.entries(r7).filter(([c, v]) => /học kỳ|học kì/i.test(v)).map(([c, v]) => [+c, v]).sort((a, b) => a[0] - b[0]);
+  const khoi = ki.map(([c, v], i) => {
+    const den = i + 1 < ki.length ? ki[i + 1][0] - 1 : 99;
+    const muc = tim(8, ['Mức đạt được'], c, den), diem = tim(8, ['Điểm'], c, den), viet = tim(8, ['Viết'], c, den);
+    const nd = tim(9, ['Nội dung'], c, den), dt = tim(9, ['Đọc thành tiếng'], c, den), dth = tim(9, ['Đọc thầm'], c, den), doc = tim(9, ['Đọc'], c, den);
+    let docTong = null; Object.entries(cells[9] || {}).forEach(([cc, v]) => { if (+cc >= c && +cc <= den && v.trim().toUpperCase() === 'ĐỌC') docTong = +cc; });
+    return { ten: v, muc, diem, nd, dt, dth, doc: docTong, viet };
+  });
+  return { loai, hang, khoi };
+}
+
+/* ================= SINH NHẬN XÉT ================= */
+const diemSangMuc = d => { const x = parseFloat(String(d).replace(',', '.')); if (isNaN(x)) return ''; return x >= 9 ? 'T' : x >= 5 ? 'H' : 'C'; };
+function dongTach(ds) { return ds.map(x => { const m = /^(doc|viet)\|(.*)$/.exec(x); return m ? { tag: m[1], t: m[2].trim() } : { tag: '', t: x.trim() }; }).filter(x => x.t); }
+function chonTheoTag(ds, tag, r, tru) {
+  const l = dongTach(ds), uu = tag ? l.filter(x => x.tag === tag) : [];
+  const nguon = (uu.length ? uu : l.filter(x => !x.tag || !tag)).map(x => x.t); const pool = nguon.length ? nguon : l.map(x => x.t);
+  return chonNgauNhien(pool, r, 1, tru)[0];
+}
+function vietMon(hang, mon, lanViet, used) {
+  const b = BANK[mon] || BANK['Môn khác']; const muc = hang.mucDung; if (!muc) return '';
+  const lv = { T: 3, H: 2, C: 1 }; let tagManh = '', tagYeu = '';
+  if (mon === 'Tiếng Việt' && hang.tv) {
+    const doc = [hang.tv.dt, hang.tv.dth, hang.tv.doc].filter(x => lv[x]).map(x => lv[x]).sort()[0], viet = lv[hang.tv.viet];
+    if (doc && viet && doc !== viet) { tagManh = doc > viet ? 'doc' : 'viet'; tagYeu = doc > viet ? 'viet' : 'doc'; }
+    else if (doc && !viet) { tagManh = ''; tagYeu = 'doc'; } else if (!doc && viet) { tagYeu = 'viet'; }
+  }
+  let kq = '';
+  for (let tr = 0; tr < 40; tr++) {
+    const r = rng(hash(hang.ten + '|' + mon + '|' + lanViet + '|' + tr)), cau = [];
+    if (muc === 'T') {
+      const a = chonTheoTag(b.manh, tagManh || 'doc', r, []); const c = chonTheoTag(b.manh, tagManh === 'viet' ? 'doc' : 'viet', r, [a]);
+      cau.push(a); if (c) cau.push(c);
+      if (mon !== 'Tiếng Việt') { const x = chonNgauNhien(b.manh, r, 2); cau.length = 0; x.forEach(y => cau.push(y.replace(/^(doc|viet)\|/, ''))); }
+    } else if (muc === 'H') {
+      cau.push(chonTheoTag(b.nhung, tagYeu, r, [])); const c = chonTheoTag(b.can, tagYeu, r, cau); if (c) cau.push(c);
+    } else {
+      cau.push(chonTheoTag(b.kho.length ? b.kho : b.nhung, tagYeu, r, [])); const c = chonTheoTag(b.can, tagYeu, r, cau); if (c) cau.push(c); cau.push(CUOI_C);
+    }
+    kq = cau.filter(Boolean).join(' ');
+    if (!used.has(kq)) break;
+  }
+  return kq;
+}
+function bangNL(chuoi) { return chuoi.split('\n').map(l => l.split('|').map(x => x.trim())).filter(x => x[0]).map(x => ({ ten: x[0], tot: x[1] || '', can: x[2] || '' })); }
+function vietNhom(muc, ds, ten, nhom, lanViet, used) {
+  const tot = [], can = [];
+  ds.forEach(d => { const v = muc[d.ten]; if (v === 'T') tot.push(d); else if (v === 'Đ' || v === 'D' || v === 'C') can.push([d, v]); });
+  if (!tot.length && !can.length) return '';
+  let kq = '';
+  for (let tr = 0; tr < 40; tr++) {
+    const r = rng(hash(ten + '|' + nhom + '|' + lanViet + '|' + tr)), cau = [];
+    chonNgauNhien(tot, r, 2).forEach(d => cau.push(d.tot));
+    if (!tot.length) cau.push('Em đạt yêu cầu ở các nội dung đã học.');
+    if (can.length) { const x = chonNgauNhien(can, r, 1)[0]; cau.push(x[0].can); }
+    kq = cau.filter(Boolean).join(' ');
+    if (!used.has(kq)) break;
+  }
+  return kq;
+}
+
+/* ================= GIAO DIỆN ================= */
+let P = null;     // kết quả phân tích sheet hiện tại
+let CUR = null;   // {doc, cells}
+let DS = [];      // học sinh
+let kiIdx = 0, sheetIdx = 0, mon = '';
+const khoaGhiChu = () => 'nx_ghichu|' + F.ten + '|' + F.sheets[sheetIdx].ten + '|' + kiIdx;
+
+async function xuLyFile(file) {
+  if (!file || !/\.xlsx$/i.test(file.name)) return bao('Hãy chọn file .xlsx');
+  try { await napFile(await file.arrayBuffer(), file.name); } catch (e) { console.error(e); return bao('Không đọc được file này'); }
+  sheetIdx = 0;
+  // chọn sheet đầu tiên nhận dạng được
+  for (let i = 0; i < F.sheets.length; i++) { const s = await moSheet(i); if (phanTichBang(s.cells)) { sheetIdx = i; break; } }
+  await taiSheet();
+}
+async function taiSheet() {
+  CUR = await moSheet(sheetIdx); P = phanTichBang(CUR.cells);
+  if (!P) { $('tomtat').innerHTML = '<div class="hop d">Em chưa nhận ra khuôn file này. Công cụ đọc được file đánh giá định kỳ môn học và file năng lực phẩm chất xuất từ hệ thống.</div>'; $('khoiNhanXet').style.display = 'none'; $('khoiTai').style.display = 'none'; return; }
+  kiIdx = 0; if (P.loai !== 'NLPC') { const idx = P.khoi.findIndex(k => /giữa/i.test(k.ten)); kiIdx = idx >= 0 ? idx : 0; }
+  mon = P.loai === 'NLPC' ? 'NLPC' : P.loai;
+  $('tomtat').innerHTML = `<div class="hop"><b>${esc(F.ten)}</b>: ${P.loai === 'NLPC' ? 'Năng lực, phẩm chất' : 'Môn ' + esc(P.loai)}, ${P.hang.length} học sinh.</div>`;
+  $('khoiNhanXet').style.display = ''; $('khoiTai').style.display = '';
+  // chọn kì / sheet / môn
+  const chonKi = $('chonKi'); chonKi.innerHTML = '';
+  if (P.loai === 'NLPC') { chonKi.innerHTML = '<option>Theo bảng tính bên cạnh</option>'; chonKi.disabled = true; } else { chonKi.disabled = false; P.khoi.forEach((k, i) => chonKi.innerHTML += `<option value="${i}" ${i === kiIdx ? 'selected' : ''}>${esc(k.ten)}</option>`); }
+  $('chonSheet').innerHTML = F.sheets.map((s, i) => `<option value="${i}" ${i === sheetIdx ? 'selected' : ''}>${esc(s.ten)}</option>`).join('');
+  $('chonSheetBox').style.display = F.sheets.length > 1 ? '' : 'none';
+  const dsMon = Object.keys(BANK); $('chonMon').innerHTML = dsMon.map(m => `<option ${m === mon ? 'selected' : ''}>${esc(m)}</option>`).join(''); $('chonMon').disabled = P.loai === 'NLPC';
+  docHocSinh(); veNganHang(); veBang();
+}
+function docHocSinh() {
+  const gc = luuTru.doc(khoaGhiChu(), {});
+  DS = P.hang.map(r => {
+    const c = CUR.cells[r] || {}, o = { r, stt: c[1], ten: c[2], ngay: c[3], note: gc[c[2]] || '', lan: gc['#' + c[2]] || 0 };
+    if (P.loai === 'NLPC') {
+      o.muc = {}; Object.entries(P.mucCol).forEach(([ten, col]) => { const v = chuanHoa(c[col] || '').toUpperCase(); if (v) o.muc[ten] = v === 'D' ? 'Đ' : v; });
+      o.cot = P.nd; o.cu = P.nd.map(col => c[col] || ''); o.nx = o.cu.slice(); o.coMuc = Object.keys(o.muc).length > 0;
+    } else {
+      const k = P.khoi[kiIdx]; o.muc0 = (c[k.muc] || '').toUpperCase(); o.diem = k.diem ? c[k.diem] || '' : '';
+      o.mucDung = ['T', 'H', 'C'].includes(o.muc0) ? o.muc0 : diemSangMuc(o.diem); o.suy = !['T', 'H', 'C'].includes(o.muc0) && !!o.mucDung;
+      if (k.dt || k.viet) o.tv = { dt: (c[k.dt] || '').toUpperCase(), dth: (c[k.dth] || '').toUpperCase(), doc: (c[k.doc] || '').toUpperCase(), viet: (c[k.viet] || '').toUpperCase() };
+      o.cot = [k.nd]; o.cu = [c[k.nd] || '']; o.nx = [o.cu[0]]; o.coMuc = !!o.mucDung;
+    }
+    return o;
+  });
+}
+function veNganHang() {
+  const e = $('nganHang');
+  if (P.loai === 'NLPC') {
+    e.innerHTML = ['chung|Năng lực chung', 'dacthu|Năng lực đặc thù', 'phamchat|Phẩm chất chủ yếu'].map(x => { const [k, t] = x.split('|'); return `<label>${t} (mỗi dòng: Tên | câu khi Tốt | câu khi cần cố gắng)</label><textarea data-nl="${k}" style="min-height:110px">${esc(NL[k])}</textarea>`; }).join('') + '<p class="ghi">Sửa xong, bấm "Viết nhận xét cho cả lớp" để áp dụng.</p>';
+  } else {
+    const b = BANK[mon] || BANK['Môn khác'];
+    e.innerHTML = `<p class="ghi">Mỗi dòng một câu. Câu cho Tiếng Việt có thể bắt đầu bằng "doc|" hoặc "viet|" để chỉ dùng cho kĩ năng đọc hoặc viết. Chỉ giữ những câu đúng phạm vi đã học.</p><div class="luoi">` +
+      [['manh', 'Câu khen (mức T)'], ['nhung', 'Câu mở đầu cho mức H'], ['can', 'Câu "Cần..." (mức H, C)'], ['kho', 'Câu cho mức C']].map(([k, t]) => `<div><label>${t}</label><textarea data-bk="${k}" style="min-height:140px">${esc(b[k].join('\n'))}</textarea></div>`).join('') + '</div><button class="nut xam nho" id="khoiPhucNH">Khôi phục câu mặc định của môn này</button>';
+  }
+}
+function veBang() {
+  const nl = P.loai === 'NLPC';
+  const tieu = nl ? '<tr><th>STT</th><th>Họ và tên</th><th>Mức</th><th>Ghi chú riêng của cô</th><th>Nhận xét năng lực chung</th><th>Nhận xét năng lực đặc thù</th><th>Nhận xét phẩm chất</th><th></th></tr>' : '<tr><th>STT</th><th>Họ và tên</th><th>Mức</th><th>Điểm</th><th>Ghi chú riêng của cô</th><th>Nhận xét</th><th></th></tr>';
+  const hang = DS.map((o, i) => {
+    const mucHtml = nl ? (o.coMuc ? Object.entries(o.muc).reduce((a, [k, v]) => { a[v] = (a[v] || 0) + 1; return a; }, {}) : null) : null;
+    const mc = nl ? (mucHtml ? Object.entries(mucHtml).map(([k, v]) => `<span class="m ${k}">${k}:${v}</span>`).join(' ') : '<span class="m x">trống</span>') : `<span class="m ${o.mucDung || 'x'} ${o.suy ? 'suy' : ''}" title="${o.suy ? 'Mức suy ra từ điểm, chưa có trong file' : ''}">${o.mucDung || '?'}</span>`;
+    const tx = o.nx.map((t, k) => `<td><textarea data-i="${i}" data-k="${k}" ${o.coMuc ? '' : 'disabled placeholder="Chưa có mức, bỏ qua"'}>${esc(t)}</textarea></td>`).join('');
+    return `<tr><td class="c">${esc(o.stt)}</td><td>${esc(o.ten)}</td><td class="c">${mc}</td>${nl ? '' : `<td class="c">${esc(o.diem)}</td>`}<td><input data-note="${i}" value="${esc(o.note)}" placeholder="Điều cô muốn nói riêng"></td>${tx}<td class="c"><button class="nut xam nho" data-viet="${i}" ${o.coMuc ? '' : 'disabled'}>↻</button></td></tr>`;
+  }).join('');
+  $('bang').innerHTML = tieu + hang; capNhatThongKe();
+}
+function capNhatThongKe() {
+  const co = DS.filter(o => o.coMuc), thieu = DS.filter(o => !o.coMuc), daCo = co.filter(o => o.nx.some(x => x.trim())).length;
+  const c = DS.filter(o => o.mucDung === 'C' && !o.note.trim()).map(o => o.ten);
+  const suy = DS.filter(o => o.suy).length;
+  let h = `<div class="hop">Có mức: ${co.length}/${DS.length} em. Đã có nhận xét: ${daCo} em.` + (thieu.length ? `<br><span class="canh">Chưa có mức (bỏ qua): ${thieu.map(o => esc(o.ten)).join(', ')}</span>` : '') + '</div>';
+  if (P.loai === 'NLPC') {
+    const ten = ['năng lực chung', 'năng lực đặc thù', 'phẩm chất'], gr = [bangNL(NL.chung), bangNL(NL.dacthu), bangNL(NL.phamchat)];
+    const thieuNhom = gr.map(ds => co.filter(o => !ds.some(d => o.muc[d.ten])).length);
+    const dong = thieuNhom.map((n, k) => n ? `${n} em chưa có mức ${ten[k]}` : '').filter(Boolean);
+    if (dong.length) h += `<div class="hop v">Nhóm nào chưa có mức thì để trống, không viết bừa: ${dong.join('; ')}. Cô Ghi mức trên hệ thống, xuất Excel lại rồi tải lên để viết tiếp.</div>`;
+  }
+  if (suy) h +=`<div class="hop v">${suy} em chưa có mức trong file, công cụ suy ra từ điểm (9-10: T, 5-8: H, dưới 5: C), viền cam. Cô kiểm tra lại nhé.</div>`;
+  if (c.length) h += `<div class="hop d">Em xếp loại C chưa có ghi chú riêng: ${c.map(esc).join(', ')}. Cô nên thêm ghi chú để nhận xét đúng với em.</div>`;
+  $('thongKe').innerHTML = h;
+}
+function vietMotEm(i, ghiDe = false) {
+  const o = DS[i]; if (!o.coMuc) return;
+  const used = new Set(DS.flatMap(x => x.nx).filter(Boolean));
+  const luuNote = () => { const gc = luuTru.doc(khoaGhiChu(), {}); gc['#' + o.ten] = o.lan; luuTru.ghi(khoaGhiChu(), gc); };
+  const ghiChu = theGhiChu(o.note), chiNote = $('chiGhiChu').checked && ghiChu;
+  let neu;
+  if (P.loai === 'NLPC') {
+    const nhom = [bangNL(NL.chung), bangNL(NL.dacthu), bangNL(NL.phamchat)];
+    neu = nhom.map((ds, k) => { if (chiNote && k === 0) return ghiChu; const t = vietNhom(o.muc, ds, o.ten, k, o.lan, used); return (!chiNote && ghiChu && k === 0) ? (t ? t + ' ' + ghiChu : ghiChu) : t; });
+  } else {
+    const t = chiNote ? ghiChu : vietMon(o, mon, o.lan, used);
+    neu = [(!chiNote && ghiChu ? t + ' ' + ghiChu : t)];
+  }
+  o.nx = neu.map((t, k) => (!ghiDe && (o.nx[k] || '').trim()) ? o.nx[k] : t);
+  luuNote();
+}
+function giaLap() { return null; }
+
+/* ================= SỰ KIỆN ================= */
+const tha = $('tha'), tep = $('tep');
+tha.onclick = () => tep.click();
+tep.onchange = () => xuLyFile(tep.files[0]);
+['dragover', 'dragenter'].forEach(ev => tha.addEventListener(ev, e => { e.preventDefault(); tha.classList.add('keo'); }));
+['dragleave', 'drop'].forEach(ev => tha.addEventListener(ev, e => { e.preventDefault(); tha.classList.remove('keo'); }));
+tha.addEventListener('drop', e => xuLyFile(e.dataTransfer.files[0]));
+$('chonKi').onchange = async e => { kiIdx = +e.target.value; docHocSinh(); veBang(); };
+$('chonSheet').onchange = async e => { sheetIdx = +e.target.value; await taiSheet(); };
+$('chonMon').onchange = e => { mon = e.target.value; veNganHang(); };
+$('vietCaLop').onclick = () => {
+  const ghiDe = $('ghiDe').checked; let n = 0;
+  DS.forEach((o, i) => { if (!o.coMuc) return; if (!ghiDe && o.nx.every(x => x.trim())) return; vietMotEm(i, ghiDe); n++; });
+  veBang(); bao(n ? `Đã viết nhận xét cho ${n} em` : 'Các em đều đã có nhận xét. Muốn viết lại, tick "Viết lại cả những nhận xét đã có".');
+};
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.i != null) { DS[+t.dataset.i].nx[+t.dataset.k] = t.value; capNhatThongKe(); }
+  if (t.dataset.note != null) { const o = DS[+t.dataset.note]; o.note = t.value; const gc = luuTru.doc(khoaGhiChu(), {}); gc[o.ten] = t.value; luuTru.ghi(khoaGhiChu(), gc); capNhatThongKe(); }
+  if (t.dataset.bk) { const b = BANK[mon] || (BANK[mon] = {}); b[t.dataset.bk] = t.value.split('\n').map(x => x.trim()).filter(Boolean); luuTru.ghi('nx_bank_v1', BANK); }
+  if (t.dataset.nl) { NL[t.dataset.nl] = t.value; luuTru.ghi('nx_nl_v1', NL); }
+});
+document.addEventListener('click', e => {
+  const v = e.target.closest('[data-viet]'); if (v) { const i = +v.dataset.viet; DS[i].lan++; vietMotEm(i, true); veBang(); return; }
+  if (e.target.id === 'khoiPhucNH') { BANK[mon] = JSON.parse(JSON.stringify(BANK0[mon] || BANK0['Môn khác'])); luuTru.ghi('nx_bank_v1', BANK); veNganHang(); bao('Đã khôi phục'); }
+});
+$('taiXuong').onclick = async () => {
+  let n = 0;
+  DS.forEach(o => { if (!o.coMuc) return; o.nx.forEach((t, k) => { t = t.trim(); if (t !== o.cu[k].trim() && t) { datO(CUR.doc, cotChu(o.cot[k]) + o.r, t); n++; } }); });
+  if (!n) return bao('Chưa có nhận xét mới để ghi vào file');
+  const x = new XMLSerializer().serializeToString(CUR.doc);
+  F.zip.file(F.sheets[sheetIdx].path, x.startsWith('<?xml') ? x : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' + x);
+  const blob = await F.zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', compression: 'DEFLATE' });
+  window.__lastBlob = blob;
+  DS.forEach(o => { o.cu = o.nx.slice(); });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = F.ten.replace(/\.xlsx$/i, '') + '_da_dien.xlsx'; document.body.appendChild(a); a.click(); a.remove();
+  $('ketQuaTai').innerHTML = `<div class="hop"><span class="ok">Đã ghi ${n} ô nhận xét.</span> File: ${esc(a.download)}</div>`;
+};
+</script>
+</body>
+</html>

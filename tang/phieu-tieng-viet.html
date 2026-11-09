@@ -57,7 +57,7 @@ button:active{transform:translateY(2px)}
 .ghi{font-size:14px;color:var(--phu);margin:6px 0 0}
 @media (max-width:560px){.luoi{grid-template-columns:repeat(4,1fr)}.bai,.bai.full{grid-column:span 4}.bai{font-size:21px}.hang{grid-template-columns:1fr}}
 @media print{
-  body{background:#fff}.bang>*:not(.in-ra){display:none!important}
+  body{background:#fff}.bang:not(.in-ra){display:none!important}
   .bang{padding:0;max-width:none}.to{box-shadow:none;margin:0;padding:6mm 4mm}
   .xem-dap{display:none}
 }
@@ -102,7 +102,7 @@ mark{background:#ffff00;color:inherit;padding:0 .12em}
 .caps{display:grid;grid-template-columns:1fr 1fr;gap:.5em .8em}
 .cap{border:2px solid #2d4a70;border-radius:1.2em;padding:.25em .7em;font-weight:700;text-align:center}
 .noi{display:flex;justify-content:space-around;gap:1em}.nl{text-align:right}.nr{text-align:left}.noi div div{margin:.2em 0}
-.gr{display:flex;flex-wrap:wrap;gap:.2em 1.4em;align-items:baseline;margin:.35em 0}.gr b{min-width:5.2em}.gr .nw{white-space:nowrap}
+.gr{display:flex;flex-wrap:wrap;gap:.2em 1.4em;align-items:baseline;justify-content:space-between;margin:.35em 0}.gr b{min-width:5.2em}.gr .nw{white-space:nowrap}
 /* A4 */
 .mf4{font-size:calc(var(--pt,12)*1.3333px*var(--f,1));line-height:1.35}
 .mdau4{font-size:.95em;margin:0 0 .15em}
@@ -123,6 +123,12 @@ mark{background:#ffff00;color:inherit;padding:0 .12em}
 @media print{.to.mau4,.to.mau5{margin:0;box-shadow:none}}
 .to h2,.to .nhom,.to .mdau b{font-family:inherit}
 .ph4{display:grid;grid-template-columns:repeat(4,1fr);gap:.5em;text-align:center;align-items:end}.ph4>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end}.ph4 img{height:4.6em;max-width:100%;object-fit:contain}.ph4 .hw{margin-top:.2em;white-space:nowrap}.ph4 .cham4{width:100%;margin-top:.3em}
+.cm{position:relative;display:inline-block;padding-top:.45em;line-height:1}
+.cm .g{position:absolute;left:38%;top:.1em;font-style:normal;font-weight:bold;font-size:1.3em;line-height:1}
+.cm[data-t=r] .g{font-size:.95em;top:-.22em}
+.cm[data-t=x] .g{font-size:1.2em;top:-.28em}
+.cm[data-t=s] .g{font-size:.5em;top:.08em;left:42%}
+.cm[data-t=n] .g{top:auto;bottom:-.55em}
 </style>
 <style id="pg">@page{size:A4;margin:12mm}</style>
 </head>
@@ -378,7 +384,10 @@ function mot(dang, ctx){
 
 /* ===== Hai mẫu trang: A5 (phiếu ôn cuối tuần) và A4 (đề khảo sát) ===== */
 const CH = '.......';
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const GDAU = {s: '/', h: '`', r: '?', x: '~', n: '.'};
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/(.)(.*?)/g, (m, t, x) => '<span class="cm" data-t="' + t + '"><i class="g">' + GDAU[t] + '</i>' + x + '</span>');
+const thanh = s => { const d = s.normalize('NFD'); return d.includes('́') ? 's' : d.includes('̀') ? 'h' : d.includes('̉') ? 'r' : d.includes('̃') ? 'x' : d.includes('̣') ? 'n' : ''; };
+const choT = t => t ? '' + t + CH + '' : CH;
 const hl = s => '<mark>' + esc(s) + '</mark>';
 
 /* các bài (tối đa 3) có âm, vần gần nhất, xếp tăng dần */
@@ -394,8 +403,8 @@ function donViNhieu(n, max){
 function chamToken(tok, u){
   const m = tok.match(/^(.*?)([.,!?;:]*)$/), t = m[1], p = m[2];
   if (!khop(t, u)) return null;
-  const [dau, , cuoi] = chiaChoTrong(t, u);
-  return dau + CH + cuoi + p;
+  const [dau, mid, cuoi] = chiaChoTrong(t, u);
+  return dau + choT(dang_am(u) ? '' : thanh(mid)) + cuoi + p;
 }
 function chamCau(c, dsU){
   const toks = c.split(/\s+/);
@@ -494,8 +503,8 @@ function mauA5(d, ten){
   const gr = d.nhom.filter(g => g.ds.length);
   if (gr.length){
     h += '<h3 class="mh">' + stt++ + '. Điền:</h3>';
-    gr.forEach((g, i) => { h += '<div class="gr"><b>' + 'abc'[i] + ') ' + hl(g.label) + ':</b>' + g.ds.slice(0, 3).map(x => '<span class="nw">' + esc(x[2]) + '</span>').join('') + '</div>'; });
-    ans.push(gr.map((g, i) => 'abc'[i] + ') ' + g.ds.slice(0, 3).map(x => x[1]).join(', ')).join(' ; '));
+    gr.forEach((g, i) => { h += '<div class="gr"><b>' + 'abc'[i] + ') ' + hl(g.label) + ':</b>' + g.ds.slice(0, 4).map(x => '<span class="nw">' + esc(x[2]) + '</span>').join('') + '</div>'; });
+    ans.push(gr.map((g, i) => 'abc'[i] + ') ' + g.ds.slice(0, 4).map(x => x[1]).join(', ')).join(' ; '));
   }
   /* 5 */
   if (d.chep){

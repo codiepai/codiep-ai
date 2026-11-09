@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trợ lý soạn giáo án - CÔ ĐIỆP AI</title>
+<meta name="description" content="Soạn kế hoạch bài dạy tiểu học theo khuôn 7 phần: yêu cầu cần đạt, năng lực số, tiến trình, hoạt động giáo viên và học sinh. Tự chia thời gian, xuất file Word chuẩn.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<style>
+:root{--ink:#1d3557;--red:#e63946;--cam:#f77f00;--vang:#ffd166;--blue:#1d7bd8;--ok:#2a9d4a;--phu:#5b6b80;--vien:#d3e6f8;--nen:#eaf5ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#d8efff,#fff6e0);min-height:100vh}
+.bia{background:linear-gradient(135deg,#0b3a73,#1d7bd8);color:#fff;padding:16px 16px 54px}
+.rong{max-width:1060px;margin:0 auto}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(26px,5vw,38px)/1.1 "Baloo 2",sans-serif;margin:8px 0 6px}.bia h1 b{color:var(--vang)}
+.bia p{margin:0;opacity:.95;max-width:680px;font-size:15px}
+.dai{display:inline-block;background:linear-gradient(90deg,#ff5d8f,#ff9a3c);color:#fff;border-radius:40px;padding:5px 16px;font:700 14px "Baloo 2",sans-serif;margin-top:10px}
+main{max-width:1060px;margin:-34px auto 0;padding:0 12px 40px;display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+.buoc{background:#fff;border-radius:20px;box-shadow:0 8px 20px rgba(29,53,87,.12);padding:10px;position:sticky;top:8px}
+.b{display:flex;gap:8px;align-items:center;padding:9px 10px;border-radius:14px;cursor:pointer;font-weight:600;font-size:14px}
+.b i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--vien);color:var(--blue);display:grid;place-items:center;font:800 14px "Baloo 2";flex:none}
+.b.on{background:var(--nen);box-shadow:inset 0 0 0 2px #9fd4ff}.b.on i{background:var(--blue);color:#fff}
+.b.xong i{background:var(--ok);color:#fff}
+.the{background:#fff;border-radius:22px;box-shadow:0 8px 20px rgba(29,53,87,.12);padding:20px;margin-bottom:14px;border:6px solid #fff}
+h2{font:800 23px "Baloo 2",sans-serif;margin:0 0 4px}
+h3{font:700 17px "Baloo 2",sans-serif;margin:14px 0 6px;color:var(--blue)}
+.mota{color:var(--phu);font-size:14px;margin:0 0 14px}
+label{display:block;font-weight:600;font-size:13.5px;margin:10px 0 4px}
+input,select,textarea{width:100%;font:500 15px "Be Vietnam Pro",sans-serif;padding:9px 11px;border:2px solid var(--vien);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+input[type=checkbox]{width:auto;margin-right:6px}
+.cb{display:flex;align-items:center;font-weight:500;margin:6px 0}
+.luoi{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0 12px}
+.ghi{color:var(--phu);font-size:12.5px;margin:3px 0 0}
+.nut{border:0;border-radius:14px;padding:10px 16px;font:700 15px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 4px 0 #b86200;cursor:pointer;margin:4px 6px 4px 0}
+.nut:active{transform:translateY(2px);box-shadow:0 2px 0 #b86200}
+.nut.xanh{background:linear-gradient(180deg,#3d9bf0,#1d7bd8);box-shadow:0 4px 0 #0b4f96}
+.nut.luc{background:linear-gradient(180deg,#34c97a,#2a9d4a);box-shadow:0 4px 0 #1b6f33}
+.nut.xam{background:#fff;color:var(--blue);border:2px solid var(--vien);box-shadow:0 3px 0 var(--vien)}
+.nut.nho{padding:6px 11px;font-size:13px}
+.chan{display:flex;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+.hop{background:var(--nen);border-radius:14px;padding:11px 13px;font-size:13.5px;margin:10px 0}
+.hop.v{background:#fff6e0}.hop.d{background:#ffe9eb}
+.hd{display:grid;grid-template-columns:1.4fr 70px 1.4fr 1fr 1.2fr 28px 28px 28px;gap:5px;margin-bottom:6px;align-items:center}
+.hd.nghi{background:#f1f8ee;border-radius:10px;padding:2px}
+.hd input,.hd select{padding:7px 8px;font-size:13.5px}
+.hd button{border:0;background:var(--nen);border-radius:8px;cursor:pointer;height:34px;color:var(--ink)}
+.tg{font-size:12px;color:var(--phu);margin:-3px 0 7px}
+.pm{display:grid;grid-template-columns:240px 1fr;gap:14px}
+.dsm{max-height:600px;overflow:auto;border:2px solid var(--vien);border-radius:14px;padding:6px}
+.m{padding:7px 8px;border-radius:10px;cursor:pointer;font-size:13.5px;display:flex;gap:7px;align-items:flex-start}
+.m.on{background:var(--nen)}
+.cham{width:10px;height:10px;border-radius:50%;background:#c9d4e0;flex:none;margin-top:5px}
+.cham.x{background:var(--ok)}.cham.v{background:var(--vang)}
+.ok{color:var(--ok);font-weight:700}.canh{color:var(--cam);font-weight:700}.sai{color:var(--red);font-weight:700}
+.kt{display:flex;gap:8px;padding:6px 0;border-bottom:1px dashed var(--vien);font-size:14.5px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.hien{opacity:1}
+.ky{text-align:center;color:#5b7aa0;font-size:12.5px;padding:6px 0 26px}
+@media(max-width:820px){main{grid-template-columns:1fr}.buoc{position:static;display:flex;overflow:auto;gap:4px}.b{white-space:nowrap}.pm{grid-template-columns:1fr}.hd{grid-template-columns:1fr 60px 1fr 28px 28px 28px}.hd .an{display:none}}
+</style>
+</head>
+<body>
+<div class="bia"><div class="rong">
+  <a href="index.html">← CÔ ĐIỆP AI</a>
+  <h1>Trợ lý soạn <b>giáo án</b></h1>
+  <p>Khuôn kế hoạch bài dạy 7 phần cho tiểu học. Tự chia thời gian từng hoạt động, xuất Word chuẩn, bài lưu ngay trên máy thầy cô.</p>
+  <span class="dai">Soạn theo nội dung bài thầy cô dán vào, công cụ không tự nghĩ ra nội dung sách.</span>
+</div></div>
+<main><nav class="buoc" id="nav"></nav><section id="pan"></section></main>
+<div class="ky">Cô Hồng Điệp - TH Kim Đồng</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DỮ LIỆU ============ */
+const KHOA = 'giaoan_codiep_v1';
+const BUOC = ['Thông tin bài', 'Tiến trình tiết dạy', 'Viết nội dung', 'Kiểm tra và xuất Word'];
+let buoc = 0, mucChon = 'yccd', uid = 1;
+let G = macDinh();
+
+const MAU_HD = {
+  'Toán': [['Khởi động', 4, 'Trò chơi, vấn đáp', 'Cả lớp'], ['Khám phá', 6, 'Trực quan, quan sát, đàm thoại', 'Cả lớp, cặp đôi'], ['Thực hành 1', 5, 'Làm mẫu, thực hành cá nhân, vấn đáp', 'Cá nhân, cả lớp'], ['NGHỈ GIỮA TIẾT', 2, 'Trò chơi vận động', 'Cả lớp'], ['Thực hành 2', 6, 'Thảo luận cặp đôi, hợp tác', 'Cá nhân, cặp đôi'], ['Thực hành 3 (trò chơi)', 6, 'Dạy học qua trò chơi, hợp tác nhóm', 'Nhóm 4, cả lớp'], ['Vận dụng, củng cố, dặn dò', 6, 'Giải quyết tình huống, đánh giá nhanh', 'Cả lớp']],
+  'Tiếng Việt': [['Khởi động', 4, 'Trò chơi, vấn đáp', 'Cả lớp'], ['Khám phá: đọc và tìm hiểu bài', 10, 'Đọc mẫu, đọc cá nhân, đàm thoại', 'Cả lớp, cặp đôi'], ['Luyện tập 1', 7, 'Thực hành, thảo luận cặp đôi', 'Cá nhân, cặp đôi'], ['NGHỈ GIỮA TIẾT', 2, 'Trò chơi vận động', 'Cả lớp'], ['Luyện tập 2 (viết, nói và nghe)', 8, 'Thực hành, hợp tác nhóm', 'Cá nhân, nhóm'], ['Vận dụng, củng cố, dặn dò', 4, 'Trò chơi, đánh giá nhanh', 'Cả lớp']],
+  'Khác': [['Khởi động', 4, 'Trò chơi, vấn đáp', 'Cả lớp'], ['Khám phá', 10, 'Trực quan, đàm thoại', 'Cả lớp, nhóm'], ['Luyện tập', 10, 'Thực hành, thảo luận', 'Cá nhân, nhóm'], ['NGHỈ GIỮA TIẾT', 2, 'Trò chơi vận động', 'Cả lớp'], ['Vận dụng, củng cố, dặn dò', 9, 'Giải quyết tình huống, đánh giá nhanh', 'Cả lớp']]
+};
+function macDinh() {
+  return {
+    info: { mon: 'Toán', lop: '1', sach: 'Kết nối tri thức với cuộc sống', tuan: '', chude: '', bai: '', tiet: '', trang: '', tl: 35, nghi: true, nghiTu: 15, nguoiday: 'Trần Thị Hồng Điệp', ngay: '…/…/…', thaogiang: false, noidung: '', dacdiem: '', trochoi: '', nls: true, gdbvmt: false, khac: '', tomtat: true, khokhan: true },
+    hd: [], yccd: '', nls: '', dodungGV: '', dodungHS: '', khokhan: ''
+  };
+}
+function luu() { try { localStorage.setItem(KHOA, JSON.stringify(G)); } catch (e) {} }
+function tai() { try { const t = localStorage.getItem(KHOA); if (t) { const o = JSON.parse(t); G = Object.assign(macDinh(), o); G.info = Object.assign(macDinh().info, o.info); } } catch (e) {} uid = 1 + Math.max(0, ...G.hd.map(h => h.id || 0)); }
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const san = t => String(t || '').replace(/[—–]/g, '-');
+function bao(t) { const e = $('toast'); e.textContent = t; e.classList.add('hien'); clearTimeout(bao.t); bao.t = setTimeout(() => e.classList.remove('hien'), 2200); }
+function chep(t) {
+  const xong = () => bao('Đã chép. Dán vào ChatGPT hoặc Gemini nhé.');
+  const du = () => { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); xong(); } catch (e) { bao('Không chép được, hãy bôi đen rồi Ctrl+C'); } a.remove(); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(xong, du); else du();
+}
+function datPath(o, p, v) { const k = p.split('.'); for (let i = 0; i < k.length - 1; i++) o = o[k[i]]; o[k[k.length - 1]] = v; }
+
+/* ============ TIẾN TRÌNH ============ */
+function dungHD() {
+  const mau = MAU_HD[G.info.mon] || MAU_HD['Khác'];
+  G.hd = mau.filter(m => G.info.nghi || m[0] !== 'NGHỈ GIỮA TIẾT').map(m => ({ id: uid++, ten: m[0], phut: m[1], pp: m[2], ht: m[3], tc: '', loai: m[0] === 'NGHỈ GIỮA TIẾT' ? 'nghi' : 'thuong', muctieu: '', gv: '', hs: '' }));
+  chiaLai();
+}
+function chiaLai() {
+  const i = G.info, nghi = G.hd.filter(h => h.loai === 'nghi'), thuong = G.hd.filter(h => h.loai !== 'nghi');
+  const phutNghi = nghi.length ? 2 : 0; nghi.forEach(h => h.phut = 2);
+  const dich = i.tl - phutNghi, tong = thuong.reduce((a, h) => a + h.phut, 0) || 1;
+  let con = dich;
+  thuong.forEach((h, k) => { const v = k === thuong.length - 1 ? con : Math.max(1, Math.round(h.phut * dich / tong)); h.phut = v; con -= v; });
+}
+function mocGio() { let t = 0; return G.hd.map(h => { const s = t; t += +h.phut || 0; return [s, t]; }); }
+function tongPhut() { return G.hd.reduce((a, h) => a + (+h.phut || 0), 0); }
+function tgStr(h, g) { return `${h.phut} phút / (${g[0]}' - ${g[1]}')`; }
+function tenHD(h, n) { return h.loai === 'nghi' ? 'NGHỈ GIỮA TIẾT' : `${n}. ${h.ten}`; }
+function danhSoHD() { let n = 0; return G.hd.map(h => h.loai === 'nghi' ? '*' : ++n); }
+
+/* ============ CÂU LỆNH ============ */
+const LUAT = `Quy tắc viết:
+- Viết như giáo viên tiểu học viết giáo án thật: câu ngắn, hành động cụ thể, có câu hỏi của giáo viên đặt trong ngoặc kép và dự kiến câu trả lời của học sinh.
+- CHỈ dựa vào nội dung bài học do giáo viên dán ở trên. Không bịa nội dung sách giáo khoa, số trang, số bài tập, từ ngữ hay số liệu. Chỗ nào thiếu dữ kiện thì ghi đúng dạng [cần bổ sung: ...].
+- Không dùng gạch dài (— hoặc –), không dùng ký hiệu markdown (#, **, |) trừ các dấu mốc ## bên dưới.
+- Không dùng các cụm sáo rỗng như "góp phần quan trọng", "vô cùng", "hành trình".
+- Thời gian mỗi hoạt động khớp với bảng tiến trình.`;
+function ctx() {
+  const i = G.info, ghi = G.hd.map((h, k) => `${danhSoHD()[k]}. ${h.ten} (${h.phut} phút; phương pháp: ${h.pp || 'tự chọn'}; hình thức: ${h.ht || 'tự chọn'})`);
+  return `THÔNG TIN TIẾT DẠY:
+- Môn: ${i.mon}. Lớp: ${i.lop}. Bộ sách: ${i.sach}. Tuần: ${i.tuan || '[chưa nhập]'}.
+- Chủ đề/chủ điểm: ${i.chude || '[chưa nhập]'}. Tên bài: ${i.bai || '[chưa nhập]'}. Tiết: ${i.tiet || '[chưa nhập]'}. Trang SGK: ${i.trang || '[chưa nhập]'}.
+- Thời lượng: ${i.tl} phút${i.nghi ? ' (có nghỉ giữa tiết 2 phút)' : ''}.
+- Đặc điểm lớp: ${i.dacdiem || '[không ghi]'}.
+- Trò chơi hoặc hoạt động giáo viên muốn dùng: ${i.trochoi || '[để AI gợi ý, ưu tiên trò chơi đơn giản, ít đồ dùng]'}.
+- Tích hợp: ${[i.nls ? 'năng lực số (lớp nhỏ ở mức làm quen, giáo viên điều khiển thiết bị)' : '', i.gdbvmt ? 'giáo dục bảo vệ môi trường' : '', i.khac].filter(Boolean).join('; ') || 'không'}.
+
+NỘI DUNG BÀI HỌC DO GIÁO VIÊN DÁN (căn cứ duy nhất):
+${i.noidung || '[chưa dán nội dung bài, hãy ghi [cần bổ sung: nội dung bài học] ở những chỗ cần]'}
+
+CÁC HOẠT ĐỘNG VÀ THỜI GIAN:
+${ghi.join('\n')}`;
+}
+function lenhCaTiet() {
+  const i = G.info;
+  let mau = `##YCCD\n(Yêu cầu cần đạt: viết 3 phần mở đầu "1. Kiến thức, kĩ năng:" "2. Năng lực:" "3. Phẩm chất:", mỗi ý một dòng bắt đầu bằng "- ")\n`;
+  if (i.nls) mau += `##NLS\n(Tích hợp năng lực số: mỗi dòng gồm 3 ô ngăn bằng dấu | theo dạng: Thành phần năng lực số | Biểu hiện cụ thể trong tiết học | Công cụ, thiết bị gợi ý. Viết 4 đến 5 dòng, KHÔNG viết dòng tiêu đề)\n`;
+  mau += `##DODUNG_GV\n(Đồ dùng của giáo viên, một dòng)\n##DODUNG_HS\n(Đồ dùng của học sinh, một dòng)\n`;
+  G.hd.forEach((h, k) => { mau += `##HD${k + 1}_MUCTIEU\n(${h.loai === 'nghi' ? 'Mục đích và hình thức của phần nghỉ giữa tiết' : 'Mục tiêu và phương pháp của hoạt động "' + h.ten + '", viết một đoạn ngắn'})\n##HD${k + 1}_GV\n(Hoạt động của giáo viên: các bước, mỗi bước một dòng, dòng tên trò chơi hoặc tên bước nhỏ bắt đầu bằng "* ")\n##HD${k + 1}_HS\n(Hoạt động của học sinh tương ứng với từng dòng bên giáo viên)\n`; });
+  if (i.khokhan) mau += `##KHOKHAN\n(Dự kiến khó khăn của học sinh và cách hỗ trợ, 3 đến 4 dòng bắt đầu bằng "- ")\n`;
+  return `${ctx()}\n\nHãy soạn kế hoạch bài dạy cho tiết trên. Trả lời ĐÚNG theo mẫu dưới đây: mỗi phần bắt đầu bằng một dòng dấu mốc (##TÊN) đứng một mình trên dòng, sau đó là nội dung. Không thêm lời dẫn, không thêm phần nào khác.\n\n${LUAT}\n\nMẪU TRẢ LỜI:\n${mau}`;
+}
+function lenhHD(k) {
+  const h = G.hd[k];
+  return `${ctx()}\n\nHãy viết lại hoạt động số ${k + 1}: "${h.ten}" (${h.phut} phút). ${h.tc ? 'Trò chơi, công cụ: ' + h.tc + '. ' : ''}Trả lời ĐÚNG theo mẫu, mỗi phần bắt đầu bằng dòng dấu mốc đứng một mình:\n\n##HD${k + 1}_MUCTIEU\n(mục tiêu và phương pháp)\n##HD${k + 1}_GV\n(hoạt động giáo viên, mỗi bước một dòng, tên trò chơi hoặc bước nhỏ bắt đầu bằng "* ")\n##HD${k + 1}_HS\n(hoạt động học sinh tương ứng)\n\n${LUAT}`;
+}
+function lenhMuc(key) {
+  const ten = { yccd: 'Yêu cầu cần đạt', nls: 'Tích hợp năng lực số', dodung: 'Đồ dùng dạy học', khokhan: 'Dự kiến khó khăn và cách hỗ trợ' }[key];
+  const mau = { yccd: '##YCCD\n(3 phần "1. Kiến thức, kĩ năng:" "2. Năng lực:" "3. Phẩm chất:", mỗi ý một dòng bắt đầu bằng "- ")', nls: '##NLS\n(mỗi dòng: Thành phần năng lực số | Biểu hiện cụ thể trong tiết học | Công cụ, thiết bị gợi ý. 4 đến 5 dòng, không dòng tiêu đề)', dodung: '##DODUNG_GV\n(một dòng)\n##DODUNG_HS\n(một dòng)', khokhan: '##KHOKHAN\n(3 đến 4 dòng bắt đầu bằng "- ")' }[key];
+  return `${ctx()}\n\nHãy viết phần "${ten}". Trả lời đúng mẫu, không lời dẫn:\n\n${mau}\n\n${LUAT}`;
+}
+function phanTich(text) {
+  const re = /^\s*##\s*([A-Z0-9_]+)\s*$/gm; const parts = {}; let m, last = null, idx = 0; const marks = [];
+  while ((m = re.exec(text))) marks.push([m[1], m.index, re.lastIndex]);
+  marks.forEach((x, n) => { parts[x[0]] = text.slice(x[2], n + 1 < marks.length ? marks[n + 1][1] : text.length).trim(); });
+  let dem = 0;
+  const dat = (k, f) => { if (parts[k] != null) { f(parts[k]); dem++; } };
+  dat('YCCD', v => G.yccd = v); dat('NLS', v => G.nls = v); dat('DODUNG_GV', v => G.dodungGV = v); dat('DODUNG_HS', v => G.dodungHS = v); dat('KHOKHAN', v => G.khokhan = v);
+  G.hd.forEach((h, k) => { dat(`HD${k + 1}_MUCTIEU`, v => h.muctieu = v); dat(`HD${k + 1}_GV`, v => h.gv = v); dat(`HD${k + 1}_HS`, v => h.hs = v); });
+  return dem;
+}
+
+/* ============ GIAO DIỆN ============ */
+function veNav() {
+  const xong = [G.info.bai && G.info.noidung, G.hd.length && tongPhut() === G.info.tl, G.yccd && G.hd.some(h => h.gv), true];
+  $('nav').innerHTML = BUOC.map((t, i) => `<div class="b ${i === buoc ? 'on' : ''} ${xong[i] && i < buoc ? 'xong' : ''}" data-act="buoc:${i}"><i>${xong[i] && i < buoc ? '✓' : i + 1}</i>${t}</div>`).join('');
+}
+function ve() { veNav(); $('pan').innerHTML = [v1, v2, v3, v4][buoc](); window.scrollTo({ top: 0 }); }
+function chan(t, s) { return `<div class="chan"><button class="nut xam" data-act="buoc:${t}" ${t < 0 ? 'style="visibility:hidden"' : ''}>← Quay lại</button><button class="nut xanh" data-act="buoc:${s}" ${s > 3 ? 'style="visibility:hidden"' : ''}>Tiếp tục →</button></div>`; }
+const vao = (p, v, ex = '') => `<input data-p="${p}" value="${esc(v)}" ${ex}>`;
+function chon(p, v, ds) { return `<select data-p="${p}">${ds.map(x => `<option ${x == v ? 'selected' : ''}>${x}</option>`).join('')}</select>`; }
+
+function v1() {
+  const i = G.info;
+  return `<div class="the"><h2>1. Thông tin bài dạy</h2><p class="mota">Dán nội dung bài học từ sách giáo khoa vào ô cuối trang. Công cụ chỉ soạn dựa trên nội dung đó, không tự nghĩ ra nội dung sách.</p>
+  <div class="luoi"><div><label>Môn</label><select data-p="info.mon" data-act2="doimon">${['Toán', 'Tiếng Việt', 'Khác'].map(x => `<option ${x === i.mon ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
+  <div><label>Môn khác (nếu chọn Khác)</label>${vao('info.monkhac', i.monkhac || '', 'placeholder="VD: Tự nhiên và Xã hội"')}</div>
+  <div><label>Lớp</label>${chon('info.lop', i.lop, ['1', '2', '3', '4', '5'])}</div>
+  <div><label>Bộ sách</label>${chon('info.sach', i.sach, ['Kết nối tri thức với cuộc sống', 'Chân trời sáng tạo', 'Cánh diều'])}</div>
+  <div><label>Tuần</label>${vao('info.tuan', i.tuan, 'placeholder="VD: 13"')}</div>
+  <div><label>Thời lượng (phút)</label><select data-p="info.tl" data-n="1" data-act2="doitl">${[35, 40, 45, 47].map(x => `<option ${x === +i.tl ? 'selected' : ''}>${x}</option>`).join('')}</select></div></div>
+  <label>Chủ đề hoặc chủ điểm</label>${vao('info.chude', i.chude, 'placeholder="VD: Chủ đề 3: Phép cộng, phép trừ trong phạm vi 10"')}
+  <label>Tên bài</label>${vao('info.bai', i.bai, 'placeholder="VD: Bài 12: Bảng cộng, bảng trừ trong phạm vi 10"')}
+  <div class="luoi"><div><label>Tiết</label>${vao('info.tiet', i.tiet, 'placeholder="VD: Tiết 1 (T1)"')}</div><div><label>Trang sách giáo khoa</label>${vao('info.trang', i.trang, 'placeholder="VD: 80, 81"')}</div>
+  <div><label>Người dạy</label>${vao('info.nguoiday', i.nguoiday)}</div><div><label>Ngày dạy</label>${vao('info.ngay', i.ngay)}</div></div>
+  <label class="cb"><input type="checkbox" data-p="info.nghi" data-act2="doinghi" ${i.nghi ? 'checked' : ''}>Có nghỉ giữa tiết (2 phút)</label>
+  <label class="cb"><input type="checkbox" data-p="info.thaogiang" ${i.thaogiang ? 'checked' : ''}>Tiết thao giảng</label>
+  <h3>Các phần cần có trong giáo án</h3>
+  <label class="cb"><input type="checkbox" data-p="info.nls" ${i.nls ? 'checked' : ''}>Tích hợp năng lực số (bảng 3 cột)</label>
+  <label class="cb"><input type="checkbox" data-p="info.tomtat" ${i.tomtat ? 'checked' : ''}>Bảng tóm tắt tiến trình dạy học</label>
+  <label class="cb"><input type="checkbox" data-p="info.khokhan" ${i.khokhan ? 'checked' : ''}>Dự kiến khó khăn và cách hỗ trợ</label>
+  <label class="cb"><input type="checkbox" data-p="info.gdbvmt" ${i.gdbvmt ? 'checked' : ''}>Tích hợp giáo dục bảo vệ môi trường</label>
+  <label>Tích hợp khác (nếu có)</label>${vao('info.khac', i.khac, 'placeholder="VD: giáo dục an toàn giao thông"')}
+  <label>Đặc điểm lớp (không bắt buộc, nên có)</label><textarea data-p="info.dacdiem" style="min-height:70px" placeholder="VD: Lớp 40 em, có 3 em đọc chậm, 1 em hòa nhập. Lớp có tivi, không có máy tính bảng.">${esc(i.dacdiem)}</textarea>
+  <label>Trò chơi hoặc hoạt động cô muốn dùng (không bắt buộc)</label><textarea data-p="info.trochoi" style="min-height:70px" placeholder="VD: Trò chơi Ong tìm hoa, thẻ đèn giao thông tự đánh giá.">${esc(i.trochoi)}</textarea>
+  <label>Nội dung bài học trong sách giáo khoa (dán hoặc gõ vào đây) *</label><textarea data-p="info.noidung" style="min-height:200px" placeholder="Dán nội dung các phần, bài tập của bài học, yêu cầu cần đạt theo chương trình nếu có...">${esc(i.noidung)}</textarea>
+  <p class="ghi">Càng dán đủ nội dung thật của bài, giáo án càng sát và càng ít chỗ phải bổ sung.</p>
+  ${chan(-1, 1)}</div>`;
+}
+function v2() {
+  if (!G.hd.length) dungHD();
+  const gio = mocGio(), tong = tongPhut(), ok = tong === +G.info.tl;
+  const hang = G.hd.map((h, k) => `<div class="hd ${h.loai === 'nghi' ? 'nghi' : ''}"><input data-p="hd.${k}.ten" value="${esc(h.ten)}"><input type="number" min="1" data-n="1" data-act2="tinh" data-p="hd.${k}.phut" value="${h.phut}"><input data-p="hd.${k}.pp" value="${esc(h.pp)}" placeholder="Phương pháp, kĩ thuật"><input data-p="hd.${k}.ht" value="${esc(h.ht)}" placeholder="Hình thức"><input class="an" data-p="hd.${k}.tc" value="${esc(h.tc)}" placeholder="Trò chơi, công cụ"><button data-act="len:${k}">↑</button><button data-act="xuong:${k}">↓</button><button data-act="xoa:${k}">✕</button></div><div class="tg" id="tg${k}">${tgStr(h, gio[k])}</div>`).join('');
+  return `<div class="the"><h2>2. Tiến trình tiết dạy</h2><p class="mota">Sửa tên hoạt động, số phút, phương pháp, hình thức. Công cụ tự tính mốc thời gian từng hoạt động.</p>
+  <div class="hd" style="font-weight:700;font-size:12.5px"><span>Hoạt động</span><span>Phút</span><span>Phương pháp, kĩ thuật</span><span>Hình thức</span><span class="an">Trò chơi, công cụ</span><span></span><span></span><span></span></div>${hang}
+  <div class="hop ${ok ? '' : 'd'}" id="tongph">Tổng ${tong} phút, thời lượng tiết ${G.info.tl} phút. ${ok ? '<span class="ok">Khớp.</span>' : '<span class="sai">Chưa khớp, bấm "Chia lại thời gian" hoặc sửa số phút.</span>'}</div>
+  <button class="nut xam nho" data-act="them">+ Thêm hoạt động</button><button class="nut xam nho" data-act="chia">Chia lại thời gian theo ${G.info.tl} phút</button><button class="nut xam nho" data-act="dungHD">Dựng lại theo mẫu môn ${esc(G.info.mon)}</button>
+  ${chan(0, 2)}</div>`;
+}
+function tinhMuc(key) {
+  if (key === 'yccd') return G.yccd ? 'x' : ''; if (key === 'nls') return G.nls ? 'x' : ''; if (key === 'dodung') return G.dodungGV && G.dodungHS ? 'x' : (G.dodungGV || G.dodungHS ? 'v' : '');
+  if (key === 'khokhan') return G.khokhan ? 'x' : '';
+  const h = G.hd[+key.slice(2)]; return !h ? '' : (h.gv && h.hs ? (/\[cần bổ sung/i.test(h.gv + h.hs) ? 'v' : 'x') : '');
+}
+function dsMuc() {
+  const i = G.info, ds = [['yccd', 'I. Yêu cầu cần đạt']];
+  if (i.nls) ds.push(['nls', 'II. Tích hợp năng lực số']);
+  ds.push(['dodung', 'Đồ dùng dạy học']);
+  G.hd.forEach((h, k) => ds.push(['hd' + k, (h.loai === 'nghi' ? 'Nghỉ giữa tiết' : danhSoHD()[k] + '. ' + h.ten) + ` (${h.phut}')`]));
+  if (i.khokhan) ds.push(['khokhan', 'Dự kiến khó khăn']);
+  return ds;
+}
+function v3() {
+  const ds = dsMuc(); if (!ds.some(x => x[0] === mucChon)) mucChon = 'yccd';
+  const l = ds.map(([k, t]) => `<div class="m ${k === mucChon ? 'on' : ''}" data-act="muc:${k}"><span class="cham ${tinhMuc(k)}"></span>${esc(t)}</div>`).join('');
+  return `<div class="the"><h2>3. Viết nội dung</h2><p class="mota">Cách nhanh: bấm "Chép câu lệnh cả tiết", dán vào ChatGPT hoặc Gemini, rồi dán kết quả vào ô "Dán kết quả cả tiết" để điền vào mọi phần một lần. Sau đó chỉnh từng phần ở bên dưới.</p>
+  <button class="nut xanh" data-act="lenhall">Chép câu lệnh cả tiết</button>
+  <label>Dán kết quả cả tiết vào đây</label><textarea id="dankq" style="min-height:90px" placeholder="Dán toàn bộ câu trả lời của AI (có các dòng ##YCCD, ##HD1_GV...)"></textarea>
+  <button class="nut luc" data-act="danall">Điền vào các phần</button>
+  <div class="pm" style="margin-top:14px"><div class="dsm">${l}</div><div>${chiTiet()}</div></div>${chan(1, 3)}</div>`;
+}
+function chiTiet() {
+  const k = mucChon;
+  const o = (p, v, h = 150) => `<textarea data-p="${p}" data-after="cham" style="min-height:${h}px">${esc(v)}</textarea>`;
+  if (k === 'yccd') return `<h3>I. Yêu cầu cần đạt</h3><button class="nut xam nho" data-act="lenhmuc:yccd">Chép câu lệnh riêng phần này</button>${o('yccd', G.yccd, 260)}`;
+  if (k === 'nls') return `<h3>II. Tích hợp năng lực số</h3><p class="ghi">Mỗi dòng 3 ô ngăn bằng dấu | (Thành phần | Biểu hiện trong tiết học | Công cụ, thiết bị).</p><button class="nut xam nho" data-act="lenhmuc:nls">Chép câu lệnh riêng phần này</button>${o('nls', G.nls, 220)}`;
+  if (k === 'dodung') return `<h3>Đồ dùng dạy học</h3><button class="nut xam nho" data-act="lenhmuc:dodung">Chép câu lệnh riêng phần này</button><label>Giáo viên</label>${o('dodungGV', G.dodungGV, 80)}<label>Học sinh</label>${o('dodungHS', G.dodungHS, 80)}`;
+  if (k === 'khokhan') return `<h3>Dự kiến khó khăn và cách hỗ trợ</h3><button class="nut xam nho" data-act="lenhmuc:khokhan">Chép câu lệnh riêng phần này</button>${o('khokhan', G.khokhan, 180)}`;
+  const n = +k.slice(2), h = G.hd[n];
+  return `<h3>${esc(h.loai === 'nghi' ? 'Nghỉ giữa tiết' : danhSoHD()[n] + '. ' + h.ten)}</h3><button class="nut xam nho" data-act="lenhhd:${n}">Chép câu lệnh viết lại hoạt động này</button>
+  <label>${h.loai === 'nghi' ? 'Mục đích và hình thức' : 'Mục tiêu và phương pháp'}</label>${o(`hd.${n}.muctieu`, h.muctieu, 70)}
+  <div class="luoi"><div><label>Hoạt động của giáo viên</label>${o(`hd.${n}.gv`, h.gv, 260)}</div><div><label>Hoạt động của học sinh</label>${o(`hd.${n}.hs`, h.hs, 260)}</div></div>
+  <p class="ghi">Dòng bắt đầu bằng "* " hoặc "a) " sẽ in đậm trong Word.</p>`;
+}
+function kiemTra() {
+  const i = G.info, r = [];
+  const thieu = [['tên bài', i.bai], ['tuần', i.tuan], ['người dạy', i.nguoiday]].filter(x => !x[1]).map(x => x[0]);
+  r.push([!thieu.length, 'Đầu giáo án đủ thông tin' + (thieu.length ? ' (thiếu: ' + thieu.join(', ') + ')' : '')]);
+  const tong = tongPhut(); r.push([tong === +i.tl, `Tổng thời gian ${tong} phút, thời lượng ${i.tl} phút`]);
+  r.push([!!G.yccd, G.yccd ? 'Đã có yêu cầu cần đạt' : 'Chưa có yêu cầu cần đạt']);
+  const trong = G.hd.map((h, k) => [h, k]).filter(([h]) => !h.gv || !h.hs);
+  r.push([!trong.length, trong.length ? `Còn ${trong.length} hoạt động chưa đủ cột giáo viên và học sinh: ${trong.map(([h]) => h.ten).slice(0, 3).join('; ')}` : 'Mọi hoạt động có cả hoạt động giáo viên và học sinh']);
+  if (i.nls) r.push([!!G.nls, G.nls ? 'Đã có phần năng lực số' : 'Chưa có phần năng lực số']);
+  const all = [G.yccd, G.nls, G.dodungGV, G.dodungHS, G.khokhan, ...G.hd.flatMap(h => [h.muctieu, h.gv, h.hs])].join('\n');
+  const nph = (all.match(/\[cần bổ sung[^\]]*\]/gi) || []).length; r.push([nph === 0, nph ? `Còn ${nph} chỗ [cần bổ sung] (tô vàng trong Word)` : 'Không còn chỗ [cần bổ sung]']);
+  const gach = (all.match(/[—–]/g) || []).length; if (gach) r.push([true, `Có ${gach} gạch dài, khi xuất Word sẽ tự đổi thành gạch ngắn`]);
+  return r;
+}
+function v4() {
+  return `<div class="the"><h2>4. Kiểm tra và xuất Word</h2><p class="mota">Xử lý các mục chưa đạt rồi tải file. Bài vẫn tải được khi còn chỗ thiếu, chỗ đó được tô vàng để thầy cô điền.</p>
+  ${kiemTra().map(([ok, t]) => `<div class="kt"><span class="${ok ? 'ok' : 'canh'}">${ok ? '✓' : '!'}</span><span>${esc(t)}</span></div>`).join('')}
+  <div class="luoi" style="margin-top:12px"><div><label>Cỡ chữ</label><select id="coChu"><option value="26" selected>13</option><option value="28">14</option><option value="24">12</option></select></div></div>
+  <button class="nut luc" data-act="xuat">⬇ Tải file Word (.docx)</button><button class="nut xam" data-act="saoluu">Tải bản sao lưu (.json)</button><button class="nut xam" data-act="mo">Mở bản sao lưu</button><button class="nut xam" data-act="moi">Soạn bài mới</button><input type="file" id="tepjson" accept=".json" style="display:none">
+  <div class="hop v">Giáo án do AI soạn là bản nháp. Thầy cô đọc lại, chỉnh cho đúng lớp mình và đúng sách trước khi dùng.</div>
+  ${chan(2, 4)}</div>`;
+}
+
+/* ============ XUẤT WORD ============ */
+function tenMon() { return G.info.mon === 'Khác' ? (G.info.monkhac || 'Môn học') : G.info.mon; }
+async function dungDocx(size) {
+  const D = window.docx; if (!D) throw new Error('Chưa tải được thư viện xuất Word. Kiểm tra mạng rồi thử lại.');
+  const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, ShadingType, BorderStyle } = D;
+  const FONT = 'Times New Roman', i = G.info;
+  const runs = (t, o = {}) => san(t).split(/(\[cần bổ sung[^\]]*\])/i).filter(Boolean).map(p => new TextRun({ text: p, font: FONT, size: o.size || size, bold: o.bold, italics: o.italics, highlight: /^\[cần bổ sung/i.test(p) ? 'yellow' : undefined }));
+  const giua = (t, o = {}) => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: o.after ?? 40, before: o.before || 0 }, children: runs(t, { bold: o.bold !== false, size: o.size }) });
+  const P = (t, o = {}) => new Paragraph({ spacing: { after: 40, before: o.before || 0 }, alignment: AlignmentType.LEFT, children: runs(t, o) });
+  const dong = (t, o = {}) => String(t || '').split('\n').map(x => x.trim()).filter(Boolean).map(x => { const dam = /^(\*\s|[a-zđ]\)\s)/i.test(x); return new Paragraph({ spacing: { after: 30 }, alignment: AlignmentType.LEFT, children: runs(x, { bold: dam || o.bold }) }); });
+  const vien = { style: BorderStyle.SINGLE, size: 6, color: '444444' }, vienAll = { top: vien, bottom: vien, left: vien, right: vien };
+  const cell = (children, o = {}) => new TableCell({ children: Array.isArray(children) ? children : [children], columnSpan: o.span, borders: vienAll, width: o.w ? { size: o.w, type: WidthType.PERCENTAGE } : undefined, shading: o.fill ? { type: ShadingType.CLEAR, color: 'auto', fill: o.fill } : undefined, margins: { top: 60, bottom: 60, left: 100, right: 100 } });
+  const cellT = (t, o = {}) => cell(new Paragraph({ alignment: o.left ? AlignmentType.LEFT : AlignmentType.CENTER, spacing: { after: 0 }, children: runs(t, { bold: o.bold }) }), o);
+  const gio = mocGio(), so = danhSoHD(), ch = [];
+  ch.push(giua('KẾ HOẠCH BÀI DẠY' + (i.thaogiang ? ' (TIẾT THAO GIẢNG)' : ''), { size: size + 4 }));
+  ch.push(giua(`MÔN: ${tenMon().toUpperCase()} - LỚP ${i.lop} - SÁCH ${i.sach.toUpperCase()}`));
+  if (i.chude) ch.push(giua(i.chude.toUpperCase()));
+  if (i.bai) ch.push(giua(i.bai.replace(/^(bài\s*\d+\s*:\s*)(.*)$/i, (m, a, b) => a + b.toUpperCase())));
+  if (i.tiet || i.trang) ch.push(giua(`TIẾT ${i.tiet.replace(/^tiết\s*/i, '')}${i.trang ? ' - Trang ' + i.trang : ''}`.trim()));
+  const nghi = G.hd.findIndex(h => h.loai === 'nghi');
+  ch.push(giua(`Tuần ${i.tuan || '...'} - Thời lượng: ${i.tl} phút` + (nghi >= 0 ? ` (nghỉ giữa tiết từ phút ${gio[nghi][0]} đến phút ${gio[nghi][1]})` : ''), { bold: false }));
+  ch.push(giua(`Người dạy: ${i.nguoiday} - Lớp: ${i.lop}... - Ngày dạy: ${i.ngay}`, { bold: false, after: 120 }));
+  let r = 0; const ROM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+  const tieuDe = t => ch.push(P(`${ROM[r++]}. ${t}`, { bold: true, before: 120 }));
+  tieuDe('YÊU CẦU CẦN ĐẠT'); ch.push(...dong(G.yccd || '[cần bổ sung: yêu cầu cần đạt]'));
+  if (i.nls) {
+    tieuDe('GỢI Ý TÍCH HỢP NĂNG LỰC SỐ');
+    const rows = String(G.nls || '').split('\n').map(x => x.trim()).filter(x => x.includes('|')).map(x => x.split('|').map(s => s.trim()));
+    if (rows.length) ch.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [new TableRow({ tableHeader: true, children: ['Thành phần năng lực số', 'Biểu hiện cụ thể trong tiết học', 'Công cụ, thiết bị gợi ý'].map(t => cellT(t, { bold: true, fill: 'DDEBF7', w: 33 })) }), ...rows.map(c => new TableRow({ children: [0, 1, 2].map(k => cellT(c[k] || '', { left: 1 })) }))] }), new Paragraph({ spacing: { after: 40 } }));
+    else ch.push(...dong(G.nls || '[cần bổ sung: tích hợp năng lực số]'));
+  }
+  tieuDe('ĐỒ DÙNG DẠY HỌC');
+  ch.push(...dong('- Giáo viên: ' + (G.dodungGV || '[cần bổ sung: đồ dùng giáo viên]')), ...dong('- Học sinh: ' + (G.dodungHS || '[cần bổ sung: đồ dùng học sinh]')));
+  if (i.tomtat) {
+    tieuDe('TÓM TẮT TIẾN TRÌNH DẠY HỌC');
+    const w = [5, 23, 13, 24, 14, 21];
+    ch.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [new TableRow({ tableHeader: true, children: ['TT', 'Hoạt động', 'Thời gian', 'Phương pháp, kĩ thuật', 'Hình thức', 'Trò chơi, công cụ số'].map((t, k) => cellT(t, { bold: true, fill: 'DDEBF7', w: w[k] })) }), ...G.hd.map((h, k) => new TableRow({ children: [so[k], h.loai === 'nghi' ? 'NGHỈ GIỮA TIẾT' : h.ten, tgStr(h, gio[k]), h.pp, h.ht, h.tc].map((t, c) => cellT(String(t), { left: c > 0 && c !== 2 })) }))] }), new Paragraph({ spacing: { after: 40 } }));
+  }
+  tieuDe('CÁC HOẠT ĐỘNG DẠY HỌC CHỦ YẾU');
+  const fills = ['FFE699', 'FFE699', 'FFE699'], rows = [new TableRow({ tableHeader: true, children: [cellT('Hoạt động của giáo viên', { bold: true, fill: 'DDEBF7', w: 56 }), cellT('Hoạt động của học sinh', { bold: true, fill: 'DDEBF7', w: 44 })] })];
+  G.hd.forEach((h, k) => {
+    const ten = (h.loai === 'nghi' ? '* NGHỈ GIỮA TIẾT' : `${so[k]}. ${h.ten.toUpperCase()}`) + ` (${h.phut} PHÚT: ${gio[k][0]}' - ${gio[k][1]}')`;
+    rows.push(new TableRow({ cantSplit: true, children: [cell(new Paragraph({ spacing: { after: 0 }, children: runs(ten, { bold: true }) }), { span: 2, fill: h.loai === 'nghi' ? 'E2F0D9' : 'FFE699' })] }));
+    const mt = (h.loai === 'nghi' ? 'Mục đích và hình thức: ' : 'Mục tiêu và phương pháp: ') + (h.muctieu || '[cần bổ sung]');
+    rows.push(new TableRow({ children: [cell(new Paragraph({ spacing: { after: 0 }, children: runs(mt) }), { span: 2, fill: 'FFF2CC' })] }));
+    rows.push(new TableRow({ children: [cell(dong(h.gv || '[cần bổ sung: hoạt động của giáo viên]'), { w: 56 }), cell(dong(h.hs || '[cần bổ sung: hoạt động của học sinh]'), { w: 44 })] }));
+  });
+  ch.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows }), new Paragraph({ spacing: { after: 40 } }));
+  if (i.khokhan) { tieuDe('DỰ KIẾN KHÓ KHĂN VÀ CÁCH HỖ TRỢ'); ch.push(...dong(G.khokhan || '[cần bổ sung: khó khăn và cách hỗ trợ]')); }
+  tieuDe('ĐIỀU CHỈNH SAU TIẾT DẠY');
+  for (let k = 0; k < 3; k++) ch.push(P('…'.repeat(80)));
+  const doc = new Document({ styles: { default: { document: { run: { font: FONT, size } } } }, sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 840, bottom: 840, left: 1120, right: 840 } } }, children: ch }] });
+  return Packer.toBlob(doc);
+}
+async function xuatWord() {
+  bao('Đang tạo file Word...');
+  try {
+    const blob = await dungDocx(+$('coChu').value); window.__lastBlob = blob;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = ('KHBD-' + tenMon() + '-Tuan' + (G.info.tuan || '') + '-' + (G.info.bai || 'bai-day')).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '-') + '.docx';
+    document.body.appendChild(a); a.click(); a.remove(); bao('Đã tải file Word');
+  } catch (e) { console.error(e); bao('Lỗi: ' + e.message); }
+}
+
+/* ============ SỰ KIỆN ============ */
+document.addEventListener('input', e => {
+  const t = e.target, p = t.dataset.p; if (!p) return;
+  let v = t.type === 'checkbox' ? t.checked : t.value; if (t.dataset.n) v = v === '' ? null : +v;
+  datPath(G, p, v); luu();
+  if (t.dataset.act2 === 'tinh') { const gio = mocGio(); G.hd.forEach((h, k) => { const e2 = $('tg' + k); if (e2) e2.textContent = tgStr(h, gio[k]); }); const tong = tongPhut(), ok = tong === +G.info.tl, b = $('tongph'); if (b) { b.className = 'hop ' + (ok ? '' : 'd'); b.innerHTML = `Tổng ${tong} phút, thời lượng tiết ${G.info.tl} phút. ` + (ok ? '<span class="ok">Khớp.</span>' : '<span class="sai">Chưa khớp, bấm "Chia lại thời gian" hoặc sửa số phút.</span>'); } }
+  if (t.dataset.after === 'cham') { veNav(); const d = document.querySelector('.dsm .m.on .cham'); if (d) d.className = 'cham ' + tinhMuc(mucChon); }
+});
+document.addEventListener('change', e => {
+  const t = e.target, a = t.dataset.act2;
+  if (a === 'doimon' || a === 'doitl' || a === 'doinghi') {
+    if (G.hd.some(h => h.gv || h.hs) && !confirm('Đổi mục này sẽ dựng lại tiến trình và có thể làm lệch nội dung đã viết. Tiếp tục?')) { ve(); return; }
+    uid = 1 + Math.max(0, ...G.hd.map(h => h.id || 0));
+    const cu = G.hd; dungHD(); if (cu.some(h => h.gv || h.hs)) G.hd.forEach((h, k) => { if (cu[k]) { h.muctieu = cu[k].muctieu; h.gv = cu[k].gv; h.hs = cu[k].hs; } });
+    luu(); ve();
+  }
+  if (t.id === 'tepjson') { const f = t.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { G = Object.assign(macDinh(), JSON.parse(r.result)); G.info = Object.assign(macDinh().info, G.info); uid = 1 + Math.max(0, ...G.hd.map(h => h.id || 0)); luu(); buoc = 0; ve(); bao('Đã mở bản sao lưu'); } catch (x) { bao('File không đúng định dạng'); } }; r.readAsText(f); }
+});
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const [a, x] = t.dataset.act.split(':');
+  if (a === 'buoc') { buoc = +x; return ve(); }
+  if (a === 'muc') { mucChon = x; return ve(); }
+  if (a === 'them') { G.hd.splice(G.hd.length - 1 < 0 ? 0 : G.hd.length, 0, { id: uid++, ten: 'Hoạt động mới', phut: 5, pp: '', ht: 'Cả lớp', tc: '', loai: 'thuong', muctieu: '', gv: '', hs: '' }); luu(); return ve(); }
+  if (a === 'len' && +x > 0) { [G.hd[x - 1], G.hd[x]] = [G.hd[x], G.hd[x - 1]]; luu(); return ve(); }
+  if (a === 'xuong' && +x < G.hd.length - 1) { [G.hd[+x + 1], G.hd[x]] = [G.hd[x], G.hd[+x + 1]]; luu(); return ve(); }
+  if (a === 'xoa') { G.hd.splice(+x, 1); luu(); return ve(); }
+  if (a === 'chia') { chiaLai(); luu(); return ve(); }
+  if (a === 'dungHD') { if (G.hd.some(h => h.gv || h.hs) && !confirm('Dựng lại sẽ xóa nội dung hoạt động đã viết. Tiếp tục?')) return; dungHD(); luu(); return ve(); }
+  if (a === 'lenhall') { if (!G.hd.length) dungHD(); return chep(lenhCaTiet()); }
+  if (a === 'lenhmuc') return chep(lenhMuc(x));
+  if (a === 'lenhhd') return chep(lenhHD(+x));
+  if (a === 'danall') { const v = $('dankq').value; if (!v.trim()) return bao('Dán kết quả của AI vào ô trước'); const n = phanTich(v); luu(); if (!n) return bao('Không thấy dòng dấu mốc ##. Nhờ AI trả lời đúng mẫu.'); bao(`Đã điền ${n} phần`); return ve(); }
+  if (a === 'xuat') return xuatWord();
+  if (a === 'saoluu') { const b = new Blob([JSON.stringify(G)], { type: 'application/json' }), l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'sao-luu-giao-an.json'; l.click(); return; }
+  if (a === 'mo') return $('tepjson').click();
+  if (a === 'moi') { if (!confirm('Soạn bài mới sẽ xóa bài đang soạn (nên tải bản sao lưu trước). Tiếp tục?')) return; const i = G.info; G = macDinh(); Object.assign(G.info, { mon: i.mon, lop: i.lop, sach: i.sach, tl: i.tl, nghi: i.nghi, nguoiday: i.nguoiday, nls: i.nls, tomtat: i.tomtat, khokhan: i.khokhan }); luu(); buoc = 0; ve(); }
+});
+tai(); ve();
+</script>
+</body>
+</html>

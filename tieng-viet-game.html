@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sân chơi Tiếng Việt lớp 1 - Cô Điệp AI</title>
+<meta property="og:title" content="Sân chơi Tiếng Việt lớp 1 - Cô Điệp AI">
+<meta property="og:description" content="Hơn 90 trò chơi Tiếng Việt lớp 1 theo từng bài: luyện vần, khởi động, ôn cuối tuần, chơi cả lớp.">
+<link rel="icon" href="anh-nho.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#06285a;--royal:#0b5cab;--blue:#1d7bd8;--sky:#eaf5ff;--ink:#0b1f3a;--phu:#4a6378;--gold:#ffc94a;--vien:#d6e7f8;--cam:#f77f00;--hong:#e64980;--luc:#22b35e;--tim:#7b5cff}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Be Vietnam Pro","Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#eaf5ff 0,#fff8e6 100%);min-height:100vh}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px 60px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:10px;flex-wrap:wrap}
+.top a{color:var(--royal);font-weight:700;text-decoration:none}
+.sao{background:#fff;border:2px solid var(--gold);border-radius:999px;padding:6px 16px;font-weight:700;font-family:"Baloo 2",sans-serif;font-size:18px}
+.hero{background:linear-gradient(135deg,var(--navy),var(--royal) 60%,var(--blue));color:#fff;border-radius:28px;padding:30px 26px;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(6,40,90,.25)}
+.hero h1{font-family:"Baloo 2",sans-serif;font-size:clamp(28px,5vw,44px);margin:0 0 6px;line-height:1.1}
+.hero p{margin:0 0 16px;font-size:17px;max-width:560px;opacity:.95}
+.hero .chu{position:absolute;right:18px;top:6px;font-family:"Baloo 2",sans-serif;font-size:90px;font-weight:800;opacity:.14;letter-spacing:6px;line-height:1}
+.hero .chu2{right:22px;top:92px;font-size:60px;color:var(--gold);opacity:.3}
+.goiy{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:var(--navy);font-weight:800;border:0;border-radius:16px;padding:12px 20px;font-size:17px;cursor:pointer;box-shadow:0 5px 0 #c99410;font-family:inherit}
+.goiy:active{transform:translateY(3px);box-shadow:0 2px 0 #c99410}
+.tim{display:flex;gap:10px;margin:22px 0 12px;flex-wrap:wrap}
+.tim input{flex:1;min-width:200px;padding:13px 18px;border-radius:14px;border:2px solid var(--vien);font-size:16px;font-family:inherit;background:#fff}
+.tim input:focus{outline:none;border-color:var(--blue)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tab{padding:10px 16px;border-radius:999px;border:2px solid var(--vien);background:#fff;font-weight:700;color:var(--royal);cursor:pointer;font-size:15px;font-family:inherit}
+.tab.on{background:var(--royal);border-color:var(--royal);color:#fff}
+.bai{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}
+.bai button{flex:none;min-width:44px;padding:7px 10px;border-radius:10px;border:2px solid var(--vien);background:#fff;font-weight:700;color:var(--phu);cursor:pointer;font-size:14px;font-family:inherit}
+.bai button.on{background:var(--cam);border-color:var(--cam);color:#fff}
+.dem{color:var(--phu);margin:4px 2px 12px;font-size:14px}
+.luoi{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:14px}
+.the{background:#fff;border-radius:20px;padding:16px;text-decoration:none;color:inherit;border:2px solid var(--vien);display:flex;flex-direction:column;gap:6px;position:relative;transition:.15s;box-shadow:0 4px 0 var(--vien)}
+.the:hover{transform:translateY(-3px);border-color:var(--blue);box-shadow:0 8px 0 var(--vien)}
+.the .bd{align-self:flex-start;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;color:#fff}
+.the .ic{font-size:34px;line-height:1}
+.the b{font-family:"Baloo 2",sans-serif;font-size:19px;line-height:1.2}
+.the span.v{font-size:14px;color:var(--phu)}
+.the .da{position:absolute;right:12px;top:12px;font-size:20px}
+.k-luyen{background:var(--royal)}.k-kd{background:var(--tim)}.k-tuan{background:var(--luc)}.k-lop{background:var(--cam)}.k-chu{background:var(--hong)}
+.rong{text-align:center;padding:40px 10px;color:var(--phu);font-size:17px}
+.chan{margin-top:34px;text-align:center;color:var(--phu);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="./">&larr; Trang chủ CÔ ĐIỆP AI</a><div class="sao" id="tongSao">⭐ 0</div></div>
+
+  <div class="hero">
+    <div class="chu">a b c</div><div class="chu chu2">ươ ao</div>
+    <h1>Sân chơi Tiếng Việt lớp 1</h1>
+    <p>Chọn bài đang học, bấm vào trò chơi là chơi ngay. Chơi trên điện thoại ở nhà hay chiếu tivi cả lớp đều được.</p>
+    <button class="goiy" id="goiy">🎲 Chơi thử một trò bất kỳ</button>
+  </div>
+
+  <div class="tim"><input id="q" type="search" placeholder="Gõ tên trò, tên vần hoặc số bài, ví dụ: ao, kho báu, 42..." aria-label="Tìm trò chơi"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="bai" id="bai"></div>
+  <div class="dem" id="dem"></div>
+  <div class="luoi" id="luoi"></div>
+  <div class="chan">Các trò chơi do cô Điệp soạn theo sách Tiếng Việt 1 (Kết nối tri thức). Học sinh không cần đăng nhập.</div>
+</div>
+
+<script>
+// Mỗi dòng: [mã file, tên trò, số bài (0 = không gắn bài), nhãn bài]
+// Luyện tập vần theo bài (thư mục trochoi/)
+const LUYEN=[
+['tv50','Truy Tìm Kho Báu',50,'Ôn tập'],['tv49','Rùa Con Về Đích',49,'ot ôt ơt'],['tv48','Bong Bóng Sắc Màu',48,'at ăt ât'],
+['tv47','Tên Lửa Thần Tốc',47,'oc ôc uc ưc'],['tv46','Ong Vàng Tìm Mật',46,'ac ăc âc'],['tv45','Tàu hỏa xếp câu',45,'Ôn tập'],
+['tv44','Đào kho báu iu - ưu',44,'iu ưu'],['tv43','Xưởng lắp rô-bốt',43,'au âu êu'],['tv42','Lật thẻ - Bóng bay - Toa tàu',42,'ao eo'],
+['tv41','Bưu tá gấu giao thư',41,'ui ưi'],['tv40','Tiệm kem ôn tập',40,'Ôn tập'],['tv39','Hội đom đóm',39,'oi ôi ơi'],
+['tv38','Nông trại máy cày',38,'ai ay ây'],['tv37','Tiệm kem tủm tỉm',37,'em êm im um'],['tv36','Đom đóm thắp đèn',36,'om ôm ơm'],
+['tv35','Bến đò',35,'Ôn tập'],['tv35b','Đàn cá ôn tập',35,'Ôn tập'],['bai35','Ôn Bài 35',35,'Ôn tập'],['tv34','Vườn hoa',34,'am ăm âm'],['tv34b','Giỏ tre vui vẻ',34,'am ăm âm'],
+['tv33','Biển xanh',33,'en ên in un'],['tv32','Rừng xanh vui nhộn',32,'on ôn ơn'],['tv31','Nông trại vần',31,'an ăn ân'],
+['tv30','Sách bay',30,'Ôn tập'],['kt30','Biển chữ ôn tập',30,'Ôn tập'],['tv29','Bể cá chính tả',29,'Chính tả'],['kt29','Rừng chính tả',29,'Chính tả'],
+['tv28','Bướm tha chữ',28,'Y y'],['kt28','Vườn dã quỳ',28,'Y y'],['tv27','Đoàn xe chở chữ',27,'V v, X x'],['kt27','Về quê vui vẻ',27,'V v, X x'],
+['tv26','Bóng bay chữ',26,'Ph ph, Qu qu'],['co25','Đàn cò tha chữ',25,'Ôn tập']
+];
+// Khởi động đầu tiết
+const KD=[
+['kd50','Vòng Quay Kỳ Diệu',50,'Ôn tập'],['kd49','Đoán Hình Bị Che',49,'ot ôt ơt'],['kd48','Ếch Con Vượt Suối',48,'at ăt ât'],
+['kd47','Trốn Tìm',47,'oc ôc uc ưc'],['kd46','Mèo Con Bắt Cá',46,'ac ăc âc'],['kd45b','Hộp Quà Mùa Hè',45,'Ôn tập'],['kd45','Đấu Trường Tí Hon',45,'Ôn tập'],
+['kd44','Chuyến Tàu Kiến Thức',44,'iu ưu'],['kd43','Vòng Quay Kỳ Diệu',43,'au âu êu'],['kd42b','Mèo con hái táo',42,'ao eo'],['kd42','Ếch con nhảy lá sen',42,'ao eo'],
+['kd41','Hộp Quà Bí Mật',41,'ui ưi'],['kd40','Vòng quay may mắn',40,'Ôn tập'],['kd40b','Hộp quà bí mật',40,'Ôn tập'],['kd39','Ai nhanh hơn',39,'oi ôi ơi'],
+['kd38','Câu cá',38,'ai ay ây'],['kd37','Trốn tìm',37,'em êm im um'],['kd36','Đoàn tàu về xóm',36,'om ôm ơm'],['kd35','Hộp quà bí mật',35,'Ôn tập'],['kd35b','Đàn cá ôn vần',35,'Ôn tập'],
+['kd34','Đoán hình bị che',34,'am ăm âm'],['kd33','Vòng quay may mắn',33,'en ên in un'],['kd32','Ai nhanh hơn',32,'on ôn ơn'],['kd31','Câu cá',31,'an ăn ân'],
+['kd30','Vòng quay may mắn',30,'Ôn tập'],['kd29','Ai nhanh hơn',29,'Chính tả'],['kd28','Câu cá',28,'Y y'],['kd27','Hộp quà bí mật',27,'V v, X x'],
+['kd26','Đoán hình bị che',26,'Ph ph, Qu qu'],['kd25','Vòng quay may mắn',25,'Ôn tập'],['kd24','Ai nhanh hơn',24,'ua ưa'],['kd23','Câu cá',23,'Th th, ia'],['kd22','Hộp quà bí mật',22,'T t, Tr tr']
+];
+// Ôn cuối tuần (Toán + Tiếng Việt)
+const TUAN=[['tuan20','Đàn thỏ về chuồng',20],['tuan19','Nhổ cà rốt',19],['tuan18','Hái bó rau',18],['tuan17','Viên kẹo ngọt',17],['tuan16','Xếp que kem',16],['tuan15','Xếp hộp quà',15],
+['tuan14','Ong lấy mật',14],['tuan13','Tên lửa',13],['tuan12','Đoàn tàu',12],['tuan11','Câu cá',11],['tuan10','Xây lâu đài',10],['tuan9','Chùm bóng bay',9],['vuon9','Vườn cây',9],
+['tuan8','Phiêu lưu bản đồ',8],['vuon8','Vườn cây',8],['tuan7','Đường đua',7],['tuan6','Ôn tuần 6',6],['tuan5','Ôn tuần 5',5]];
+
+const DS=[];
+LUYEN.forEach(r=>DS.push({k:'luyen',url:'trochoi/'+r[0]+'.html',ten:r[1],bai:r[2],mo:'Bài '+r[2]+': '+r[3],ic:'🎮'}));
+KD.forEach(r=>DS.push({k:'kd',url:'trochoi/'+r[0]+'.html',ten:r[1],bai:r[2],mo:'Khởi động Bài '+r[2]+': '+r[3],ic:'🚀'}));
+TUAN.forEach(r=>DS.push({k:'tuan',url:'trochoi/'+r[0]+'.html',ten:r[1],bai:0,mo:'Tuần '+r[2]+' (Toán + Tiếng Việt)',ic:'🗓️'}));
+[
+['trochoi/keoco.html','Kéo co vần',0,'Thi đua 2 đội, cô bấm chấm','🪢','lop'],
+['trochoi/ngngh.html','Hai ngôi nhà ng/ngh, g/gh',0,'Có giọng đọc thuyết minh','🏠','lop'],
+['tro-choi-ca-lop.html','Trò chơi cả lớp',0,'Rung chuông vàng, Đua thuyền, Hộp quà...','🏆','lop'],
+['chiec-non-ki-dieu.html','Chiếc Nón Kì Diệu',0,'Quay nón, trả lời câu hỏi','🎩','lop'],
+['lop-hoc.html','Công cụ lớp học',0,'Bốc thăm, chia nhóm, đồng hồ','👩‍🏫','lop'],
+['vuon-chu-cai.html','Vườn chữ cái',0,'4 trò nhận mặt chữ, viết chữ','🌱','chu']
+].forEach(r=>DS.push({k:r[5],url:r[0],ten:r[1],bai:r[2],mo:r[3],ic:r[4]}));
+
+const NHAN={luyen:'Luyện vần',kd:'Khởi động',tuan:'Ôn cuối tuần',lop:'Cả lớp',chu:'Chữ cái'};
+const TABS=[['all','Tất cả'],['luyen','Luyện vần'],['kd','Khởi động'],['tuan','Ôn cuối tuần'],['lop','Cả lớp, thi đua'],['chu','Chữ cái']];
+let tab='all',bai=0,tu='';
+const $=id=>document.getElementById(id);
+const bo=s=>(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d');
+let sao=0;try{sao=parseInt(localStorage.getItem('vuon-sao')||'0',10)||0}catch(e){}
+$('tongSao').textContent='⭐ '+sao;
+let da={};try{da=JSON.parse(localStorage.getItem('san-tv-da')||'{}')}catch(e){}
+
+function ve(){
+  $('tabs').innerHTML=TABS.map(t=>`<button class="tab ${tab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('');
+  const co=[...new Set(DS.filter(d=>d.bai).map(d=>d.bai))].sort((a,b)=>b-a);
+  $('bai').innerHTML=`<button class="${bai===0?'on':''}" data-b="0">Mọi bài</button>`+co.map(b=>`<button class="${bai===b?'on':''}" data-b="${b}">${b}</button>`).join('');
+  const t=bo(tu);
+  const ra=DS.filter(d=>(tab==='all'||d.k===tab)&&(!bai||d.bai===bai)&&(!t||bo(d.ten+' '+d.mo+' '+(d.bai?'bai '+d.bai:'')).includes(t)));
+  $('dem').textContent=ra.length?ra.length+' trò chơi':'';
+  $('luoi').innerHTML=ra.length?ra.map(d=>`<a class="the" href="${d.url}" data-u="${d.url}"><span class="bd k-${d.k}">${NHAN[d.k]}</span><span class="ic">${d.ic}</span><b>${d.ten}</b><span class="v">${d.mo}</span>${da[d.url]?'<span class="da" title="Đã chơi">✅</span>':''}</a>`).join(''):'<div class="rong" style="grid-column:1/-1">Chưa thấy trò nào khớp. Thử gõ ngắn hơn, hoặc chọn "Mọi bài" nhé.</div>';
+}
+$('tabs').onclick=e=>{const b=e.target.closest('[data-t]');if(b){tab=b.dataset.t;ve()}};
+$('bai').onclick=e=>{const b=e.target.closest('[data-b]');if(b){bai=+b.dataset.b;ve()}};
+$('q').oninput=e=>{tu=e.target.value;ve()};
+$('luoi').onclick=e=>{const a=e.target.closest('[data-u]');if(a){da[a.dataset.u]=1;try{localStorage.setItem('san-tv-da',JSON.stringify(da))}catch(x){}}};
+$('goiy').onclick=()=>{const p=DS.filter(d=>d.k==='luyen'||d.k==='kd'||d.k==='tuan'||d.k==='lop');const d=p[Math.floor(Math.random()*p.length)];da[d.url]=1;try{localStorage.setItem('san-tv-da',JSON.stringify(da))}catch(x){}location.href=d.url};
+ve();
+</script>
+</body>
+</html>

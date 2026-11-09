@@ -36,7 +36,7 @@ button:active{transform:translateY(2px)}
 .dapan{page-break-before:always}
 @media (max-width:560px){.luoi{grid-template-columns:repeat(4,1fr)}.bai.rong{grid-column:span 4}.bai{font-size:20px}.hang{grid-template-columns:1fr}}
 @media print{
-  body{background:#fff}.bang>*:not(.in-ra){display:none!important}
+  body{background:#fff}.bang:not(.in-ra){display:none!important}
   .bang{padding:0;max-width:none}.to{box-shadow:none;margin:0;padding:6mm 4mm}
   .xem-dap{display:none}
 }
@@ -96,6 +96,10 @@ b.o.r{border-color:#e53935}b.o.b{border-color:#1e88e5}b.o.g{border-color:#43a047
 .dapso{font-size:15px;line-height:1.7}
 @media print{.to.mau4t,.to.mau5t{margin:0;box-shadow:none}}
 .hh{height:1.5em;width:auto;vertical-align:middle;margin:0 .06em}.khung .hh{height:1.7em}.kh .hh{height:1.35em}.kh2 .hh{height:1.5em}
+button.sua{background:#2a9d8f;box-shadow:0 4px 0 #1b6f65}
+button.xw{background:#7b4fd0;box-shadow:0 4px 0 #52309a}
+.to.dang-sua{outline:3px dashed #f77f00;outline-offset:4px;cursor:text}
+@media print{.to.dang-sua{outline:none}}
 </style>
 <style id="pg">@page{size:A4;margin:12mm}</style>
 </head>
@@ -202,8 +206,9 @@ b.o.r{border-color:#e53935}b.o.b{border-color:#1e88e5}b.o.g{border-color:#43a047
         <select id="co"><option>11</option><option>12</option><option>13</option><option selected>14</option><option>15</option><option>16</option></select></div>
       <div><label for="ten">Tên phiếu</label><input id="ten" type="text" value="Phiếu luyện tính"></div>
     </div>
-    <div class="nut"><button id="tao">Tạo phiếu</button><button class="in" id="in">In phiếu</button></div>
+    <div class="nut"><button id="tao">Tạo phiếu</button><button class="in" id="in">In phiếu</button><button class="sua" id="sua">Chỉnh sửa phiếu</button><button class="sua xw" id="xw">Xuất Word</button></div>
     <p class="ghi" id="phong-ghi"></p>
+    <p class="ghi" id="sua-ghi" hidden><b>Đang chỉnh sửa:</b> bấm vào chữ trên phiếu rồi gõ để sửa, xóa hoặc thêm. Sửa xong bấm <b>Xong chỉnh sửa</b>. Bấm "Tạo phiếu" lại thì phiếu mới thay phiếu đã sửa.</p>
     <p class="ghi">Miễn phí cho thầy cô. Bấm <b>In phiếu</b>, trong hộp in chọn <b>Lưu thành PDF</b> để tải phiếu về máy.</p>
   </div>
 </div>
@@ -712,6 +717,7 @@ function mot(dang, p, bai){
 }
 
 function tao(){
+  if (dangSua) thoatSua();
   if ($('kho').value !== 'tudo'){ taoMauToan(); return; }
   $('to').className = 'to'; $('dapan').className = 'to dapan';
   $('to').style.fontFamily = '';
@@ -749,11 +755,256 @@ function apKho(doi){
   if (doi && tudo) $('sl').value = '10';
 }
 $('kho').onchange = () => { apKho(true); tao(); };
+
+/* ===== Chỉnh sửa phiếu trực tiếp ===== */
+let dangSua = false;
+const VNI_NGUOC = (() => { const m = {};
+  const VN = 'àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ'; for (const c of VN + VN.toUpperCase()){ let v; try { v = vniChar(c); } catch (e) { continue; } if (typeof v === 'string' && v !== c && !(v in m)) m[v] = c; }
+  return m; })();
+const VNI_NGUOC_RE = new RegExp(Object.keys(VNI_NGUOC).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
+function giaiVniCay(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), ds = [];
+  while (w.nextNode()) ds.push(w.currentNode);
+  ds.forEach(n => { n.nodeValue = n.nodeValue.replace(VNI_NGUOC_RE, k => VNI_NGUOC[k]); });
+}
+function vaoSua(){
+  const to = $('to'); if (!to.firstElementChild) return;
+  if (/VNI/i.test(to.style.fontFamily)){ giaiVniCay(to); to.dataset.vni = '1'; to.style.fontFamily = PHONG_TIMES; }
+  to.contentEditable = 'true'; to.spellcheck = false; to.classList.add('dang-sua');
+  dangSua = true; $('sua').textContent = 'Xong chỉnh sửa'; $('sua-ghi').hidden = false;
+}
+function thoatSua(){
+  const to = $('to');
+  to.removeAttribute('contenteditable'); to.classList.remove('dang-sua');
+  if (to.dataset.vni){ delete to.dataset.vni; to.style.fontFamily = phongDangDung().ff; vniCay(to); }
+  dangSua = false; $('sua').textContent = 'Chỉnh sửa phiếu'; $('sua-ghi').hidden = true;
+}
+$('sua').onclick = () => dangSua ? thoatSua() : vaoSua();
+
+/* ===== Xuất Word (.docx) từ phiếu đang hiện ===== */
+const XW_NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"';
+let XW_K = 1;
+const xwEsc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function xwHex(c){
+  const m = (c || '').match(/[\d.]+/g);
+  if (!m || m.length < 3 || (m.length > 3 && +m[3] === 0)) return null;
+  return m.slice(0, 3).map(x => Math.round(+x).toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+function xwRpr(el, bdr, tail){
+  const cs = getComputedStyle(el), fam = cs.fontFamily.split(',')[0].replace(/["']/g, '').trim() || 'Times New Roman';
+  let r = '<w:rFonts w:ascii="' + xwEsc(fam) + '" w:hAnsi="' + xwEsc(fam) + '" w:cs="' + xwEsc(fam) + '"/>';
+  if (+cs.fontWeight >= 600) r += '<w:b/>';
+  if (cs.fontStyle === 'italic') r += '<w:i/>';
+  const col = xwHex(cs.color); if (col && col !== '000000') r += '<w:color w:val="' + col + '"/>';
+  r += '<w:sz w:val="' + Math.max(2, Math.round(parseFloat(cs.fontSize) * 1.5 * XW_K)) + '"/>';
+  if (bdr) r += '<w:bdr w:val="single" w:sz="6" w:space="0" w:color="000000"/>';
+  if (el.tagName === 'MARK'){ const bg = xwHex(cs.backgroundColor); if (bg) r += '<w:shd w:val="clear" w:color="auto" w:fill="' + bg + '"/>'; }
+  return '<w:rPr>' + r + (tail || '') + '</w:rPr>';
+}
+const xwRun = (t, el, tail) => '<w:r>' + xwRpr(el, false, tail) + '<w:t xml:space="preserve">' + xwEsc(t) + '</w:t></w:r>';
+function xwImg(img, ctx){
+  const d = ctx.imgs.get(img);
+  if (!d) return xwRun(img.alt ? '[' + img.alt + ']' : '', img.parentElement || document.body);
+  const r = img.getBoundingClientRect(), cx = Math.round(Math.max(r.width, 8) * 9525), cy = Math.round(Math.max(r.height, 8) * 9525), id = d.n;
+  return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="' + cx + '" cy="' + cy + '"/><wp:docPr id="' + id + '" name="Hinh ' + id + '"/>' +
+    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+    '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="' + id + '" name="Hinh ' + id + '"/><pic:cNvPicPr/></pic:nvPicPr>' +
+    '<pic:blipFill><a:blip r:embed="' + d.rid + '"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>' +
+    '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="' + cx + '" cy="' + cy + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+}
+function xwInlineNode(n, cur, ctx){
+  const host = n.parentElement || document.body;
+  if (n.nodeType === 3){ const t = n.nodeValue.replace(/\s+/g, ' '); if (t) cur.push(xwRun(t, host)); return; }
+  if (n.nodeType !== 1) return;
+  const cs = getComputedStyle(n); if (cs.display === 'none') return;
+  if (n.tagName === 'BR'){ cur.push('<w:r><w:br/></w:r>'); return; }
+  if (n.tagName === 'IMG'){ cur.push(xwImg(n, ctx)); return; }
+  if (n.tagName === 'I' && n.classList.contains('g')){
+    const t = n.parentElement && n.parentElement.dataset.t, pos = {s: 7, h: 7, r: 7, x: 5, n: -2}[t] || 6, sz = Math.round(parseFloat(getComputedStyle(host).fontSize) * 1.5 * XW_K * 1.2);
+    cur.push('<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:b/><w:color w:val="E0264B"/><w:position w:val="' + pos + '"/><w:sz w:val="' + sz + '"/></w:rPr><w:t xml:space="preserve">' + xwEsc(n.textContent) + '</w:t></w:r>'); return; }
+  if (n.tagName === 'I' && !n.textContent.trim()){ cur.push(xwRun(n.classList.contains('dai') ? '……………………' : n.classList.contains('oli') ? '▭▭' : '………', host)); return; }
+  const bd = parseFloat(cs.borderTopWidth) >= 1 && cs.borderTopStyle !== 'none' && /^inline/.test(cs.display), b0 = cur.length;
+  n.childNodes.forEach(k => xwInlineNode(k, cur, ctx));
+  if (bd) for (let i = b0; i < cur.length; i++) cur[i] = cur[i].replace('</w:rPr>', '<w:bdr w:val="single" w:sz="6" w:space="0" w:color="000000"/></w:rPr>');
+  if (cs.display === 'inline-block') cur.push(xwRun(' ', host));
+}
+function xwPara(cur, el, extra){
+  const cs = getComputedStyle(el), fs = parseFloat(cs.fontSize) || 16;
+  let p = '';
+  if (extra) p += extra;
+  const sb = Math.min(160, Math.round((parseFloat(cs.marginTop) || 0) * 15)), sa = Math.min(160, Math.round((parseFloat(cs.marginBottom) || 0) * 15));
+  const lh = parseFloat(cs.lineHeight); const line = isNaN(lh) ? 276 : Math.max(240, Math.min(440, Math.round(lh / fs * 240 * 0.85)));
+  p += '<w:spacing w:before="' + sb + '" w:after="' + (sa || 0) + '" w:line="' + line + '" w:lineRule="auto"/>';
+  const ti = parseFloat(cs.textIndent); if (ti > 0) p += '<w:ind w:firstLine="' + Math.round(ti * 15) + '"/>';
+  const ta = cs.textAlign; if (ta === 'center') p += '<w:jc w:val="center"/>'; else if (ta === 'right' || ta === 'end') p += '<w:jc w:val="right"/>';
+  return '<w:p><w:pPr>' + p + '</w:pPr>' + cur.join('') + '</w:p>';
+}
+const xwHas = cur => cur.some(x => /<w:t[ >]|<w:drawing|<w:br/.test(x));
+function xwBlocks(el, ctx){
+  let out = '', cur = [];
+  const flush = () => { if (xwHas(cur)) out += xwPara(cur, el); cur = []; };
+  for (const n of el.childNodes){
+    if (n.nodeType === 3){ const t = n.nodeValue.replace(/\s+/g, ' '); if (t.trim() || cur.length) cur.push(xwRun(t, el)); continue; }
+    if (n.nodeType !== 1) continue;
+    const cs = getComputedStyle(n); if (cs.display === 'none') continue;
+    const ib = /^(inline|inline-block|contents)$/.test(cs.display) || n.tagName === 'BR' || n.tagName === 'IMG';
+    if (ib){ xwInlineNode(n, cur, ctx); continue; }
+    flush(); out += xwBlock(n, ctx);
+  }
+  flush();
+  return out;
+}
+const xwSpacer = '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="30" w:lineRule="exact"/></w:pPr></w:p>';
+function xwCellXml(w, inner, o){
+  o = o || {};
+  const b = o.b || '';
+  return '<w:tc><w:tcPr><w:tcW w:w="' + Math.round(w) + '" w:type="dxa"/>' + (o.span > 1 ? '<w:gridSpan w:val="' + o.span + '"/>' : '') + (b ? '<w:tcBorders>' + b + '</w:tcBorders>' : '') + '<w:tcMar><w:top w:w="10" w:type="dxa"/><w:left w:w="60" w:type="dxa"/><w:bottom w:w="10" w:type="dxa"/><w:right w:w="60" w:type="dxa"/></w:tcMar></w:tcPr>' + (inner && /<w:p[ >]|<w:p\/>/.test(inner) ? inner : '<w:p/>') + (inner && /<\/w:tbl>$/.test(inner) ? '<w:p/>' : '') + '</w:tc>';
+}
+function xwBorders(cs, all){
+  let b = '';
+  [['top', 'Top'], ['left', 'Left'], ['bottom', 'Bottom'], ['right', 'Right']].forEach(([a, B]) => {
+    const w = parseFloat(cs['border' + B + 'Width']);
+    if (w > 0 && cs['border' + B + 'Style'] !== 'none'){
+      const dot = cs['border' + B + 'Style'] === 'dotted' ? 'dotted' : 'single';
+      b += '<w:' + a + ' w:val="' + dot + '" w:sz="' + Math.max(4, Math.round(w * 6)) + '" w:space="0" w:color="' + (xwHex(cs['border' + B + 'Color']) || '000000') + '"/>';
+    } else if (all) b += '<w:' + a + ' w:val="nil"/>';
+  });
+  return b;
+}
+function xwTbl(widths, rowsXml){
+  const tot = widths.reduce((a, b) => a + b, 0);
+  return '<w:tbl><w:tblPr><w:tblW w:w="' + Math.round(tot) + '" w:type="dxa"/><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>' + widths.map(w => '<w:gridCol w:w="' + Math.round(w) + '"/>').join('') + '</w:tblGrid>' + rowsXml + '</w:tbl>' + xwSpacer;
+}
+function xwBox(inner, n){
+  const cs = getComputedStyle(n), w = n.getBoundingClientRect().width * 15;
+  return xwTbl([w], '<w:tr>' + xwCellXml(w, inner, {b: xwBorders(cs)}) + '</w:tr>');
+}
+function xwTable(t, ctx){
+  const rows = [...t.rows]; if (!rows.length) return '';
+  const first = [...rows[0].cells], widths = [];
+  first.forEach(c => { const sp = c.colSpan || 1; for (let i = 0; i < sp; i++) widths.push(c.getBoundingClientRect().width * 15 / sp); });
+  let rx = '';
+  rows.forEach(tr => {
+    rx += '<w:tr>' + [...tr.cells].map(c => xwCellXml(c.getBoundingClientRect().width * 15, xwBlocks(c, ctx), {span: c.colSpan, b: xwBorders(getComputedStyle(c), true)})).join('') + '</w:tr>';
+  });
+  return xwTbl(widths, rx);
+}
+function xwGrid(o){
+  const r = o.getBoundingClientRect(), rowsN = Math.max(1, parseInt(getComputedStyle(o).getPropertyValue('--rows')) || 1);
+  const s = parseFloat(getComputedStyle(o).getPropertyValue('--s')) || 2.2;
+  const cell = s * 4 * 96 / 25.4 * 0.8, cols = Math.max(1, Math.floor(r.width / cell)), cw = Math.floor(r.width * 15 / cols);
+  const col = /xanh/.test(o.className) ? '7CC0E0' : '000000';
+  const b = ['top', 'left', 'bottom', 'right'].map(a => '<w:' + a + ' w:val="single" w:sz="6" w:space="0" w:color="' + col + '"/>').join('');
+  let rx = ''; for (let i = 0; i < rowsN; i++){ rx += '<w:tr><w:trPr><w:trHeight w:val="' + Math.round(cell * 15) + '" w:hRule="exact"/></w:trPr>'; for (let j = 0; j < cols; j++) rx += xwCellXml(cw, '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>', {b}); rx += '</w:tr>'; }
+  return xwTbl(Array(cols).fill(cw), rx);
+}
+function xwLayout(n, ctx){
+  const cs = getComputedStyle(n), kids = [...n.children].filter(k => getComputedStyle(k).display !== 'none'); if (!kids.length) return '';
+  let cols = kids.length;
+  if (cs.display === 'grid'){ const g = cs.gridTemplateColumns.split(' ').filter(Boolean).length; if (g > 0) cols = g; }
+  const tot = n.getBoundingClientRect().width * 15, cw = Math.floor(tot / cols);
+  let rx = '';
+  for (let i = 0; i < kids.length; i += cols){
+    let row = '';
+    for (let j = 0; j < cols; j++){
+      const k = kids[i + j]; let inner = '';
+      if (k){
+        const kcs = getComputedStyle(k);
+        if (/^(inline|inline-block)$/.test(kcs.display)){ const cur = []; xwInlineNode(k, cur, ctx); inner = xwHas(cur) ? xwPara(cur, k, kcs.textAlign === 'center' ? '' : '') : ''; }
+        else inner = xwBlock(k, ctx);
+      }
+      row += xwCellXml(cw, inner, {});
+    }
+    rx += '<w:tr>' + row + '</w:tr>';
+  }
+  return xwTbl(Array(cols).fill(cw), rx);
+}
+function xwBlock(n, ctx){
+  const cs = getComputedStyle(n), cls = n.classList;
+  if (n.tagName === 'TABLE') return xwTable(n, ctx);
+  if (n.tagName === 'IMG' || n.tagName.toLowerCase() === 'svg') return xwPara([xwImg(n, ctx)], n.parentElement || n);
+  if (cls.contains('olib')) return xwGrid(n);
+  if (cs.display === 'flex' && cs.flexDirection === 'column') return xwBlocks(n, ctx);
+  if (!n.textContent.trim() && !n.querySelector('img') && parseFloat(cs.borderBottomWidth) > 0){
+    const w = Math.round(n.getBoundingClientRect().width * 15);
+    return '<w:p><w:pPr><w:tabs><w:tab w:val="right" w:leader="dot" w:pos="' + w + '"/></w:tabs><w:spacing w:before="0" w:after="60"/></w:pPr><w:r><w:tab/></w:r></w:p>';
+  }
+  if (cs.display === 'flex' && cs.flexWrap !== 'nowrap'){
+    const cur = []; [...n.children].forEach(k => { xwInlineNode(k, cur, ctx); cur.push(xwRun('   ', n)); }); return xwHas(cur) ? xwPara(cur, n) : '';
+  }
+  if (cs.display === 'flex' || cs.display === 'grid') return xwLayout(n, ctx);
+  const four = ['Top', 'Right', 'Bottom', 'Left'].every(s => parseFloat(cs['border' + s + 'Width']) >= 1 && cs['border' + s + 'Style'] !== 'none');
+  const inner = xwBlocks(n, ctx);
+  return four ? xwBox(inner || '<w:p/>', n) : inner;
+}
+function xwZip(files){
+  const enc = new TextEncoder(), T = [];
+  for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; T[n] = c >>> 0; }
+  const crc = d => { let c = 0xFFFFFFFF; for (let i = 0; i < d.length; i++) c = T[(c ^ d[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  let off = 0; const parts = [], cen = [];
+  files.forEach(f => {
+    const nm = enc.encode(f.name), c = crc(f.data), n = f.data.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(12, 0x21, true);
+    lh.setUint32(14, c, true); lh.setUint32(18, n, true); lh.setUint32(22, n, true); lh.setUint16(26, nm.length, true);
+    parts.push(new Uint8Array(lh.buffer), nm, f.data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(14, 0x21, true);
+    ch.setUint32(16, c, true); ch.setUint32(20, n, true); ch.setUint32(24, n, true); ch.setUint16(28, nm.length, true); ch.setUint32(42, off, true);
+    cen.push(new Uint8Array(ch.buffer), nm); off += 30 + nm.length + n;
+  });
+  const cs = cen.reduce((a, b) => a + b.length, 0), end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cs, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...cen, new Uint8Array(end.buffer)], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+async function xuatWord(){
+  if (dangSua) thoatSua();
+  const to = $('to'); if (!to.firstElementChild) return;
+  const nut = $('xw'), cu = nut.textContent; nut.textContent = 'Đang tạo file Word...'; nut.disabled = true;
+  try {
+    const enc = new TextEncoder(), ctx = {imgs: new Map()}, files = [], rels = [];
+    let k = 0;
+    for (const im of to.querySelectorAll('img')){
+      try {
+        if (!im.complete) await Promise.race([new Promise(r => { im.onload = im.onerror = r; }), new Promise(r => setTimeout(r, 2500))]);
+        if (!im.naturalWidth) continue;
+        const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight;
+        cv.getContext('2d').drawImage(im, 0, 0);
+        const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+        if (!blob) continue;
+        k++; const rid = 'rIdImg' + k;
+        ctx.imgs.set(im, {rid, n: k});
+        files.push({name: 'word/media/hinh' + k + '.png', data: new Uint8Array(await blob.arrayBuffer())});
+        rels.push('<Relationship Id="' + rid + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/hinh' + k + '.png"/>');
+      } catch (e) { /* ảnh không đọc được (mở trực tiếp từ ổ đĩa): bỏ qua */ }
+    }
+    const a5 = /mau5/.test(to.className) || $('kho').value === 'a5';
+    const pw = a5 ? 8392 : 11906, ph = a5 ? 11906 : 16838, mg = a5 ? 454 : 680;
+    XW_K = /mau5/.test(to.className) ? 0.82 : 0.9;
+    const fin = '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr></w:p>';
+    const body = xwBlocks(to, ctx).replace(/<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="30" w:lineRule="exact"\/><\/w:pPr><\/w:p>$/, '') + fin;
+    const doc = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ' + XW_NS + '><w:body>' + body + '<w:sectPr><w:pgSz w:w="' + pw + '" w:h="' + ph + '"/><w:pgMar w:top="' + (mg - 120) + '" w:right="' + mg + '" w:bottom="' + (mg - 120) + '" w:left="' + mg + '" w:header="300" w:footer="300" w:gutter="0"/></w:sectPr></w:body></w:document>';
+    const all = [
+      {name: '[Content_Types].xml', data: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>')},
+      {name: '_rels/.rels', data: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>')},
+      {name: 'word/_rels/document.xml.rels', data: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + rels.join('') + '</Relationships>')},
+      {name: 'word/document.xml', data: enc.encode(doc)}
+    ].concat(files);
+    const blob = xwZip(all), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (($('ten').value || 'Phieu').replace(/[\\/:*?"<>|]+/g, ' ').trim() || 'Phieu') + '.docx';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    window.__xwLast = {doc, size: blob.size, imgs: k};
+  } catch (e) { alert('Chưa xuất được file Word: ' + e.message); }
+  nut.textContent = cu; nut.disabled = false;
+}
+$('xw').onclick = xuatWord;
+
 $('tao').onclick = tao;
 $('phong').onchange = $('hp').onchange = $('co').onchange = tao;
 $('bai').onchange = doiBai;
 $('dang').onchange = $('pv').onchange = $('sl').onchange = tao;
-$('in').onclick = () => { $('dapan').hidden = true; $('dap').textContent = 'Xem đáp án'; window.print(); };
+$('in').onclick = () => { if (dangSua) thoatSua(); $('dapan').hidden = true; $('dap').textContent = 'Xem đáp án'; window.print(); };
 $('dap').onclick = () => { const h = $('dapan').hidden; $('dapan').hidden = !h; $('dap').textContent = h ? 'Ẩn đáp án' : 'Xem đáp án'; };
 { const co = ['HP001 4 hàng', 'HP001 5 hàng', 'HP001 4H', 'HP001 5H', 'HP001 4 hàng 2 ô ly', 'HP001 4 hang 1 ô ly', 'HP001 Tap Do'].filter(coFont);
   if (co.length) $('hp').innerHTML = co.map(x => '<option>' + x + '</option>').join(''); }

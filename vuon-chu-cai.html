@@ -112,7 +112,7 @@ h2{font:800 21px "Baloo 2",sans-serif;color:var(--royal);margin:0 0 4px}
 
 <!-- 1. HOC -->
 <div class="the" id="g-hoc">
-  <h2>Học chữ cái</h2><p class="mota">Bấm vào một chữ. Bé nghe cách đọc, xem chữ hoa chữ thường và hình minh họa.</p>
+  <h2>Học chữ cái</h2><p class="mota">Đủ 29 chữ cái. Bấm vào một chữ, bé nghe cách đọc, xem chữ hoa chữ thường và hình minh họa.</p>
   <div class="hoc"><div class="luoi" id="hocLuoi"></div>
   <div class="chi" id="hocChi"></div></div>
   <p class="ghi" id="giong"></p>
@@ -187,6 +187,13 @@ VAN.split("@").forEach(function(g){var p=g.split(":"),b=+p[0];p[1].split(";").fo
 var PHU=["ch","kh","gi","gh","nh","ng","ngh","th","tr","ph","qu"];
 D.forEach(function(i){i.v=i.b>=23&&i.l.length>1&&PHU.indexOf(i.l)<0});
 D.sort(function(x,y){return x.b-y.b});
+/* 29 chữ cái, theo thứ tự bảng chữ cái, dùng cho tab "Học chữ cái" (không phụ thuộc khoảng bài). p, q chưa có trong dữ liệu theo bài nên thêm riêng. */
+var CHU29=(function(){
+  var ex=[{b:26,l:"p",u:"P",s:"pờ",w:"đèn [p]in",g:"den-pin",v:false},{b:26,l:"q",u:"Q",s:"quờ",w:"[q]uạ",g:"qua",v:false}];
+  var th="a ă â b c d đ e ê g h i k l m n o ô ơ p q r s t u ư v x y".split(" ");
+  var all=D.concat(ex);
+  return th.map(function(c){return all.filter(function(i){return i.l===c&&i.u})[0]}).filter(Boolean);
+})();
 
 /* ===== TIỆN ÍCH ===== */
 var $=function(i){return document.getElementById(i)};
@@ -243,7 +250,7 @@ function chonGame(g){game=g;["hoc","ghep","bong","viet"].forEach(function(x){$("
 /* ===== 1. HỌC ===== */
 var cur=null;
 function hocVe(){
-  var d=dsach();cur=d.length?d[0]:null;
+  var d=CHU29;cur=d.length?d[0]:null;
   $("hocLuoi").innerHTML=d.map(function(i,k){return'<button class="chip" data-k="'+k+'">'+(i.u?i.u+" "+i.l:i.l)+'</button>'}).join("");
   [].forEach.call($("hocLuoi").children,function(c){c.onclick=function(){chonChu(+c.dataset.k)}});
   if(!d.length){$("hocChi").innerHTML='<p style="color:var(--phu)">Chưa có chữ trong khoảng bài này.</p>';return}
@@ -251,7 +258,7 @@ function hocVe(){
   $("giong").textContent=viVoice?"":"Máy này chưa có giọng đọc tiếng Việt, nên trang sẽ đọc bằng giọng Việt trực tuyến. Cần có mạng và bật loa nhé.";
 }
 function chonChu(k,im){
-  var d=dsach();cur=d[k];[].forEach.call($("hocLuoi").children,function(c,i){c.className="chip"+(i==k?" on":"")});
+  var d=CHU29;cur=d[k];[].forEach.call($("hocLuoi").children,function(c,i){c.className="chip"+(i==k?" on":"")});
   $("hocChi").innerHTML='<div class="lon"'+(cur.l.length>3?' style="font-size:64px"':'')+'>'+(cur.u?cur.u+' <i>'+cur.l+'</i>':'<i>'+cur.l+'</i>')+'</div>'+(cur.g?'<img alt="" src="hinh/'+cur.g+'.webp">':'<div style="height:24px"></div>')+'<div class="tu">'+hl(cur.w)+'</div>'+
    '<div class="hang" style="justify-content:center"><button class="nut" id="hNgheC">&#128266; Nghe chữ</button><button class="nut xanh" id="hNgheT">&#128266; Nghe từ</button></div>';
   $("hNgheC").onclick=function(){noi(cur.s)};$("hNgheT").onclick=function(){noi(sach(cur.w))};
@@ -277,7 +284,8 @@ function ghepMoi(){
   $("gKH").className="chip"+(gKieu=="hoa"?" on":"");$("gKV").className="chip"+(gKieu=="hinh"?" on":"");
   $("gKH").disabled=!kh;$("gKV").disabled=!kv;
   var d=xao(ghepPool(gKieu)).slice(0,6);gChon=null;gDung=0;gTong=d.length;
-  $("gNote").textContent=d.length<2?"Chưa đủ chữ để ghép. Chọn thêm bài nhé (chữ hoa từ Bài 2, vần có hình từ Bài 24).":"";
+  $("gNote").textContent=d.length<2?"Chưa đủ chữ để ghép. Chọn thêm bài nhé (chữ hoa từ Bài 2, vần có hình từ Bài 24).":(!kv?"Nút xám \"Vần - hình\": ghép vần (an, ăn, ân...) với hình, sáng lên khi chọn khoảng bài từ Bài 24 trở lên.":"");
+  $("gKV").title=kv?"":"Chọn khoảng bài từ Bài 24 trở lên để dùng";
   $("gA").innerHTML="";$("gB").innerHTML="";
   if(d.length<2)return;
   function the(i,trai){var b=document.createElement("button");b.className="the2";

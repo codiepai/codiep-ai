@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trợ lý soạn slide bài giảng - CÔ ĐIỆP AI</title>
+<meta name="description" content="Soạn slide PowerPoint bài giảng tiểu học có giao diện chủ đề, nhân vật, hiệu ứng bấm chuột thật, trò chơi chọn ô, thảo luận nhóm và chia sẻ. Xuất file .pptx ngay trên máy thầy cô.">
+<link rel="icon" href="anh-nho.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+:root{--ink:#1d3557;--red:#e63946;--cam:#f77f00;--vang:#ffd166;--blue:#1d7bd8;--ok:#2a9d4a;--phu:#5b6b80;--vien:#d3e6f8;--nen:#eaf5ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#d8efff,#fff6e0);min-height:100vh}
+.bia{background:linear-gradient(135deg,#0b3a73,#1d7bd8);color:#fff;padding:16px 16px 54px}
+.rong{max-width:1060px;margin:0 auto}
+.bia a{color:#cfe6ff;text-decoration:none;font-weight:600;font-size:14px}
+.bia h1{font:800 clamp(26px,5vw,38px)/1.1 "Baloo 2",sans-serif;margin:8px 0 6px}.bia h1 b{color:var(--vang)}
+.bia p{margin:0;opacity:.95;max-width:720px;font-size:15px}
+.dai{display:inline-block;background:linear-gradient(90deg,#ff5d8f,#ff9a3c);color:#fff;border-radius:40px;padding:5px 16px;font:700 14px "Baloo 2",sans-serif;margin-top:10px}
+main{max-width:1060px;margin:-34px auto 0;padding:0 12px 30px}
+.the{background:#fff;border-radius:22px;box-shadow:0 8px 20px rgba(29,53,87,.12);padding:20px;margin-bottom:14px;border:6px solid #fff}
+h2{font:800 22px "Baloo 2",sans-serif;margin:0 0 4px}
+h3{font:700 16px "Baloo 2",sans-serif;margin:12px 0 6px;color:var(--blue)}
+.mota{color:var(--phu);font-size:14px;margin:0 0 12px}
+label{display:block;font-weight:600;font-size:13.5px;margin:8px 0 4px}
+input,select,textarea{width:100%;font:500 14.5px "Be Vietnam Pro",sans-serif;padding:8px 10px;border:2px solid var(--vien);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+input[type=checkbox]{width:auto;margin-right:6px}
+.cb{display:flex;align-items:center;font-weight:500;margin:6px 0;font-size:14px}
+.luoi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px}
+.ghi{color:var(--phu);font-size:12.5px;margin:3px 0 0}
+.nut{border:0;border-radius:14px;padding:10px 16px;font:700 15px "Baloo 2",sans-serif;color:#fff;background:linear-gradient(180deg,#ffa43a,#f77f00);box-shadow:0 4px 0 #b86200;cursor:pointer;margin:4px 6px 4px 0}
+.nut:active{transform:translateY(2px);box-shadow:0 2px 0 #b86200}
+.nut.xanh{background:linear-gradient(180deg,#3d9bf0,#1d7bd8);box-shadow:0 4px 0 #0b4f96}
+.nut.luc{background:linear-gradient(180deg,#34c97a,#2a9d4a);box-shadow:0 4px 0 #1b6f33}
+.nut.xam{background:#fff;color:var(--blue);border:2px solid var(--vien);box-shadow:0 3px 0 var(--vien)}
+.hop{background:var(--nen);border-radius:14px;padding:10px 13px;font-size:13.5px;margin:10px 0}
+.hop.v{background:#fff6e0}.hop.d{background:#ffe9eb}
+.ds{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:8px}
+.sl{border:2px solid var(--vien);border-radius:12px;padding:8px 10px;font-size:13px;background:#fbfdff}
+.sl b{display:inline-block;background:var(--blue);color:#fff;border-radius:8px;padding:1px 7px;font-size:11.5px;margin-right:6px}
+.sl.muc b{background:var(--cam)}
+.cd{display:flex;gap:10px;flex-wrap:wrap}
+.cdi{border:3px solid var(--vien);border-radius:14px;padding:4px;cursor:pointer;background:#fff;text-align:center;font-size:12px;font-weight:600}
+.cdi canvas{width:150px;height:84px;border-radius:9px;display:block}
+.cdi.on{border-color:var(--blue);box-shadow:0 0 0 3px #9fd4ff88}
+.mas{display:flex;gap:8px;flex-wrap:wrap}
+.mas span{font-size:30px;border:3px solid var(--vien);border-radius:14px;padding:2px 9px;cursor:pointer;background:#fff}
+.mas span.on{border-color:var(--blue);box-shadow:0 0 0 3px #9fd4ff88}
+.ok{color:var(--ok);font-weight:700}.canh{color:var(--cam);font-weight:700}.sai{color:var(--red);font-weight:700}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.hien{opacity:1}
+.ky{text-align:center;color:#5b7aa0;font-size:12.5px;padding:6px 0 26px}
+</style>
+</head>
+<body>
+<div class="bia"><div class="rong">
+  <a href="index.html">← CÔ ĐIỆP AI</a>
+  <h1>Trợ lý soạn <b>slide bài giảng</b></h1>
+  <p>Giao diện chủ đề, nhân vật dẫn lớp, hiệu ứng bấm chuột thật, trò chơi chọn ô, thảo luận nhóm và chia sẻ. Xuất file PowerPoint ngay trên máy thầy cô.</p>
+  <span class="dai">Soạn theo nội dung bài thầy cô dán vào, không tự nghĩ ra nội dung sách.</span>
+</div></div>
+<main>
+  <div class="the">
+    <h2>1. Thông tin bài dạy</h2>
+    <p class="mota">Đã soạn giáo án bằng <a href="giao-an.html">trợ lý giáo án</a> thì tải bản sao lưu của giáo án lên đây, công cụ tự lấy bài và các hoạt động.</p>
+    <button class="nut xam" id="nhapGA">Lấy từ giáo án đã soạn (.json)</button><input type="file" id="tepGA" accept=".json" style="display:none">
+    <div class="luoi">
+      <div><label>Môn</label><input id="mon" placeholder="VD: Tiếng Việt"></div>
+      <div><label>Lớp</label><input id="lop" placeholder="VD: 1"></div>
+      <div><label>Mẫu tiết dạy cho câu lệnh</label><select id="mau"><option value="tv">Tiếng Việt (vần, âm)</option><option value="toan">Toán</option><option value="tnxh">Tự nhiên và Xã hội, Đạo đức</option><option value="hdtn">Hoạt động trải nghiệm</option><option value="khac">Môn khác</option></select></div>
+      <div><label>Số slide mong muốn (chưa kể phần bấm hiện)</label><select id="soSlide"><option>12</option><option selected>16</option><option>20</option><option>26</option></select></div>
+    </div>
+    <label>Tên bài</label><input id="bai" placeholder="VD: Bài 22: T t, Tr tr">
+    <div class="luoi">
+      <div><label>Dòng phụ trên bìa (lớp, trường)</label><input id="phu" placeholder="VD: Lớp 1.14 - Trường Tiểu học Kim Đồng"></div>
+      <div><label>Giáo viên</label><input id="gv" placeholder="VD: Giáo viên: Trần Thị Hồng Điệp"></div>
+    </div>
+    <label>Trò chơi hoặc hoạt động cô muốn có (không bắt buộc)</label><textarea id="yc" style="min-height:70px" placeholder="VD: Khởi động bằng trò chơi chọn ô, phần Vận dụng thi theo tổ."></textarea>
+    <label class="cb"><input type="checkbox" id="hinh" checked>Dùng hình emoji gợi nghĩa cho bài mới</label>
+    <label>Nội dung bài trong sách giáo khoa (dán vào đây) *</label><textarea id="nd" style="min-height:150px" placeholder="Dán âm, vần, tiếng, từ, câu, bài đọc, bài tập của bài học. Công cụ chỉ dùng đúng chữ này."></textarea>
+  </div>
+
+  <div class="the">
+    <h2>2. Giao diện slide</h2>
+    <p class="mota">Chọn chủ đề nền, nhân vật dẫn lớp và phông chữ. Có thể tải nền và nhân vật của riêng cô (ảnh PNG nền trong suốt là đẹp nhất).</p>
+    <h3>Chủ đề nền</h3><div class="cd" id="dsChuDe"></div>
+    <h3>Nhân vật dẫn lớp</h3><div class="mas" id="dsNv"></div>
+    <div class="luoi">
+      <div><label>Bộ phông chữ tiểu học</label><select id="kieuChu"><option value="lop1" selected>Lớp 1: VNI-Avo + tập viết HP001 4 hàng</option><option value="sgk">Tiểu học: Arial-SGK-TV + Nunito Black + tập viết HP001 4 hàng</option><option value="tuchon">Tự chọn (hai ô bên cạnh)</option></select><p class="ghi">Máy chiếu phải có sẵn các font này. Không có thì chữ bị lệch hoặc đổi phông.</p></div>
+      <div><label>Phông chữ tiêu đề</label><select id="phongTD"><option>Arial Rounded MT Bold</option><option>Comic Sans MS</option><option>Segoe UI Black</option><option>Trebuchet MS</option><option>Arial</option></select></div>
+      <div><label>Phông chữ nội dung</label><select id="phongND"><option>Arial</option><option>Segoe UI</option><option>Tahoma</option><option>Verdana</option></select></div>
+      <div><label>Ảnh nhân vật của cô (không bắt buộc)</label><input type="file" id="tepNv" accept="image/*"></div>
+      <div><label>Ảnh nền của cô (không bắt buộc)</label><input type="file" id="tepNen" accept="image/*"></div>
+    </div>
+    <button class="nut xam" id="xoaAnh">Bỏ ảnh đã tải</button><span class="ghi" id="trangThaiAnh"></span>
+  </div>
+
+  <div class="the">
+    <h2>3. Câu lệnh và kịch bản slide</h2>
+    <p class="mota">Bấm chép câu lệnh, dán vào ChatGPT hoặc Gemini, rồi dán kịch bản AI trả lời vào ô bên dưới. Sửa trực tiếp trong ô nếu cần.</p>
+    <button class="nut xanh" id="chepLenh">Chép câu lệnh soạn slide</button><button class="nut xam" id="mauKB">Điền kịch bản mẫu để xem thử</button>
+    <label>Dán kịch bản slide vào đây (mỗi dòng một slide)</label>
+    <textarea id="kb" style="min-height:220px;font-family:Consolas,monospace;font-size:13px" placeholder="BIA | Tiếng Việt | Bài 22: {T t} | Lớp 1.14 | Giáo viên: ...&#10;MUC | Khởi động&#10;..."></textarea>
+    <div id="canhBao"></div>
+    <div id="dsSlide" class="ds"></div>
+  </div>
+
+  <div class="the">
+    <h2>4. Xuất PowerPoint</h2>
+    <div class="luoi">
+      <div><label>Cách hiện các thẻ, đáp án</label><select id="cachHien"><option value="anim" selected>Hiệu ứng bấm chuột thật (khuyên dùng)</option><option value="slides">Nhiều slide (bấm để sang slide kế)</option><option value="het">Hiện hết cùng lúc</option></select></div>
+    </div>
+    <label class="cb"><input type="checkbox" id="ghiChu" checked>Kèm ghi chú cho cô (chỉ cô thấy khi trình chiếu)</label>
+    <label class="cb"><input type="checkbox" id="chanTrang" checked>Ghi tên bài và số trang ở chân slide</label>
+    <button class="nut luc" id="xuat">⬇ Tải file PowerPoint (.pptx)</button><button class="nut xam" id="taiTxt">Tải kịch bản (.txt)</button>
+    <div id="ketQua"></div>
+    <div class="hop">Mở file bằng PowerPoint, bấm F5 để trình chiếu, bấm chuột hoặc phím mũi tên để hiện từng phần. Trò chơi chọn ô: bấm vào số để mở câu hỏi, bấm "Về menu" để quay lại. Muốn sửa chữ, sửa thẳng trong PowerPoint hoặc sửa kịch bản ở bước 3 rồi tải lại.</div>
+  </div>
+</main>
+<div class="ky">Cô Hồng Điệp - TH Kim Đồng</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const san = t => String(t || '').replace(/[—–]/g, '-');
+const tho = t => String(t).replace(/[{}]/g, '');
+function bao(t) { const e = $('toast'); e.textContent = t; e.classList.add('hien'); clearTimeout(bao.t); bao.t = setTimeout(() => e.classList.remove('hien'), 2400); }
+
+
+/* ================= ĐỔI CHỮ SANG MÃ VNI (font VNI-Avo) - bảng giống vni.py của bảng đọc ================= */
+const VNI_MAP = (() => {
+  const V = { 'à': 'aø', 'á': 'aù', 'ả': 'aû', 'ã': 'aõ', 'ạ': 'aï', 'ă': 'aê', 'ằ': 'aè', 'ắ': 'aé', 'ẳ': 'aú', 'ẵ': 'aü', 'ặ': 'aë', 'â': 'aâ', 'ầ': 'aà', 'ấ': 'aá', 'ẩ': 'aå', 'ẫ': 'aã', 'ậ': 'aä', 'đ': 'ñ',
+    'è': 'eø', 'é': 'eù', 'ẻ': 'eû', 'ẽ': 'eõ', 'ẹ': 'eï', 'ê': 'eâ', 'ề': 'eà', 'ế': 'eá', 'ể': 'eå', 'ễ': 'eã', 'ệ': 'eä', 'ì': 'ì', 'í': 'í', 'ỉ': 'æ', 'ĩ': 'ó', 'ị': 'ò',
+    'ò': 'oø', 'ó': 'où', 'ỏ': 'oû', 'õ': 'oõ', 'ọ': 'oï', 'ô': 'oâ', 'ồ': 'oà', 'ố': 'oá', 'ổ': 'oå', 'ỗ': 'oã', 'ộ': 'oä', 'ơ': 'ô', 'ờ': 'ôø', 'ớ': 'ôù', 'ở': 'ôû', 'ỡ': 'ôõ', 'ợ': 'ôï',
+    'ù': 'uø', 'ú': 'uù', 'ủ': 'uû', 'ũ': 'uõ', 'ụ': 'uï', 'ư': 'ö', 'ừ': 'öø', 'ứ': 'öù', 'ử': 'öû', 'ữ': 'öõ', 'ự': 'öï', 'ý': 'yù', 'ỳ': 'yø', 'ỷ': 'yû', 'ỹ': 'yõ', 'ỵ': 'î' };
+  const M = Object.assign({}, V);
+  Object.keys(V).forEach(k => { const K = k.toUpperCase(); if (K === k) return; M[K] = k === 'đ' ? 'Ñ' : V[k].toUpperCase(); });
+  Object.assign(M, { 'Ì': 'Ì', 'Í': 'Í', 'Ỉ': 'Æ', 'Ĩ': 'Ó', 'Ị': 'Ò', 'Ơ': 'Ô', 'Ư': 'Ö', 'Ỵ': 'Î', 'Đ': 'Ñ' });
+  return M;
+})();
+const toVni = t => Array.from(String(t).normalize('NFC')).map(c => VNI_MAP[c] || c).join('');
+
+/* ================= CHỦ ĐỀ NỀN (vẽ bằng canvas) ================= */
+function may(g, x, y, s, a = 1) { g.fillStyle = `rgba(255,255,255,${a})`; [[0, 0, 1], [0.9, 0.15, 0.8], [-0.9, 0.2, 0.7], [0.4, -0.35, 0.8], [-0.4, -0.3, 0.7]].forEach(([dx, dy, r]) => { g.beginPath(); g.arc(x + dx * s, y + dy * s, r * s * 0.6, 0, 7); g.fill(); }); }
+function nenCaro(g, w, h, a, b, o = 50) { g.fillStyle = a; g.fillRect(0, 0, w, h); g.fillStyle = b; for (let i = 0; i < w / o; i++) for (let j = 0; j < h / o; j++) if ((i + j) % 2 === 0) g.fillRect(i * o, j * o, o, o); }
+function chuyen(g, w, h, c1, c2) { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, c1); gr.addColorStop(1, c2); g.fillStyle = gr; g.fillRect(0, 0, w, h); }
+const THEMES = [
+  { id: 'oli', ten: 'Ô vuông xanh', c1: '1D7BD8', deco: ['✏️', '🎒', '📚'], ve(g, w, h) { nenCaro(g, w, h, '#E6F4FF', '#D6EBFB'); } },
+  { id: 'troi', ten: 'Bầu trời', c1: '2A9DD8', deco: ['☁️', '⭐', '🌈'], ve(g, w, h) { chuyen(g, w, h, '#8FD3F4', '#E3F7FF'); may(g, 200, 140, 90); may(g, 1250, 100, 110); may(g, 800, 760, 80, .8); g.fillStyle = '#9BDB8A'; g.beginPath(); g.ellipse(300, h + 40, 600, 150, 0, 0, 7); g.fill(); g.fillStyle = '#7CCB6E'; g.beginPath(); g.ellipse(1300, h + 60, 700, 170, 0, 0, 7); g.fill(); } },
+  { id: 'kem', ten: 'Kem ô li', c1: 'C77D2E', deco: ['✏️', '📏', '🍎'], ve(g, w, h) { g.fillStyle = '#FFF4DE'; g.fillRect(0, 0, w, h); g.strokeStyle = '#EAD7B6'; g.lineWidth = 2; for (let x = 0; x < w; x += 40) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); } for (let y = 0; y < h; y += 40) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); } } },
+  { id: 'hong', ten: 'Vườn hồng', c1: 'E64980', deco: ['🌸', '💖', '🦋'], ve(g, w, h) { chuyen(g, w, h, '#FFE0EC', '#FFF6E0'); g.fillStyle = 'rgba(255,255,255,.7)'; for (let i = 0; i < 40; i++) { g.beginPath(); g.arc((i * 211) % w, (i * 137) % h, 14 + (i % 4) * 8, 0, 7); g.fill(); } g.fillStyle = 'rgba(230,73,128,.10)'; for (let i = 0; i < 18; i++) { g.beginPath(); g.arc((i * 331 + 90) % w, (i * 197 + 40) % h, 30 + (i % 3) * 14, 0, 7); g.fill(); } } },
+  { id: 'xanh', ten: 'Rừng xanh', c1: '2A9D4A', deco: ['🍃', '🐞', '🌻'], ve(g, w, h) { chuyen(g, w, h, '#CDEFD5', '#F4FFE9'); g.fillStyle = 'rgba(42,157,74,.12)'; for (let i = 0; i < 26; i++) { g.beginPath(); g.ellipse((i * 263) % w, (i * 151) % h, 70, 28, (i % 6) * 0.5, 0, 7); g.fill(); } g.fillStyle = '#8ED38F'; g.fillRect(0, h - 34, w, 34); } },
+  { id: 'ram', ten: 'Trăng rằm', c1: 'E8590C', deco: ['🏮', '🌕', '⭐'], ve(g, w, h) { chuyen(g, w, h, '#FFB347', '#FF7A3C'); g.fillStyle = '#FFE066'; g.beginPath(); g.arc(1320, 220, 190, 0, 7); g.fill(); g.fillStyle = 'rgba(255,255,255,.5)'; for (let i = 0; i < 30; i++) { g.beginPath(); g.arc((i * 277) % w, (i * 113) % (h * .6), 4 + i % 3 * 2, 0, 7); g.fill(); } g.fillStyle = '#7CCB6E'; g.fillRect(0, h - 70, w, 70); } }
+];
+function veNen(t, w = 1600, h = 900) { const c = document.createElement('canvas'); c.width = w; c.height = h; t.ve(c.getContext('2d'), w, h); return c.toDataURL('image/jpeg', .86); }
+const NV = ['👧', '🧒', '👩‍🏫', '🐻', '🐰', '🦊', '🐼', '🤖', '🚫'];
+let chuDe = 'oli', nvChon = '👧', anhNv = '', anhNen = '';
+
+/* ================= LƯU / TẢI ================= */
+const KHOA = 'slide_codiep_v2', TRUONG = ['mon', 'lop', 'mau', 'soSlide', 'bai', 'phu', 'gv', 'yc', 'nd', 'kb', 'cachHien', 'phongTD', 'phongND', 'kieuChu'], CB = ['hinh', 'ghiChu', 'chanTrang'];
+let hdGA = [];
+function luu() { try { const o = { chuDe, nvChon, hdGA }; TRUONG.forEach(k => o[k] = $(k).value); CB.forEach(k => o[k] = $(k).checked); localStorage.setItem(KHOA, JSON.stringify(o)); } catch (e) {} }
+function tai() { try { const o = JSON.parse(localStorage.getItem(KHOA) || 'null'); if (!o) return; TRUONG.forEach(k => { if (o[k] != null) $(k).value = o[k]; }); CB.forEach(k => { if (o[k] != null) $(k).checked = o[k]; }); chuDe = o.chuDe || chuDe; nvChon = o.nvChon || nvChon; hdGA = o.hdGA || []; } catch (e) {} }
+
+/* ================= CÂU LỆNH ================= */
+const CU_PHAP = `Mỗi dòng là một slide, các ô ngăn bằng dấu |. Dòng bắt đầu bằng # là ghi chú. Chỉ trả lời bằng các dòng kịch bản, không lời dẫn, không đánh số.
+Tô đỏ phần mới (âm, vần, số cần chú ý) bằng ngoặc nhọn: {tr}e, cá {tr}ê. Chỉ bọc đúng phần cần nhấn, không bọc cả câu. KHÔNG dùng { } trong các lựa chọn của CHON và trong chữ học sinh phải đoán.
+
+BIA | môn | tên bài | dòng phụ | giáo viên          (luôn là dòng đầu)
+MUCTIEU | mục tiêu 1 | mục tiêu 2 | ...             (slide Yêu cầu cần đạt, tối đa 4 ý ngắn)
+MUC | tên phần                                      (Khởi động, Khám phá, Luyện tập, Vận dụng, Củng cố)
+AM | tiêu đề | chữ lớn | tiếng mẫu | hình           (âm hoặc vần mới, hình có thể bỏ trống)
+THE | tiêu đề | mục | mục ~hình | ...                (thẻ bấm hiện, tối đa 12; ~🚗 thêm hình)
+DOC | tiêu đề | câu 1 | câu 2 | ...                  (tối đa 4 câu mỗi slide)
+CHU | tiêu đề | dòng 1\\ndòng 2                      (đoạn chữ, tối đa khoảng 5 dòng)
+VIET | tiêu đề | chữ mẫu                             (tập viết, cách chữ bằng 3 dấu cách)
+HOI | câu hỏi | hình | đáp án                        (bấm thì hiện đáp án)
+CHON | câu hỏi | A | B* | C                          (trắc nghiệm 2 đến 6 lựa chọn, dấu * sau đáp án đúng)
+DUNGSAI | tiêu đề | phát biểu | Đ hoặc S             (học sinh chọn Đúng hay Sai, bấm hiện đáp án)
+DEM | câu hỏi | hình | số lượng                     (lặp hình, tối đa 20, bấm hiện số)
+PHEP | tiêu đề | 3 + 2 = [5] | 4 + [3] = 7           (phần trong [ ] là ô trống hiện khi bấm)
+BANG | tiêu đề | 1 + 6;7 | 3 + 4;[7] | ...         (bảng, mỗi hàng ngăn bằng |, ô trong hàng ngăn bằng ;, ô nằm trọn trong [ ] hiện khi bấm theo từng hàng)
+BAI | Bài 1 | đề bài | LÀM BÀI CÁ NHÂN             (bài tập có nhãn hình thức: LÀM BÀI CÁ NHÂN, THỰC HÀNH NHÓM ĐÔI, CÙNG CHIA SẺ, THI THEO TỔ)
+NHOM | nhóm đôi hoặc nhóm 4 | câu hỏi | số phút     (thảo luận nhóm, có đồng hồ phút)
+CHIASE | tiêu đề                                     (slide Chia sẻ trước lớp)
+HOP | tiêu đề | câu 1 :: đáp án 1 | câu 2 :: đáp án 2 | ...   (trò chơi chọn ô: bấm số mở câu hỏi, bấm hiện đáp án, tối đa 9 ô)
+KET | lời chào | dặn dò                              (slide cuối)
+GHICHU | lời gợi ý cho cô                             (gắn vào slide ngay trước, học sinh không thấy)`;
+const MAU = `BIA | Tiếng Việt | Bài 22: {T t}, {Tr tr} | Lớp 1.14 - Trường Tiểu học Kim Đồng | Giáo viên: Trần Thị Hồng Điệp
+MUCTIEU | Đọc đúng, viết đúng âm {t}, {tr} | Đọc được tiếng, từ có âm {t}, {tr} | Nói và nghe tự tin, hợp tác cùng bạn
+MUC | Khởi động
+HOP | Chọn ô may mắn | Đây là con gì? 🦁 :: sư tử | Tiếng nào có âm tr? :: tre | Ô tô có âm nào? :: t
+GHICHU | Cô cho các tổ chọn ô, bấm số để hiện câu hỏi, bấm thêm để hiện đáp án.
+MUC | Khám phá
+AM | Âm mới | {T t} | {t}ô | 🎨
+AM | Âm mới | {Tr tr} | {tr}e | 🎋
+THE | Đọc từ | ô {t}ô ~🚗 | sư {t}ử ~🦁 | cá {tr}ê ~🐟 | {tr}e ngà ~🎋
+NHOM | nhóm đôi | Tìm tiếng có âm {tr} trong lớp mình | 2
+CHIASE | Chia sẻ trước lớp
+MUC | Luyện tập
+BAI | Bài 1 | Đọc to các từ vừa học | LÀM BÀI CÁ NHÂN
+VIET | Tập viết | t   tr   tô   tre
+DOC | Đọc câu | Hà {t}ả hồ cá. | Hồ {t}o, có cá mè, cá {tr}ê.
+CHON | Tiếng nào có âm {tr}? | tô | tre* | thỏ
+DUNGSAI | Đúng hay sai? | Cá trê sống dưới nước. | Đ
+MUC | Vận dụng
+BAI | Bài 2 | Tính nhẩm | THI THEO TỔ
+PHEP | Tính | 4 + 3 = [7] | 5 + 2 = [7]
+BANG | Bảng cộng 7 | 1 + 6;7 | 2 + 5;7 | 3 + 4;[7] | 4 + 3;[7]
+DEM | Có mấy con gà? | 🐔 | 6
+MUC | Củng cố
+CHU | Hôm nay con học gì? | Âm {t}: {t}ô, ô {t}ô\\nÂm {tr}: {tr}e, cá {tr}ê
+KET | Chúc các con học tốt! | Về nhà đọc lại bài cho bố mẹ nghe nhé.`;
+const KHUNG = {
+  tv: 'MUC Khởi động (trò chơi HOP hoặc THE đọc từ ôn, vui, ngắn) - MUC Khám phá: HOI "Tranh vẽ gì?" rồi DOC câu rồi AM âm/vần mới, THE đọc tiếng và đọc từ, NHOM rồi CHIASE - MUC Luyện tập: VIET tập viết, DOC bài đọc, CHON hoặc DUNGSAI - MUC Vận dụng (mở rộng vốn từ, tìm tiếng có vần) - MUC Củng cố (CHU "Hôm nay con học gì?") - KET.',
+  toan: 'MUC Khởi động (trò chơi đố vui hoặc HOP) - MUC Khám phá (DEM, CHU tình huống, PHEP hoặc BANG hiện từng bước) - MUC Thực hành: các slide BAI 1, BAI 2, BAI 3 có nhãn hình thức (LÀM BÀI CÁ NHÂN, THỰC HÀNH NHÓM ĐÔI, CÙNG CHIA SẺ), kèm PHEP, BANG, CHON - MUC Củng cố: HOP hoặc BAI có nhãn THI THEO TỔ - KET.',
+  tnxh: 'MUC Khởi động (HOI câu hỏi gợi mở) - MUC Khám phá (CHU hoặc HOI mô tả hình trong sách, NHOM rồi CHIASE) - MUC Luyện tập (DUNGSAI, CHON tình huống) - MUC Vận dụng (câu hỏi liên hệ bản thân) - MUC Củng cố (CHU ghi nhớ) - KET.',
+  hdtn: 'MUC Sinh hoạt dưới cờ (CHU) - MUC Sinh hoạt theo chủ đề: BAI 1, NHOM rồi CHIASE, BAI 2, NHOM rồi CHIASE (nhịp thảo luận rồi chia sẻ) - MUC Củng cố (CHU) - KET dặn dò.',
+  khac: 'MUC Khởi động - MUC Khám phá - MUC Luyện tập - MUC Vận dụng - MUC Củng cố - KET, chọn loại slide hợp nội dung.'
+};
+function lenh() {
+  const g = id => $(id).value.trim();
+  const ga = hdGA.length ? `\nCÁC HOẠT ĐỘNG CỦA TIẾT DẠY (theo giáo án, chia các phần của slide theo đúng trình tự này):\n${hdGA.map((h, i) => `${i + 1}. ${h}`).join('\n')}\n` : '';
+  return `Hãy soạn kịch bản slide bài giảng PowerPoint cho giáo viên tiểu học.
+
+THÔNG TIN:
+- Môn: ${g('mon') || '[chưa nhập]'}. Lớp: ${g('lop') || '[chưa nhập]'}. Tên bài: ${g('bai') || '[chưa nhập]'}.
+- Dòng phụ trên bìa: ${g('phu') || 'Lớp ..., Trường Tiểu học ...'}. ${g('gv') || 'Giáo viên: ...'}.
+- Khoảng ${$('soSlide').value} slide (không tính phần chỉ hiện khi bấm).
+- Yêu cầu riêng: ${g('yc') || 'không'}.
+- Hình emoji: ${$('hinh').checked ? 'dùng cho bài mới để gợi nghĩa từ; slide đọc câu, ôn bài cũ thì chỉ để chữ' : 'KHÔNG dùng hình, để ô hình trống'}.
+${ga}
+NỘI DUNG BÀI HỌC DO GIÁO VIÊN DÁN (căn cứ duy nhất, dùng đúng chữ trong này):
+${g('nd') || '[chưa dán nội dung bài, hãy ghi # cần bổ sung nội dung bài ở chỗ cần]'}
+
+KHUNG TIẾT DẠY GỢI Ý: ${KHUNG[$('mau').value]}
+Mở đầu sau BIA bằng một slide MUCTIEU ngắn. Mỗi phần mở bằng một dòng MUC.
+
+QUY TẮC:
+- Chỉ dùng chữ, âm, vần, từ có trong nội dung đã dán. Không bịa nội dung sách. Với lớp 1 chỉ dùng âm, vần đã học tới bài này trong mọi ví dụ thêm.
+- Chữ ít, to: mỗi thẻ một tiếng hoặc từ, mỗi khung một câu, câu hỏi khởi động ngắn.
+- Giọng trên slide là lời cô nói với trò, mộc, gần gũi ("Các con giỏi lắm!"). Không dùng gạch dài (— hoặc –), dùng gạch ngắn "-" hoặc dấu phẩy.
+- Chọn emoji khớp đúng nghĩa từ; không có hình khớp thì bỏ trống ô hình.
+- Thêm GHICHU sau slide nào cần nhắc cô cách tổ chức (chia nhóm, hỏi gợi mở).
+
+CÚ PHÁP KỊCH BẢN:
+${CU_PHAP}
+
+VÍ DỤ (chỉ để học cú pháp, không chép nội dung):
+${MAU}`;
+}
+
+/* ================= PHÂN TÍCH KỊCH BẢN ================= */
+const LOAI = ['BIA', 'MUCTIEU', 'MUC', 'AM', 'THE', 'DOC', 'CHU', 'VIET', 'HOI', 'CHON', 'DUNGSAI', 'DEM', 'PHEP', 'BANG', 'BAI', 'NHOM', 'CHIASE', 'HOP', 'KET', 'GHICHU'];
+function phanTich(text) {
+  const ds = [], loi = [];
+  text.split('\n').forEach((raw, i) => {
+    const l = raw.trim(); if (!l || l.startsWith('#')) return;
+    const o = l.split('|').map(x => x.trim()); const k = o[0].toUpperCase();
+    if (['HINH', 'HINHTHE', 'VIDEO'].includes(k)) return loi.push(`Dòng ${i + 1}: loại ${k} cần ảnh hoặc video trong máy nên bản web chưa làm được, em bỏ qua.`);
+    if (!LOAI.includes(k)) return loi.push(`Dòng ${i + 1}: không hiểu "${o[0].slice(0, 20)}", em bỏ qua.`);
+    ds.push({ k, a: o.slice(1).map(x => x.replace(/\\n/g, '\n')), dong: i + 1 });
+  });
+  return { ds, loi };
+}
+
+/* ================= DỰNG SLIDE ================= */
+const PHAN = [['khởi động', 'F77F00'], ['sinh hoạt dưới cờ', 'F77F00'], ['khám phá', '1D7BD8'], ['luyện tập', '2A9D4A'], ['thực hành', '2A9D4A'], ['sinh hoạt theo', '2A9D4A'], ['vận dụng', '7B2FF7'], ['củng cố', 'E64980'], ['trò chơi', 'E8590C']];
+const mauPhan = ten => { const t = ten.toLowerCase(); const m = PHAN.find(p => t.includes(p[0])); return m ? m[1] : '1D7BD8'; };
+const THE_MAU = ['1D7BD8', 'F77F00', '2A9D4A', 'E64980', '7B2FF7', '0B8F9C'];
+function runs(t, o) {
+  const kq = [], dongs = String(san(t)).split('\n');
+  dongs.forEach((dong, li) => {
+    const phan = dong.split(/(\{[^}]*\})/).filter(Boolean); if (!phan.length) phan.push(' ');
+    phan.forEach((p, pi) => { const dam = /^\{.*\}$/.test(p); kq.push({ text: dam ? p.slice(1, -1) : p, options: { color: dam ? o.hi : o.color, bold: o.bold || dam, fontSize: o.size, fontFace: o.font, breakLine: li < dongs.length - 1 && pi === phan.length - 1 } }); });
+  });
+  return kq;
+}
+function vua(text, w, h, max, min = 14) { const s = tho(text); for (let f = max; f >= min; f -= 2) { const cpl = Math.max(1, Math.floor(w * 72 / (f * 0.55))); const dong = s.split('\n').reduce((a, l) => a + Math.max(1, Math.ceil(l.length / cpl)), 0); if (dong * f * 1.25 / 72 <= h) return f; } return min; }
+
+function dungPptx(ds, opt) {
+  const P = new PptxGenJS(); P.layout = 'LAYOUT_16x9'; P.title = 'Slide bài giảng'; P.author = 'Cô Điệp AI';
+  const TH = THEMES.find(t => t.id === opt.chuDe) || THEMES[0], FH = opt.bo === 'lop1' ? 'VNI-Avo' : opt.bo === 'sgk' ? 'Nunito Black' : opt.fh, FB = opt.bo === 'lop1' ? 'VNI-Avo' : opt.bo === 'sgk' ? 'Arial-SGK-TV' : opt.fb, FV = opt.bo === 'tuchon' ? 'Segoe Script' : 'HP001 4 hàng', EMO = 'Segoe UI Emoji', vn = (t, f) => f === 'VNI-Avo' ? toVni(t) : t;
+  const nenData = (opt.anhNen || veNen(TH)).replace(/^data:/, '');
+  P.defineSlideMaster({ title: 'NEN', background: { data: nenData } });
+  const dsAnim = []; let phan = '1D7BD8', stt = 0, ten = '', so = 0, nv = opt.nv, nvImg = opt.anhNv ? opt.anhNv.replace(/^data:/, '') : '';
+  const mode = opt.cach;
+
+  // ---- ngữ cảnh vẽ: mỗi phần tử có "bước" (0 = luôn hiện, k = hiện ở lần bấm thứ k)
+  function mk(s, up, anim, probe) {
+    let cnt = 0, max = 0;
+    const gan = (st, kind, o) => { if (anim && st > 0) o.objectName = `rv${st}_${cnt++}${kind}`; return o; };
+    return {
+      max: () => max,
+      shape(type, o, st = 0) { max = Math.max(max, st); if (probe || st > up) return; s.addShape(type, gan(st, 's', o)); },
+      text(c, o, st = 0) { max = Math.max(max, st); if (probe || st > up) return; s.addText(typeof c === 'string' ? vn(c, o.fontFace) : c.map(r => ({ text: vn(r.text, r.options && r.options.fontFace), options: r.options })), gan(st, 't', o)); },
+      image(o, st = 0) { max = Math.max(max, st); if (probe || st > up) return; s.addImage(gan(st, 'p', o)); }
+    };
+  }
+  const rect = (C, x, y, w, h, fill, line, st = 0, ex = {}) => C.shape(P.ShapeType.roundRect, Object.assign({ x, y, w, h, fill: { color: fill }, line: { color: line || fill, width: 1.5 }, rectRadius: 0.14 }, ex), st);
+  const chu = (C, t, x, y, w, h, size, color, extra = {}, st = 0) => C.text(runs(t, { color, hi: extra.hi || 'E63946', size, bold: extra.bold !== false, font: extra.font || FB }), Object.assign({ x, y, w, h, align: 'center', valign: 'middle', margin: 0.05 }, extra.o || {}), st);
+  const emo = (C, e, x, y, w, h, size, st = 0, rot = 0) => C.text(e, { x, y, w, h, align: 'center', valign: 'middle', fontSize: size, fontFace: EMO, margin: 0, rotate: rot }, st);
+  const nhanVat = (C, x, y, w, h, size, st = 0) => { if (nvImg) C.image({ data: nvImg, x, y, w, h, sizing: { type: 'contain', w, h } }, st); else if (nv && nv !== '🚫') emo(C, nv, x, y, w, h, size, st); };
+  const bong = () => ({ type: 'outer', color: '000000', opacity: 0.22, blur: 6, offset: 3, angle: 90 });
+
+  // ---- khung chung cho slide nội dung
+  function khung(s, tit, chip) {
+    const C0 = mk(s, 9e9, false, false); so++;
+    C0.shape(P.ShapeType.roundRect, { x: 0.4, y: 0.62, w: 9.2, h: 4.5, fill: { color: 'FFFFFF' }, line: { color: TH.c1, width: 3 }, rectRadius: 0.2, shadow: bong() });
+    const w = Math.min(7.4, 0.9 + tho(tit || ' ').length * 0.2);
+    if (tit) C0.shape(P.ShapeType.roundRect, { x: 0.55, y: 0.12, w, h: 0.64, fill: { color: phan }, line: { color: 'FFFFFF', width: 2.5 }, rectRadius: 0.3, shadow: bong() });
+    if (tit) C0.text(runs(tit, { color: 'FFFFFF', hi: 'FFE066', size: vua(tit, w - 0.4, 0.55, 22, 13), bold: true, font: FH }), { x: 0.7, y: 0.14, w: w - 0.3, h: 0.6, valign: 'middle', align: 'center', margin: 0 });
+    if (chip) { const cw = Math.min(4.2, 0.7 + chip.length * 0.17); C0.shape(P.ShapeType.roundRect, { x: 9.55 - cw, y: 0.2, w: cw, h: 0.5, fill: { color: 'FFD166' }, line: { color: 'FFFFFF', width: 2 }, rectRadius: 0.25, shadow: bong() }); C0.text(chip, { x: 9.55 - cw, y: 0.2, w: cw, h: 0.5, align: 'center', valign: 'middle', fontSize: 14, bold: true, color: '5A3A00', fontFace: FH, margin: 0 }); }
+    if (opt.chan) { C0.text(tho(ten), { x: 0.5, y: 5.2, w: 7.5, h: 0.3, fontSize: 10, color: '6B7A8D', fontFace: FB, margin: 0 }); C0.text(String(so), { x: 9, y: 5.2, w: 0.6, h: 0.3, fontSize: 10, color: '6B7A8D', align: 'right', fontFace: FB, margin: 0 }); }
+  }
+  const CX = 0.7, CY = 0.98, CW = 8.6, CH = 3.95;
+
+  // thêm slide nội dung: draw(C) vẽ phần thân; xử lý các chế độ hiện
+  function noiDung(tit, chip, draw) {
+    const probe = mk(null, 0, false, true); draw(probe); const max = probe.max();
+    const moi = () => { const s = P.addSlide({ masterName: 'NEN' }); khung(s, tit, chip); return s; };
+    if (mode === 'slides' && max > 0) { for (let j = 0; j <= max; j++) { const s = moi(); draw(mk(s, j, false, false)); } }
+    else { const s = moi(); draw(mk(s, 9e9, mode === 'anim', false)); if (mode === 'anim' && max > 0) dsAnim.push(P.slides.length); }
+  }
+  const ghiNhom = [];
+
+  ds.forEach(d => {
+    const a = d.a;
+    if (d.k === 'GHICHU') { const dsl = P.slides; if (opt.ghiChu && dsl && dsl.length) dsl[dsl.length - 1].addNotes(san(a[0] || '')); return; }
+    if (d.k === 'BIA') {
+      ten = a[1] || ''; const s = P.addSlide({ masterName: 'NEN' }); so++; const C = mk(s, 9e9, false, false);
+      rect(C, 0.5, 0.55, 9, 4.5, 'FFFFFF', TH.c1, 0, { line: { color: TH.c1, width: 4 }, shadow: bong() });
+      rect(C, 0.8, 0.8, 2.5, 0.55, 'FFD166', 'FFFFFF'); chu(C, a[0] || '', 0.8, 0.8, 2.5, 0.55, 18, '5A3A00', { font: FH });
+      chu(C, a[1] || '', 0.8, 1.5, nv !== '🚫' || nvImg ? 5.6 : 8.4, 2.1, vua(a[1] || '', 5.4, 2, 48, 22), TH.c1, { font: FH, hi: 'E63946' });
+      C.text(san(a[2] || ''), { x: 0.8, y: 3.75, w: 6, h: 0.45, fontSize: 18, color: '4A6378', fontFace: FB, margin: 0 }); C.text(san(a[3] || ''), { x: 0.8, y: 4.2, w: 6, h: 0.45, fontSize: 18, bold: true, color: '1D3557', fontFace: FB, margin: 0 });
+      nhanVat(C, 6.5, 1.2, 2.7, 3.4, 130); emo(C, TH.deco[0], 8.6, 0.55, 0.8, 0.8, 34); return;
+    }
+    if (d.k === 'MUC') {
+      phan = mauPhan(a[0] || ''); stt++; const s = P.addSlide(); so++; s.background = { color: phan }; const C = mk(s, 9e9, false, false);
+      C.shape(P.ShapeType.ellipse, { x: 3.9, y: 0.55, w: 2.2, h: 2.2, fill: { color: 'FFFFFF' }, line: { color: 'FFFFFF' }, shadow: bong() });
+      C.text(String(stt), { x: 3.9, y: 0.55, w: 2.2, h: 2.2, align: 'center', valign: 'middle', fontSize: 100, bold: true, color: phan, fontFace: FH });
+      C.text(san(a[0] || '').toUpperCase(), { x: 0.5, y: 3.0, w: 9, h: 1.2, align: 'center', valign: 'middle', fontSize: vua(a[0] || '', 9, 1.2, 56, 26), bold: true, color: 'FFFFFF', fontFace: FH });
+      const left = stt % 2 === 1; nhanVat(C, left ? 0.4 : 7.3, 2.6, 2.4, 2.7, 110); emo(C, TH.deco[stt % 3], left ? 7.8 : 0.5, 0.6, 1.2, 1.2, 50); emo(C, TH.deco[(stt + 1) % 3], left ? 0.6 : 8.0, 0.4, 1, 1, 40); return;
+    }
+    if (d.k === 'KET') {
+      const s = P.addSlide(); so++; s.background = { color: 'E64980' }; const C = mk(s, 9e9, false, false);
+      chu(C, a[0] || 'Chúc các con học tốt!', 2.4, 0.8, 7, 2, vua(a[0] || '', 6.8, 1.9, 48, 22), 'FFFFFF', { font: FH, hi: 'FFE066' }); chu(C, a[1] || '', 2.4, 2.9, 7, 1.4, vua(a[1] || '', 6.8, 1.3, 26, 16), 'FFFFFF', { bold: false, hi: 'FFE066' });
+      nhanVat(C, 0.4, 1.0, 2.1, 3.4, 110); emo(C, '🎉', 8.4, 0.3, 1.2, 1.2, 50); emo(C, '⭐', 0.5, 4.4, 1, 1, 40); return;
+    }
+    if (d.k === 'MUCTIEU') {
+      const ys = a.filter(Boolean).slice(0, 4);
+      noiDung('Yêu cầu cần đạt', '', C => { emo(C, '🎯', CX, CY + 0.1, 1.3, 1.3, 64); ys.forEach((y, i) => { const h = Math.min(0.85, (CH - 0.1) / ys.length - 0.15), yy = CY + 0.1 + i * (h + 0.15); rect(C, CX + 1.5, yy, CW - 1.5, h, THE_MAU[i % 4], THE_MAU[i % 4], i + 1); chu(C, '✔ ' + y, CX + 1.6, yy, CW - 1.7, h, vua(y, CW - 2, h - 0.1, 26, 14), 'FFFFFF', { hi: 'FFE066', o: { align: 'left' } }, i + 1); }); }); return;
+    }
+    if (d.k === 'AM') {
+      const tit = a[0] || 'Âm mới', lon = a[1] || '', mau = a[2] || '', hinh = a[3] || '';
+      noiDung(tit, '', C => { rect(C, CX, CY, 4.2, CH, 'FFF8F0', 'F3D9C0'); chu(C, lon, CX, CY, 4.2, CH, vua(lon, 4.0, CH - 0.2, 150, 56), 'E63946', { font: FH, hi: 'E63946' });
+        rect(C, CX + 4.4, CY, 4.2, CH, 'EAF5FF', 'BFD7F0', 1); if (hinh && opt.hinh) emo(C, hinh, CX + 4.4, CY + 0.1, 4.2, 2, 90, 1); chu(C, mau, CX + 4.4, hinh && opt.hinh ? CY + 2.0 : CY, 4.2, hinh && opt.hinh ? 1.9 : CH, vua(mau, 4, 1.8, 64, 28), '1D3557', { font: FH }, 1); }); return;
+    }
+    if (d.k === 'THE') {
+      const mucs = a.slice(1).filter(Boolean).slice(0, 12).map(x => { const m = x.split('~'); return { t: m[0].trim(), h: (m[1] || '').trim() }; }); const n = mucs.length || 1;
+      noiDung(a[0] || '', '', C => { const cols = n <= 4 ? n : 4, rows = Math.ceil(n / cols), gap = 0.16, cw = (CW - gap * (cols - 1)) / cols, ch = (CH - gap * (rows - 1)) / rows, max = rows === 1 ? 46 : rows === 2 ? 36 : 26;
+        mucs.forEach((m, i) => { const x = CX + (i % cols) * (cw + gap), y = CY + Math.floor(i / cols) * (ch + gap), c = THE_MAU[i % THE_MAU.length], coH = m.h && opt.hinh; rect(C, x, y, cw, ch, c, c, i + 1, { shadow: bong() }); if (coH) emo(C, m.h, x, y + 0.05, cw, ch * 0.5, Math.min(52, Math.floor(ch * 26)), i + 1); chu(C, m.t, x, coH ? y + ch * 0.5 : y, cw, coH ? ch * 0.5 : ch, vua(m.t, cw - 0.2, (coH ? ch * 0.5 : ch) - 0.1, max, 14), 'FFFFFF', { hi: 'FFE066', font: FH }, i + 1); }); }); return;
+    }
+    if (d.k === 'DOC') {
+      const cs = a.slice(1).filter(Boolean).slice(0, 4), n = cs.length || 1, gap = 0.18, h = Math.min(1.2, (CH - gap * (n - 1)) / n);
+      noiDung(a[0] || 'Đọc câu', '', C => cs.forEach((c, i) => { const y = CY + i * (h + gap); rect(C, CX, y, CW, h, THE_MAU[i % 4], THE_MAU[i % 4], i + 1, { shadow: bong() }); chu(C, c, CX + 0.1, y, CW - 0.2, h, vua(c, CW - 0.4, h - 0.1, 38, 18), 'FFFFFF', { hi: 'FFE066' }, i + 1); })); return;
+    }
+    if (d.k === 'CHU') {
+      const t = a.slice(1).join('\n'); noiDung(a[0] || '', '', C => { rect(C, CX, CY, CW, CH, 'F7FBFF', 'D3E6F8'); chu(C, t, CX + 0.2, CY + 0.05, CW - 0.4, CH - 0.1, vua(t, CW - 0.6, CH - 0.3, 38, 18), '1D3557', { o: { lineSpacingMultiple: 1.15 } }); }); return;
+    }
+    if (d.k === 'VIET') {
+      const t = a[1] || ''; noiDung(a[0] || 'Tập viết', '', C => { rect(C, CX, CY, CW, CH, 'FFFFFF', 'D3E6F8'); if (opt.bo === 'tuchon') [CY + 1.0, CY + 1.95, CY + 2.9].forEach(y => C.shape(P.ShapeType.line, { x: CX + 0.2, y, w: CW - 0.4, h: 0, line: { color: 'BFD7F0', width: 1, dashType: 'dash' } })); chu(C, t, CX + 0.2, CY + 0.3, CW - 0.4, CH - 0.6, vua(t, CW - 0.6, CH - 0.8, 88, 28), '1D4FA0', { hi: '1D4FA0', font: FV }); }); return;
+    }
+    if (d.k === 'HOI') {
+      const q = a[0] || '', h = a[1] || '', dap = a[2] || '';
+      noiDung('', '', C => { rect(C, CX, CY - 0.2, CW, 1.0, 'FFF3D6', 'FFD166'); chu(C, q, CX + 0.15, CY - 0.2, CW - 0.3, 1.0, vua(q, CW - 0.5, 0.9, 28, 15), '1D3557', { hi: 'E63946' });
+        if (h && opt.hinh) emo(C, h, CX, CY + 0.8, CW, dap ? 1.9 : 3.0, dap ? 90 : 120); else if (!dap) emo(C, '❓', CX, CY + 0.8, CW, 3, 120);
+        if (dap) { rect(C, CX + 0.8, CY + 2.7, CW - 1.6, 1.2, '2A9D4A', '2A9D4A', 1, { shadow: bong() }); chu(C, '✔ ' + dap, CX + 0.8, CY + 2.7, CW - 1.6, 1.2, vua(dap, CW - 2, 1.1, 44, 18), 'FFFFFF', { hi: 'FFE066', font: FH }, 1); } }); return;
+    }
+    if (d.k === 'CHON') {
+      const q = a[0] || '', ops = a.slice(1).filter(Boolean).slice(0, 6).map(x => ({ t: x.replace(/\*$/, '').trim(), dung: /\*$/.test(x) })); const n = ops.length || 1;
+      noiDung('', '', C => { rect(C, CX, CY - 0.2, CW, 0.95, 'FFF3D6', 'FFD166'); chu(C, q, CX + 0.15, CY - 0.2, CW - 0.3, 0.95, vua(q, CW - 0.5, 0.85, 28, 15), '1D3557', { hi: 'E63946' });
+        const cot = n > 3 ? 2 : 1, hang = Math.ceil(n / cot), gap = 0.16, cw = (CW - gap * (cot - 1)) / cot, ch = Math.min(1.0, (CH - 0.95 - gap * hang) / hang);
+        ops.forEach((o, i) => { const x = CX + (i % cot) * (cw + gap), y = CY + 0.9 + Math.floor(i / cot) * (ch + gap); rect(C, x, y, cw, ch, THE_MAU[i % 6], THE_MAU[i % 6], 0, { shadow: bong() }); chu(C, String.fromCharCode(65 + i) + '. ' + o.t, x + 0.1, y, cw - 0.2, ch, vua(o.t, cw - 0.8, ch - 0.1, 34, 16), 'FFFFFF', { hi: 'FFE066' });
+          if (o.dung) { rect(C, x, y, cw, ch, '2A9D4A', 'FFFFFF', 1, { line: { color: 'FFFFFF', width: 3 } }); chu(C, String.fromCharCode(65 + i) + '. ' + o.t + '  ✔', x + 0.1, y, cw - 0.2, ch, vua(o.t, cw - 0.8, ch - 0.1, 34, 16), 'FFFFFF', { hi: 'FFE066' }, 1); } else rect(C, x, y, cw, ch, 'E4EAF1', 'E4EAF1', 1, { fill: { color: 'E4EAF1', transparency: 25 } }); }); }); return;
+    }
+    if (d.k === 'DUNGSAI') {
+      const t = a[1] || '', dung = /^(đ|d|đúng|dung)/i.test((a[2] || '').trim());
+      noiDung(a[0] || 'Đúng hay sai?', '', C => { rect(C, CX, CY, CW, 1.9, 'FFF3D6', 'FFD166'); chu(C, t, CX + 0.2, CY, CW - 0.4, 1.9, vua(t, CW - 0.6, 1.7, 36, 16), '1D3557', { hi: 'E63946' });
+        [['ĐÚNG', '2A9D4A', true, 0], ['SAI', 'E63946', false, 1]].forEach(([lb, c, v, i]) => { const x = CX + 0.4 + i * (CW / 2), w = CW / 2 - 0.8, y = CY + 2.2; rect(C, x, y, w, 1.5, c, c, 0, { shadow: bong() }); chu(C, lb, x, y, w, 1.5, 44, 'FFFFFF', { font: FH });
+          if (v === dung) { rect(C, x, y, w, 1.5, c, 'FFFFFF', 1, { line: { color: 'FFFFFF', width: 4 } }); chu(C, '✔ ' + lb, x, y, w, 1.5, 44, 'FFFFFF', { font: FH }, 1); } else rect(C, x, y, w, 1.5, 'FFFFFF', 'FFFFFF', 1, { fill: { color: 'FFFFFF', transparency: 55 } }); }); }); return;
+    }
+    if (d.k === 'DEM') {
+      const q = a[0] || '', h = a[1] || '⭐', sl = Math.min(20, parseInt(a[2]) || 0);
+      noiDung('', '', C => { rect(C, CX, CY - 0.2, CW, 0.95, 'FFF3D6', 'FFD166'); chu(C, q, CX + 0.15, CY - 0.2, CW - 0.3, 0.95, vua(q, CW - 0.5, 0.85, 28, 15), '1D3557', { hi: 'E63946' });
+        const dong = []; for (let i = 0; i < sl; i += 10) dong.push(Array(Math.min(10, sl - i)).fill(h).join(' ')); C.text(dong.join('\n'), { x: CX, y: CY + 0.9, w: CW - 2.4, h: CH - 1, align: 'center', valign: 'middle', fontSize: sl > 10 ? 36 : 48, fontFace: EMO, lineSpacingMultiple: 1.2 });
+        rect(C, CX + CW - 2.2, CY + 1.2, 2.1, 2.2, 'FFFFFF', 'E63946', 1, { line: { color: 'E63946', width: 3 } }); chu(C, String(sl), CX + CW - 2.2, CY + 1.2, 2.1, 2.2, 110, 'E63946', { font: FH }, 1); }); return;
+    }
+    if (d.k === 'PHEP') {
+      const ph = a.slice(1).filter(Boolean).slice(0, 8), cot = ph.length > 4 ? 2 : 1, hang = Math.ceil(ph.length / cot), ch = Math.min(0.95, CH / hang), w = CW / cot;
+      noiDung(a[0] || 'Tính', '', C => ph.forEach((p, i) => { const x = CX + (i % cot) * w, y = CY + Math.floor(i / cot) * ch;
+        const dung = k => p.split(/(\[[^\]]*\])/).filter(Boolean).map(t => /^\[.*\]$/.test(t) ? (k ? { text: t.slice(1, -1), options: { color: 'E63946', bold: true, fontSize: 40, fontFace: FH } } : { text: '(  ?  )', options: { color: 'AFC7E0', bold: true, fontSize: 40, fontFace: FH } }) : { text: t, options: { color: '1D3557', bold: true, fontSize: 40, fontFace: FH } });
+        C.text(dung(false), { x, y, w, h: ch, align: 'center', valign: 'middle', margin: 0.05 }); if (/\[/.test(p)) { C.shape(P.ShapeType.rect, { x: x + 0.2, y: y + 0.05, w: w - 0.4, h: ch - 0.1, fill: { color: 'FFFFFF' }, line: { color: 'FFFFFF', width: 0 } }, i + 1); C.text(dung(true), { x, y, w, h: ch, align: 'center', valign: 'middle', margin: 0.05 }, i + 1); } })); return;
+    }
+    if (d.k === 'BANG') {
+      const hs = a.slice(1).filter(Boolean).slice(0, 12).map(r => r.split(';').map(c => c.trim())); const nc = Math.max(1, ...hs.map(r => r.length)), nh = hs.length || 1;
+      noiDung(a[0] || 'Bảng', '', C => { const cw = Math.min(nc <= 2 ? 3.0 : 1.9, CW / nc), ch = Math.min(0.8, CH / nh), x0 = CX + (CW - cw * nc) / 2, y0 = CY + (CH - ch * nh) / 2; let click = 0;
+        hs.forEach((r, ri) => { const co = r.some(c => /^\[.*\]$/.test(c)); if (co) click++; r.forEach((c, ci) => { const x = x0 + ci * cw, y = y0 + ri * ch, trong = /^\[.*\]$/.test(c), nd = trong ? c.slice(1, -1) : c, mau = ri % 2 ? 'EAF5FF' : 'FFFFFF';
+          C.shape(P.ShapeType.rect, { x, y, w: cw, h: ch, fill: { color: trong ? 'FFF3D6' : mau }, line: { color: '9FC2E6', width: 1 } }); chu(C, trong ? '?' : c, x, y, cw, ch, vua(c, cw - 0.1, ch - 0.05, 32, 11), trong ? 'F77F00' : '1D3557', { font: FH });
+          if (trong) { C.shape(P.ShapeType.rect, { x, y, w: cw, h: ch, fill: { color: 'FFFFFF' }, line: { color: '9FC2E6', width: 1 } }, click); chu(C, nd, x, y, cw, ch, vua(nd, cw - 0.1, ch - 0.05, 32, 11), 'E63946', { font: FH }, click); } }); }); }); return;
+    }
+    if (d.k === 'BAI') {
+      const nhan = a[0] || 'Bài 1', de = a[1] || '', chip = a[2] || '';
+      noiDung(nhan, chip, C => { rect(C, CX, CY + 0.1, CW, CH - 0.2, 'F7FBFF', 'D3E6F8'); chu(C, de, CX + 0.3, CY + 0.2, CW - 0.6, CH - 0.4, vua(de, CW - 0.8, CH - 0.6, 40, 18), '1D3557', { font: FH }); }); return;
+    }
+    if (d.k === 'NHOM') {
+      const loai = (a[0] || 'nhóm đôi').toLowerCase(), q = a[1] || '', ph = a[2] || '2', bon = /4|bốn/.test(loai);
+      noiDung('THẢO LUẬN ' + (bon ? 'NHÓM 4' : 'NHÓM ĐÔI').toUpperCase(), '⏱ ' + ph + ' phút', C => { rect(C, CX, CY, CW, 1.3, 'FFF3D6', 'FFD166'); chu(C, q, CX + 0.2, CY, CW - 0.4, 1.3, vua(q, CW - 0.6, 1.2, 30, 15), '1D3557', { hi: 'E63946' });
+        const es = bon ? ['👧', '🧒', '👦', '👩'] : ['👧', '🧒']; es.forEach((e, i) => emo(C, e, CX + (CW - es.length * 1.9) / 2 + i * 1.9, CY + 1.5, 1.9, 2.3, 100));
+        rect(C, CX + CW - 1.7, CY + 2.8, 1.6, 1.0, 'FFFFFF', 'E63946', 0, { line: { color: 'E63946', width: 3 } }); chu(C, ph + ':00', CX + CW - 1.7, CY + 2.8, 1.6, 1.0, 30, 'E63946', { font: FH }); }); return;
+    }
+    if (d.k === 'CHIASE') {
+      noiDung(a[0] || 'Chia sẻ', '', C => { chu(C, 'CHIA SẺ', CX, CY + 0.1, CW, 1.3, 56, TH.c1, { font: FH }); ['👧', '🧒', '👦', '👧'].forEach((e, i) => emo(C, e, CX + 0.9 + i * 1.9, CY + 1.5, 1.8, 2.3, 96)); emo(C, '💬', CX + CW - 1.3, CY + 0.1, 1.2, 1.2, 50); }); return;
+    }
+    if (d.k === 'HOP') {
+      const qs = a.slice(1).filter(Boolean).slice(0, 9).map(x => { const m = x.split('::'); return { q: (m[0] || '').trim(), d: (m[1] || '').trim() }; }); const n = qs.length || 1, tit = a[0] || 'Chọn ô may mắn';
+      const per = mode === 'slides' ? 2 : 1, menu = P.slides.length + 1;
+      const s = P.addSlide({ masterName: 'NEN' }); khung(s, tit, 'BẤM VÀO SỐ'); const C = mk(s, 9e9, false, false);
+      const cols = n <= 3 ? n : n <= 6 ? 3 : 3, rows = Math.ceil(n / cols), gap = 0.2, cw = (CW - gap * (cols - 1)) / cols, ch = (CH - gap * (rows - 1)) / rows;
+      qs.forEach((q, i) => { const x = CX + (i % cols) * (cw + gap), y = CY + Math.floor(i / cols) * (ch + gap), tg = menu + 1 + i * per;
+        s.addText([{ text: String(i + 1), options: { hyperlink: { slide: tg, tooltip: 'Mở câu ' + (i + 1) }, color: 'FFFFFF', bold: true, fontSize: Math.min(80, Math.floor(ch * 40)), fontFace: FH } }], { x, y, w: cw, h: ch, align: 'center', valign: 'middle', shape: P.ShapeType.roundRect, rectRadius: 0.2, fill: { color: THE_MAU[i % 6] }, line: { color: 'FFFFFF', width: 3 }, shadow: bong(), margin: 0 }); });
+      qs.forEach((q, i) => {
+        const veQ = (hien) => { const s2 = P.addSlide({ masterName: 'NEN' }); khung(s2, 'Câu ' + (i + 1), ''); const C2 = mk(s2, 9e9, false, false);
+          rect(C2, CX, CY, CW, 2.1, 'FFF3D6', 'FFD166'); chu(C2, q.q, CX + 0.2, CY, CW - 0.4, 2.1, vua(q.q, CW - 0.6, 1.9, 34, 16), '1D3557', { hi: 'E63946' });
+          const ve2 = hien ? 9e9 : 0; if (hien || mode === 'anim') { const Cd = mk(s2, 9e9, !hien && mode === 'anim', false); rect(Cd, CX + 0.8, CY + 2.3, CW - 1.6, 1.2, '2A9D4A', '2A9D4A', 1, { shadow: bong() }); chu(Cd, '✔ ' + q.d, CX + 0.8, CY + 2.3, CW - 1.6, 1.2, vua(q.d, CW - 2, 1.1, 40, 16), 'FFFFFF', { hi: 'FFE066', font: FH }, 1); if (!hien && mode === 'anim') dsAnim.push(P.slides.length); }
+          s2.addText([{ text: vn('↩ Về menu', FH), options: { hyperlink: { slide: menu, tooltip: 'Quay lại menu' }, color: 'FFFFFF', bold: true, fontSize: 16, fontFace: FH } }], { x: CX + CW - 2, y: CY + 3.55, w: 2, h: 0.4, align: 'center', valign: 'middle', shape: P.ShapeType.roundRect, rectRadius: 0.2, fill: { color: TH.c1 }, margin: 0 }); };
+        if (mode === 'slides') { veQ(false); veQ(true); } else veQ(mode === 'het'); });
+      return;
+    }
+  });
+  return { P, kq: { slide: P.slides.length }, dsAnim };
+}
+
+/* ================= HIỆU ỨNG BẤM CHUỘT (chèn vào XML) ================= */
+function timingXml(nhom) {
+  let id = 3, clicks = '', bld = '';
+  nhom.forEach(g => {
+    let eff = ''; g.forEach((e, i) => { const a = id++, b = id++;
+      eff += `<p:par><p:cTn id="${a}" presetID="1" presetClass="entr" presetSubtype="0" fill="hold"${e.bld ? ' grpId="0"' : ''} nodeType="${i === 0 ? 'clickEffect' : 'withEffect'}"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn id="${b}" dur="1" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt spid="${e.id}"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr><p:to><p:strVal val="visible"/></p:to></p:set></p:childTnLst></p:cTn></p:par>`;
+      if (e.bld) bld += `<p:bldP spid="${e.id}" grpId="0" animBg="1"/>`; });
+    const o1 = id++, o2 = id++;
+    clicks += `<p:par><p:cTn id="${o1}" fill="hold"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst><p:childTnLst><p:par><p:cTn id="${o2}" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>${eff}</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>`;
+  });
+  return `<p:timing><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst><p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>${clicks}</p:childTnLst></p:cTn><p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst><p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq></p:childTnLst></p:cTn></p:par></p:tnLst>${bld ? `<p:bldLst>${bld}</p:bldLst>` : ''}</p:timing>`;
+}
+async function themHieuUng(buf, dsAnim) {
+  const zip = await JSZip.loadAsync(buf); let n = 0;
+  for (const idx of dsAnim) {
+    const path = `ppt/slides/slide${idx}.xml`, f = zip.file(path); if (!f) continue;
+    let x = await f.async('string'); const re = /<p:cNvPr id="(\d+)" name="rv(\d+)_(\d+)([stp])"/g, buoc = {}; let m;
+    while ((m = re.exec(x))) { (buoc[+m[2]] = buoc[+m[2]] || []).push({ id: m[1], n: +m[3], bld: m[4] !== 'p' }); }
+    const nhom = Object.keys(buoc).map(Number).sort((a, b) => a - b).map(k => buoc[k].sort((a, b) => a.n - b.n)); if (!nhom.length) continue;
+    x = x.replace(/<p:timing>[\s\S]*?<\/p:timing>/, ''); x = x.replace('</p:sld>', timingXml(nhom) + '</p:sld>'); zip.file(path, x); n += nhom.length;
+  }
+  return { blob: await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', compression: 'DEFLATE' }), n };
+}
+
+/* ================= GIAO DIỆN ================= */
+const TEN = { BIA: 'Bìa', MUCTIEU: 'Mục tiêu', MUC: 'Phần', AM: 'Âm mới', THE: 'Thẻ', DOC: 'Đọc câu', CHU: 'Chữ', VIET: 'Tập viết', HOI: 'Hỏi đáp', CHON: 'Chọn đáp án', DUNGSAI: 'Đúng sai', DEM: 'Đếm', PHEP: 'Phép tính', BANG: 'Bảng', BAI: 'Bài tập', NHOM: 'Thảo luận', CHIASE: 'Chia sẻ', HOP: 'Chọn ô', KET: 'Kết', GHICHU: 'Ghi chú' };
+function capNhat() {
+  const { ds, loi } = phanTich($('kb').value);
+  $('canhBao').innerHTML = loi.length ? `<div class="hop d">${loi.map(esc).join('<br>')}</div>` : '';
+  $('dsSlide').innerHTML = ds.map(d => `<div class="sl ${d.k === 'MUC' ? 'muc' : ''}"><b>${TEN[d.k]}</b>${esc(d.a.slice(0, 3).join(' | ').replace(/[{}]/g, '').slice(0, 70))}</div>`).join('');
+  luu(); return ds;
+}
+function opt() { return { cach: $('cachHien').value, ghiChu: $('ghiChu').checked, chan: $('chanTrang').checked, hinh: $('hinh').checked, chuDe, nv: nvChon, anhNv, anhNen, fh: $('phongTD').value, fb: $('phongND').value, bo: $('kieuChu').value }; }
+function veChuDe() {
+  $('dsChuDe').innerHTML = ''; THEMES.forEach(t => { const d = document.createElement('div'); d.className = 'cdi' + (t.id === chuDe ? ' on' : ''); const c = document.createElement('canvas'); c.width = 300; c.height = 168; t.ve(c.getContext('2d'), 300, 168); d.appendChild(c); d.append(t.ten); d.onclick = () => { chuDe = t.id; veChuDe(); luu(); }; $('dsChuDe').appendChild(d); });
+  $('dsNv').innerHTML = NV.map(e => `<span class="${e === nvChon ? 'on' : ''}" data-nv="${e}">${e}</span>`).join('');
+  $('trangThaiAnh').textContent = (anhNv ? ' Đã có ảnh nhân vật.' : '') + (anhNen ? ' Đã có ảnh nền.' : '');
+}
+$('dsNv').onclick = e => { const s = e.target.closest('[data-nv]'); if (s) { nvChon = s.dataset.nv; veChuDe(); luu(); } };
+function docAnh(file, max, png) { return new Promise(ok => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const s = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s); const g = c.getContext('2d'); if (!png) { g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); } g.drawImage(im, 0, 0, c.width, c.height); ok(png ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', .86)); }; im.src = r.result; }; r.readAsDataURL(file); }); }
+$('tepNv').onchange = async e => { if (e.target.files[0]) { anhNv = await docAnh(e.target.files[0], 700, true); veChuDe(); } };
+$('tepNen').onchange = async e => { if (e.target.files[0]) { anhNen = await docAnh(e.target.files[0], 1600, false); veChuDe(); } };
+$('xoaAnh').onclick = () => { anhNv = anhNen = ''; veChuDe(); };
+$('chepLenh').onclick = () => { const t = lenh(); (navigator.clipboard && window.isSecureContext ? navigator.clipboard.writeText(t).then(() => bao('Đã chép. Dán vào ChatGPT hoặc Gemini nhé.'), () => bao('Không chép được')) : (() => { const x = document.createElement('textarea'); x.value = t; document.body.appendChild(x); x.select(); try { document.execCommand('copy'); bao('Đã chép. Dán vào ChatGPT hoặc Gemini nhé.'); } catch (e) { bao('Không chép được'); } x.remove(); })()); };
+$('mauKB').onclick = () => { $('kb').value = MAU.replace(/\\n/g, '\\n'); capNhat(); bao('Đã điền kịch bản mẫu'); };
+$('xuat').onclick = async () => {
+  const ds = capNhat(); if (!ds.length) return bao('Chưa có kịch bản slide');
+  bao('Đang tạo file PowerPoint...');
+  try {
+    const { P, dsAnim } = dungPptx(ds, opt()); const bia = ds.find(d => d.k === 'BIA') || { a: [] };
+    let blob = await P.write({ outputType: 'arraybuffer' }); let nUng = 0;
+    const r = await themHieuUng(blob, dsAnim); blob = r.blob; nUng = r.n;
+    const f = 'Slide-' + (bia.a[1] || 'bai-giang').replace(/[{}\\/:*?"<>|]/g, '').replace(/\s+/g, '-');
+    window.__lastBlob = blob; const l = document.createElement('a'); l.href = URL.createObjectURL(blob); l.download = f + '.pptx'; document.body.appendChild(l); l.click(); l.remove();
+    $('ketQua').innerHTML = `<div class="hop"><span class="ok">Đã tạo ${P.slides.length} slide${nUng ? ', ' + nUng + ' lần bấm hiện' : ''}.</span> File: ${esc(f)}.pptx</div>`; bao('Đã tạo xong');
+  } catch (e) { console.error(e); bao('Lỗi: ' + e.message); }
+};
+$('taiTxt').onclick = () => { const b = new Blob(['﻿' + $('kb').value], { type: 'text/plain' }), l = document.createElement('a'); l.href = URL.createObjectURL(b); l.download = 'kich-ban-slide.txt'; l.click(); };
+$('nhapGA').onclick = () => $('tepGA').click();
+$('tepGA').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const G = JSON.parse(r.result), i = G.info || {}; $('mon').value = i.mon === 'Khác' ? (i.monkhac || '') : (i.mon || ''); $('lop').value = i.lop || ''; $('bai').value = i.bai || ''; $('nd').value = i.noidung || ''; $('yc').value = i.trochoi || ''; $('gv').value = 'Giáo viên: ' + (i.nguoiday || ''); $('mau').value = i.mon === 'Toán' ? 'toan' : i.mon === 'Tiếng Việt' ? 'tv' : 'khac'; hdGA = (G.hd || []).filter(h => h.loai !== 'nghi').map(h => `${h.ten} (${h.phut} phút${h.tc ? ', ' + h.tc : ''})`); luu(); bao('Đã lấy thông tin từ giáo án'); } catch (x) { bao('File không đúng định dạng'); } }; r.readAsText(f); };
+document.addEventListener('input', () => capNhat());
+document.addEventListener('change', () => capNhat());
+tai(); veChuDe(); capNhat();
+</script>
+</body>
+</html>
